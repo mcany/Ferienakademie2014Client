@@ -12,7 +12,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
+import java.util.List;
 
 import ferienakademie.de.fitfritz.model.LocationData;
 
@@ -23,12 +23,13 @@ public class GPSService extends Service implements LocationListener {
 
     public final String TAG = GPSService.class.getSimpleName();
 
-
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
 
     private LocationManager mLocationManager;
     private String provider = LocationManager.GPS_PROVIDER;
+
+    //private List<LocationData> data = new ArrayList<>();
 
     @Override
     public IBinder onBind(Intent arg0) {
