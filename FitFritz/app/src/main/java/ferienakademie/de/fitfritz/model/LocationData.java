@@ -1,25 +1,30 @@
 package ferienakademie.de.fitfritz.model;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Date;
 
 /**
  * Created by explicat on 9/25/14.
  */
 
 public class LocationData extends SensorData {
+;
+    private Location mLocation;
 
-    private LatLng location;
+    public LocationData(Location location) {
+        setCreationDate(new Date());
+        this.mLocation = location;
+    }
 
     public LatLng getLatLng() {
-        return location;
+        return new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
     }
 
-    public void setLatLng(LatLng latLng) {
-        this.location = latLng;
-    }
-
-    public LocationData(LatLng latLng) {
-        this.location = latLng;
+    public void setLatLng(Location location) {
+        this.mLocation = location;
     }
 
 }

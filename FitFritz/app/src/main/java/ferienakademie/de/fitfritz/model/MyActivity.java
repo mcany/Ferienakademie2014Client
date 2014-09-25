@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -48,20 +49,23 @@ public class MyActivity extends Activity implements LocationListener {
         mDistanceView = (TextView) findViewById(R.id.distance);
         mSpeedView = (TextView) findViewById(R.id.speed);
 
-        handleLocation();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        mLocationManager.requestLocationUpdates(mProvider, 1000, 0, this);
+        handleLocation();
+
+        mLocationManager.requestLocationUpdates(mProvider, 50, 0, this);
+        Log.e(TAG, "requested");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mLocationManager.removeUpdates(this);
+        Log.e(TAG, "removed");
     }
 
     @Override
@@ -131,6 +135,8 @@ public class MyActivity extends Activity implements LocationListener {
         mLocation = location;
         mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
+        Log.e(TAG, String.valueOf(mLatLng.latitude) + ", " + String.valueOf(mLatLng.longitude));
+
         mVelocity = mLocation.getSpeed();
         mAltitude = mLocation.getAltitude();
 
@@ -147,13 +153,13 @@ public class MyActivity extends Activity implements LocationListener {
                     mLatLngList.get(size - 1).latitude,
                     mLatLngList.get(size - 1).longitude, tmp);
             mDistance[0] += tmp[0];
-            mAltitude = mLocation.getAltitude();
-            mSpeed = mLocation.getSpeed();
-
-            updateTextView(String.valueOf(mAltitude), String.valueOf(mLocation.getLatitude()),
-                    String.valueOf(mLocation.getLongitude()),
-                    String.valueOf(mSpeed), String.valueOf(mDistance[0]));
         }
+        mAltitude = mLocation.getAltitude();
+        mSpeed = mLocation.getSpeed();
+
+        updateTextView(String.valueOf(mAltitude), String.valueOf(mLocation.getLatitude()),
+                String.valueOf(mLocation.getLongitude()),
+                String.valueOf(mSpeed), String.valueOf(mDistance[0]));
     }
 
     private void updateTextView(String alt, String lat, String lon, String speed, String dist) {
