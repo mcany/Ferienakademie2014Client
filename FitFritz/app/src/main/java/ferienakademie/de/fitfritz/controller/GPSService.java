@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,63 +22,117 @@ import ferienakademie.de.fitfritz.model.LocationData;
 /**
  * Created by explicat on 9/25/14.
  */
-public class GPSService extends Service implements LocationListener {
 
-    public final String TAG = GPSService.class.getSimpleName();
-
+// got from http://stackoverflow.com/questions/8828639/android-get-gps-location-via-a-service (26.09.2014 17:45)
+public class GPSService extends Service {
+    private static final String TAG = "GPSService";
+    private LocationManager mLocationManager = null;
+    // each second location is fetched
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
+    private Handler mUIHandler;
+    public static final int MSG_GPSDATA = 42;
+    private IBinder mBinder = new GPSServiceBinder();
 
-    private LocationManager mLocationManager;
-    private String provider = LocationManager.GPS_PROVIDER;
-
-    //private List<LocationData> data = new ArrayList<>();
-
-    @Override
-    public IBinder onBind(Intent arg0) {
-        return null;
-    }
-
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        boolean enabled = mLocationManager.isProviderEnabled(provider);
-        if (!enabled) {
-            Intent aux = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            aux.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(aux);
+    public class GPSServiceBinder extends Binder {
+        public GPSService getService() {
+            return GPSService.this;
         }
+    }
 
+    public void connectLayoutHandler(Handler handler) {
+        mUIHandler = handler;
+    }
 
-        mLocationManager.requestLocationUpdates(provider, LOCATION_INTERVAL, LOCATION_DISTANCE, this);
-        return START_NOT_STICKY;
+    private class MyLocationListener implements LocationListener{
+        Location mLastLocation;
+        public MyLocationListener(String provider)
+        {
+            Log.e(TAG, "LocationListener " + provider);
+            mLastLocation = new Location(provider);
+        }
+        @Override
+        public void onLocationChanged(Location location)
+        {
+            Log.e(TAG, "onLocationChanged: " + location);
+            mLastLocation.set(location);
+            mUIHandler.sendMessage(Message.obtain(null, MSG_GPSDATA, mLastLocation));
+        }
+        @Override
+        public void onProviderDisabled(String provider)
+        {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+            Toast.makeText(GPSService.this, "Please enable GPS!", Toast.LENGTH_SHORT).show();
+        }
+        @Override
+        public void onProviderEnabled(String provider)
+        {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras)
+        {
+            Log.e(TAG, "onStatusChanged: " + provider);
+        }
+    }
+    LocationListener[] mLocationListeners = new LocationListener[] {
+            new MyLocationListener(LocationManager.GPS_PROVIDER),
+            new MyLocationListener(LocationManager.NETWORK_PROVIDER)
+    };
+    @Override
+    public IBinder onBind(Intent arg0)
+    {
+        Log.e(TAG, "onBind");
+        return mBinder;
+    }
+
+    @Override
+    public void onCreate()
+    {
+        Log.e(TAG, "onCreate");
+        initializeLocationManager();
+        try {
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                    mLocationListeners[1]);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        }
+        try {
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                    mLocationListeners[0]);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        }
+    }
+    @Override
+    public void onDestroy()
+    {
+        Log.e(TAG, "onDestroy");
+        super.onDestroy();
+        if (mLocationManager != null) {
+            for (int i = 0; i < mLocationListeners.length; i++) {
+                try {
+                    mLocationManager.removeUpdates(mLocationListeners[i]);
+                } catch (Exception ex) {
+                    Log.i(TAG, "fail to remove location listners, ignore", ex);
+                }
+            }
+        }
+    }
+    private void initializeLocationManager() {
+        Log.e(TAG, "initializeLocationManager");
+        if (mLocationManager == null) {
+            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        }
     }
 
 
-    @Override
-    public void onLocationChanged(Location location) {
-        LocationData locationData = new LocationData(location);
-        Log.e(TAG, String.valueOf(location.getLatitude()) + ", " + String.valueOf(location.getLongitude()));
-
-        // TODO saveData
-    }
-
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Toast.makeText(this, "Please enable GPS " + provider,
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {  }
 }
+
+

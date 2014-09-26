@@ -21,6 +21,9 @@
             </intent-filter>
         </activity>
 
+        <service android:name="ferienakademie.de.fitfritz.controller.GPSService">
+
+        </service>
     </application>
 
 </manifest>

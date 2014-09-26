@@ -1,15 +1,22 @@
 package ferienakademie.de.fitfritz.view;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -17,9 +24,13 @@ import java.util.LinkedList;
 
 import ferienakademie.de.fitfritz.R;
 import ferienakademie.de.fitfritz.controller.DatabaseHandler;
+import ferienakademie.de.fitfritz.controller.GPSService;
 import ferienakademie.de.fitfritz.model.LocationData;
 
-public class MyActivity extends Activity implements LocationListener {
+import static android.view.View.OnClickListener;
+import static ferienakademie.de.fitfritz.controller.GPSService.*;
+
+public class MyActivity extends Activity implements ServiceConnection, OnClickListener {
 
     public static final String TAG = MyActivity.class.getSimpleName();
 
@@ -41,6 +52,22 @@ public class MyActivity extends Activity implements LocationListener {
     private float mSpeed;
 
     private DatabaseHandler mDatabaseHandler;
+    private GPSService mLocationService;
+    private Handler mUIHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch(msg.what) {
+                case GPSService.MSG_GPSDATA:
+                    Log.d(TAG, "Got new GPS data!");
+                    updateLocation((Location) msg.obj);
+                    updateTextView();
+                    break;
+            }
+        }
+    };
+    private ToggleButton mBtnGPSTracking;
+
 
 
     @Override
@@ -52,8 +79,11 @@ public class MyActivity extends Activity implements LocationListener {
         mAltitudeView = (TextView) findViewById(R.id.altitude);
         mDistanceView = (TextView) findViewById(R.id.distance);
         mSpeedView = (TextView) findViewById(R.id.speed);
+        mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
+        mBtnGPSTracking.setOnClickListener(this);
 
-        mDatabaseHandler = new DatabaseHandler(getBaseContext());
+        mDatabaseHandler = new DatabaseHandler(this);
+
     }
 
     @Override
@@ -62,19 +92,18 @@ public class MyActivity extends Activity implements LocationListener {
 
         handleLocation();
 
-        mLocationManager.requestLocationUpdates(mProvider, 50, 0, this);
         Log.e(TAG, "requested");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mLocationManager.removeUpdates(this);
         Log.e(TAG, "removed");
     }
 
     @Override
     protected void onDestroy() {
+
         super.onDestroy();
     }
 
@@ -130,8 +159,7 @@ public class MyActivity extends Activity implements LocationListener {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
+    public void updateLocation(Location location) {
         mLocation = location;
         mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
@@ -171,21 +199,30 @@ public class MyActivity extends Activity implements LocationListener {
     }
 
     @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        GPSService.GPSServiceBinder binder = (GPSService.GPSServiceBinder) iBinder;
+        mLocationService = binder.getService();
+        mLocationService.connectLayoutHandler(mUIHandler);
     }
 
     @Override
-    public void onProviderEnabled(String s) {
-        if (s.equals(LocationManager.GPS_PROVIDER)) {
-            mProvider = s;
-        }
+    public void onServiceDisconnected(ComponentName componentName) {
+        mLocationService = null;
     }
 
     @Override
-    public void onProviderDisabled(String s) {
-        if(s.equals(LocationManager.GPS_PROVIDER)) {
-            mProvider = LocationManager.NETWORK_PROVIDER;
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btnStartGPSTracking:
+                Log.d(TAG, "Toggle Button pressed.");
+                if(mBtnGPSTracking.isChecked()) {
+                    Intent serviceIntent = new Intent(this, GPSService.class);
+                    bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
+                }
+                else {
+                    unbindService(this);
+                }
+                break;
         }
     }
 }
