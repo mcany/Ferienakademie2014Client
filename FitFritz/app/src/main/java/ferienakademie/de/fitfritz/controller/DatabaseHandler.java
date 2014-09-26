@@ -92,7 +92,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL(insertStatement);
 
-        Log.e(LOGCAT, "Inserted: Time: " + timeStamp +  "Longitude: " + longitude + " Latitude: " + latitude + " Altitude: " + altitude + " Speed: " + speed + "Synced: false");
+        Log.e(LOGCAT, "Inserted: Time: " + timeStamp +  " Longitude: " + longitude + " Latitude: " + latitude + " Altitude: " + altitude + " Speed: " + speed + " Synced: false");
 
     }
 
