@@ -85,6 +85,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL(insertStatement);
+
     }
 
 
