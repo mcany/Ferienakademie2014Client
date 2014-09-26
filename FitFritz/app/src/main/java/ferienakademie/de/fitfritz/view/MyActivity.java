@@ -16,6 +16,8 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.LinkedList;
 
 import ferienakademie.de.fitfritz.R;
+import ferienakademie.de.fitfritz.controller.DatabaseHandler;
+import ferienakademie.de.fitfritz.model.LocationData;
 
 public class MyActivity extends Activity implements LocationListener {
 
@@ -38,6 +40,8 @@ public class MyActivity extends Activity implements LocationListener {
     private TextView mAltitudeView;
     private float mSpeed;
 
+    private DatabaseHandler mDatabaseHandler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,7 @@ public class MyActivity extends Activity implements LocationListener {
         mDistanceView = (TextView) findViewById(R.id.distance);
         mSpeedView = (TextView) findViewById(R.id.speed);
 
+        mDatabaseHandler = new DatabaseHandler(getBaseContext());
     }
 
     @Override
@@ -97,6 +102,12 @@ public class MyActivity extends Activity implements LocationListener {
 
             mAltitude = mLocation.getAltitude();
             mSpeed = mLocation.getSpeed();
+
+            // insertion of new location into database
+            mDatabaseHandler.insertGPSDate(new LocationData(mLocation));
+
+            //TODO: test if insertion worked -> delete afterwards
+            //mDatabaseHandler.getUnsyncedLocationData();
 
             updateTextView(String.valueOf(mAltitude), String.valueOf(mLocation.getLatitude()),
                     String.valueOf(mLocation.getLongitude()),

@@ -27,4 +27,8 @@ public class LocationData extends SensorData {
         this.mLocation = location;
     }
 
+    public Location getmLocation() {
+        return mLocation;
+    }
+
 }
