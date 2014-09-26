@@ -75,16 +75,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         insertStatement += ") VALUES (";
 
-        // creation date in seconds (not ms!!) since 01.01.1970
-        insertStatement += gpsData.getCreationDate().getTime()/1000 + ", ";
-        insertStatement += gpsData.getLatLng().longitude + ", ";
-        insertStatement += gpsData.getLatLng().latitude + ", ";
-        insertStatement += gpsData.getmLocation().getAltitude() + ", ";
-        insertStatement += gpsData.getmLocation().getSpeed() + ", ";
+        // creation date in seconds (not ms!!) since 01.01.1970, because sqlite can only store integers, not longs
+        Long timeStamp = gpsData.getCreationDate().getTime()/1000;
+        insertStatement += timeStamp + ", ";
+
+        double longitude = gpsData.getLatLng().longitude;
+        insertStatement += longitude + ", ";
+        double latitude = gpsData.getLatLng().latitude;
+        insertStatement += latitude + ", ";
+        double altitude = gpsData.getmLocation().getAltitude();
+        insertStatement += altitude + ", ";
+        double speed = gpsData.getmLocation().getSpeed();
+        insertStatement += speed + ", ";
         insertStatement += "0);";
-        
+
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL(insertStatement);
+
+        Log.e(LOGCAT, "Inserted: Time: " + timeStamp +  "Longitude: " + longitude + " Latitude: " + latitude + " Altitude: " + altitude + " Speed: " + speed + "Synced: false");
+
     }
 
 
@@ -107,6 +116,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 location.setLatitude(latitude);
                 location.setAltitude(altitude);
                 location.setSpeed((float) speed);
+                // convert seconds to milliseconds
                 Date creationDate = new Date(timeStamp * 1000);
 
                 LocationData locationData = new LocationData(location, creationDate);
