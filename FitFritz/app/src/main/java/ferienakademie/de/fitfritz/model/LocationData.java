@@ -19,6 +19,11 @@ public class LocationData extends SensorData {
         this.mLocation = location;
     }
 
+    public LocationData(Location location, Date creationDate) {
+        setCreationDate(creationDate);
+        this.mLocation = location;
+    }
+
     public LatLng getLatLng() {
         return new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
     }
