@@ -82,6 +82,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         insertStatement += gpsData.getmLocation().getAltitude() + ", ";
         insertStatement += gpsData.getmLocation().getSpeed() + ", ";
         insertStatement += "0);";
+        
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL(insertStatement);
     }
