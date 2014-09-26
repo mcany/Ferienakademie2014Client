@@ -103,12 +103,6 @@ public class MyActivity extends Activity implements LocationListener {
             mAltitude = mLocation.getAltitude();
             mSpeed = mLocation.getSpeed();
 
-            // insertion of new location into database
-            mDatabaseHandler.insertGPSDate(new LocationData(mLocation));
-
-            //TODO: test if insertion worked -> delete afterwards
-            //mDatabaseHandler.getUnsyncedLocationData();
-
             updateTextView(String.valueOf(mAltitude), String.valueOf(mLocation.getLatitude()),
                     String.valueOf(mLocation.getLongitude()),
                     String.valueOf(mSpeed), String.valueOf(mDistance[0]));
@@ -117,8 +111,6 @@ public class MyActivity extends Activity implements LocationListener {
             updateTextView(String.valueOf(0), String.valueOf(0), String.valueOf(0),
                     String.valueOf(0), String.valueOf(0));
         }
-
-
     }
 
 
@@ -167,6 +159,9 @@ public class MyActivity extends Activity implements LocationListener {
         }
         mAltitude = mLocation.getAltitude();
         mSpeed = mLocation.getSpeed();
+
+        // save new location in database
+        mDatabaseHandler.insertGPSDate(new LocationData(mLocation));
 
         updateTextView(String.valueOf(mAltitude), String.valueOf(mLocation.getLatitude()),
                 String.valueOf(mLocation.getLongitude()),

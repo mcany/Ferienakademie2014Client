@@ -11,6 +11,8 @@ import android.util.Log;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -73,8 +75,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         insertStatement += ") VALUES (";
 
-        // current date in seconds (not ms!!) since 01.01.1970
-        insertStatement += new Date().getTime()/1000 + ", ";
+        // creation date in seconds (not ms!!) since 01.01.1970
+        insertStatement += gpsData.getCreationDate().getTime()/1000 + ", ";
         insertStatement += gpsData.getLatLng().longitude + ", ";
         insertStatement += gpsData.getLatLng().latitude + ", ";
         insertStatement += gpsData.getmLocation().getAltitude() + ", ";
@@ -84,28 +86,39 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(insertStatement);
     }
 
-    // used for testing -> to be deleted afterwards
-    public Map<Integer, Location> getUnsyncedLocationData() {
+
+    public List<LocationData> getUnsyncedLocationData() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAMES[0], COLUMS_GPSDATA, COL_SYNC_SERVER + " = 0", new String[]{}, null, null, null);
         cursor.moveToFirst();
+        List<LocationData> returnedList = new LinkedList<LocationData>();
         try {
             while(!cursor.isAfterLast()) {
                 int timeStamp = cursor.getInt(1);
-                double longitudeString = cursor.getDouble(2);
-                double latitudeString = cursor.getDouble(3);
-                double altitudeString = cursor.getDouble(4);
-                double speedString = cursor.getDouble(5);
+                double longitude = cursor.getDouble(2);
+                double latitude = cursor.getDouble(3);
+                double altitude = cursor.getDouble(4);
+                double speed = cursor.getDouble(5);
                 int isSyncedInt = cursor.getInt(6);
 
-                Log.d(LOGCAT, "Time: " + timeStamp + " Long: " + longitudeString + " Lat: " + latitudeString + " Alt: " + altitudeString + " Speed: " + speedString + " syncstatus: " + (isSyncedInt == 1));
+                Location location = new Location("");
+                location.setLongitude(longitude);
+                location.setLatitude(latitude);
+                location.setAltitude(altitude);
+                location.setSpeed((float) speed);
+                Date creationDate = new Date(timeStamp * 1000);
+
+                LocationData locationData = new LocationData(location, creationDate);
+                returnedList.add(locationData);
+
+                Log.d(LOGCAT, "Time: " + timeStamp + " Long: " + longitude + " Lat: " + latitude + " Alt: " + altitude + " Speed: " + speed + " syncstatus: " + (isSyncedInt == 1));
                 cursor.moveToNext();
             }
         }
         finally {
             cursor.close();
         }
-        return null;
+        return returnedList;
     }
 
 }
