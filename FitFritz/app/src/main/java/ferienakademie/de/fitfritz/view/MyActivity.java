@@ -103,13 +103,10 @@ public class MyActivity extends Activity implements LocationListener {
             mAltitude = mLocation.getAltitude();
             mSpeed = mLocation.getSpeed();
 
-            updateTextView(String.valueOf(mAltitude), String.valueOf(mLocation.getLatitude()),
-                    String.valueOf(mLocation.getLongitude()),
-                    String.valueOf(mSpeed), String.valueOf(mDistance[0]));
+            updateTextView();
 
         } else {
-            updateTextView(String.valueOf(0), String.valueOf(0), String.valueOf(0),
-                    String.valueOf(0), String.valueOf(0));
+            updateTextView();
         }
     }
 
@@ -163,18 +160,14 @@ public class MyActivity extends Activity implements LocationListener {
         // save new location in database
         mDatabaseHandler.insertGPSDate(new LocationData(mLocation));
 
-        updateTextView(String.valueOf(mAltitude), String.valueOf(mLocation.getLatitude()),
-                String.valueOf(mLocation.getLongitude()),
-                String.valueOf(mSpeed), String.valueOf(mDistance[0]));
+        updateTextView();
     }
 
-    private void updateTextView(String alt, String lat, String lon, String speed, String dist) {
-
-        mAltitudeView.setText(String.format(mAltitudeView.getText().toString(), alt));
-        mCoordinateView.setText(String.format(mCoordinateView.getText().toString(), lat, lon));
-        mSpeedView.setText(String.format(mSpeedView.getText().toString(), speed));
-        mDistanceView.setText(String.format(mDistanceView.getText().toString(), dist));
-
+    private void updateTextView() {
+        mAltitudeView.setText("Altitude: " + mAltitude);
+        mCoordinateView.setText("Latitude: " + mLocation.getLatitude() + ", Longitude: " + mLocation.getLongitude());
+        mSpeedView.setText("Speed: " + mSpeed);
+        mDistanceView.setText("Distance: " + mDistance[0]);
     }
 
     @Override
