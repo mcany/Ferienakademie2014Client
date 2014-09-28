@@ -1,150 +1,94 @@
 package de.ferienakademie.neverrest.view;
 
 import android.app.Activity;
-import android.content.ComponentName;
+
+import android.app.ActionBar;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.location.Location;
-import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.support.v4.widget.DrawerLayout;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.ToggleButton;
-
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.LinkedList;
-
 import de.ferienakademie.neverrest.R;
-import de.ferienakademie.neverrest.controller.DatabaseHandler;
-import de.ferienakademie.neverrest.controller.GPSService;
-import de.ferienakademie.neverrest.model.LocationData;
 
-import static android.view.View.OnClickListener;
-import static de.ferienakademie.neverrest.controller.GPSService.*;
+public class MyActivity extends Activity
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-public class MyActivity extends Activity implements ServiceConnection, OnClickListener {
+    /**
+     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     */
+    private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    public static final String TAG = MyActivity.class.getSimpleName();
-
-    private LocationManager mLocationManager;
-    private Location mLocation;
-    private LatLng mLatLng;
-    private LinkedList<Location> mLocationList;
-    private LinkedList<LatLng> mLatLngList;
-    private String mProvider;
-    private LatLng mMarker;
-    private float[] mDistance;
-    private float mVelocity;
-    private double mAltitude;
-
-    private TextView mCoordinateView;
-    private TextView mDistanceView;
-    private TextView mSpeedView;
-    private TextView mAltitudeView;
-    private float mSpeed;
-
-    private DatabaseHandler mDatabaseHandler;
-    private GPSService mLocationService;
-    private Handler mUIHandler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch(msg.what) {
-                case GPSService.MSG_GPSDATA:
-                    Log.d(TAG, "Got new GPS data!");
-                    updateLocation((Location) msg.obj);
-                    updateTextView();
-                    break;
-            }
-        }
-    };
-    private ToggleButton mBtnGPSTracking;
-
-
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    private CharSequence mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
-        mCoordinateView = (TextView) findViewById(R.id.coordinates);
-        mAltitudeView = (TextView) findViewById(R.id.altitude);
-        mDistanceView = (TextView) findViewById(R.id.distance);
-        mSpeedView = (TextView) findViewById(R.id.speed);
-        mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
-        mBtnGPSTracking.setOnClickListener(this);
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mTitle = getTitle();
 
-        mDatabaseHandler = new DatabaseHandler(this);
-
+        // Set up the drawer.
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        handleLocation();
-
-        Log.e(TAG, "requested");
+    public void onNavigationDrawerItemSelected(int position) {
+        // update the main content by replacing fragments
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .commit();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.e(TAG, "removed");
-    }
-
-    @Override
-    protected void onDestroy() {
-
-        super.onDestroy();
-    }
-
-    private void handleLocation() {
-
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            mProvider = LocationManager.GPS_PROVIDER;
-        } else {
-            mProvider = LocationManager.NETWORK_PROVIDER;
+    public void onSectionAttached(int number) {
+        switch (number) {
+            case 1:
+                mTitle = getString(R.string.title_section1);
+                break;
+            case 2:
+                mTitle = getString(R.string.title_section2);
+                break;
+            case 3:
+                mTitle = getString(R.string.title_section3);
+                break;
         }
+    }
 
-        mLocationList = new LinkedList<Location>();
-        mLatLngList = new LinkedList<LatLng>();
-        mDistance = new float[1];
-
-        // initialize LocationManager => last Location
-        mLocation = mLocationManager.getLastKnownLocation(mProvider);
-
-        if (mLocation != null) {
-            mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-            mVelocity = mLocation.getSpeed() * 3.6f;
-            mLocationList.add(mLocation);
-            mLatLngList.add(mLatLng);
-
-            mAltitude = mLocation.getAltitude();
-            mSpeed = mLocation.getSpeed();
-
-            updateTextView();
-
-        } else {
-            updateTextView();
-        }
+    public void restoreActionBar() {
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(mTitle);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.my, menu);
-        return true;
+        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+            // Only show items in the action bar relevant to this screen
+            // if the drawer is not showing. Otherwise, let the drawer
+            // decide what to show in the action bar.
+            getMenuInflater().inflate(R.menu.my, menu);
+            restoreActionBar();
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -159,70 +103,44 @@ public class MyActivity extends Activity implements ServiceConnection, OnClickLi
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateLocation(Location location) {
-        mLocation = location;
-        mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
 
-        Log.e(TAG, String.valueOf(mLatLng.latitude) + ", " + String.valueOf(mLatLng.longitude));
-
-        mVelocity = mLocation.getSpeed();
-        mAltitude = mLocation.getAltitude();
-
-        mLocationList.add(mLocation);
-        mLatLngList.add(mLatLng);
-
-        // compute total distance
-        int size = mLocationList.size();
-        if(size > 1) {
-            float[] tmp = new float[1];
-
-            Location.distanceBetween(mLatLngList.get(size - 2).latitude,
-                    mLatLngList.get(size - 2).longitude,
-                    mLatLngList.get(size - 1).latitude,
-                    mLatLngList.get(size - 1).longitude, tmp);
-            mDistance[0] += tmp[0];
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
         }
-        mAltitude = mLocation.getAltitude();
-        mSpeed = mLocation.getSpeed();
 
-        // save new location in database
-        mDatabaseHandler.insertGPSDate(new LocationData(mLocation));
+        public PlaceholderFragment() {
+        }
 
-        updateTextView();
-    }
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_my, container, false);
+            return rootView;
+        }
 
-    private void updateTextView() {
-        mAltitudeView.setText("Altitude: " + mAltitude);
-        mCoordinateView.setText("Latitude: " + mLocation.getLatitude() + ", Longitude: " + mLocation.getLongitude());
-        mSpeedView.setText("Speed: " + mSpeed);
-        mDistanceView.setText("Distance: " + mDistance[0]);
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        GPSService.GPSServiceBinder binder = (GPSService.GPSServiceBinder) iBinder;
-        mLocationService = binder.getService();
-        mLocationService.connectLayoutHandler(mUIHandler);
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName componentName) {
-        mLocationService = null;
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btnStartGPSTracking:
-                Log.d(TAG, "Toggle Button pressed.");
-                if(mBtnGPSTracking.isChecked()) {
-                    Intent serviceIntent = new Intent(this, GPSService.class);
-                    bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
-                }
-                else {
-                    unbindService(this);
-                }
-                break;
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            ((MyActivity) activity).onSectionAttached(
+                    getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
+
 }
