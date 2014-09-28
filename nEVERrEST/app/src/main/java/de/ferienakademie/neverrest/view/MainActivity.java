@@ -103,14 +103,12 @@ public class MainActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-<<<<<<< HEAD
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-=======
+
         // Initialize database
         DatabaseUtil.INSTANCE.initialize(getApplicationContext());
->>>>>>> fa08cfc6c4eab513255b0bf2f8363f680508e0fc
 
         mCoordinateView = (TextView) findViewById(R.id.coordinates);
         mAltitudeView = (TextView) findViewById(R.id.altitude);
