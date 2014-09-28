@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import de.ferienakademie.neverrest.model.LocationData;
 import de.ferienakademie.neverrest.shared.beans.Activity;
 import de.ferienakademie.neverrest.shared.beans.Challenge;
+import de.ferienakademie.neverrest.shared.beans.Group;
 import de.ferienakademie.neverrest.shared.beans.User;
 
 /**
@@ -33,6 +34,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     private Dao<Activity, String> activityDao = null;
     private Dao<User, String> userDao = null;
     private Dao<Challenge, Long> challengeDao = null;
+    private Dao<Group, Long> groupDao = null;
 
 
     public DatabaseHandler(Context context) {
@@ -50,6 +52,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, Activity.class);
             TableUtils.createTable(connectionSource, User.class);
             TableUtils.createTable(connectionSource, Challenge.class);
+            TableUtils.createTable(connectionSource, Group.class);
         } catch (SQLException e) {
             Log.e(TAG, "Can't create database", e);
             throw new RuntimeException(e);
@@ -83,6 +86,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, Activity.class, true);
             TableUtils.dropTable(connectionSource, User.class, true);
             TableUtils.dropTable(connectionSource, Challenge.class, true);
+            TableUtils.dropTable(connectionSource, Group.class, true);
 
             // after we drop the old databases, we create the new ones
             onCreate(db, connectionSource);
@@ -140,6 +144,19 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
         return challengeDao;
     }
 
+
+    /**
+     * Returns the Database Access Object (DAO) for our Challenge class. It will create it or just give the cached
+     * value.
+     */
+    public Dao<Group, Long> getGroupDao() throws SQLException {
+        if (groupDao == null) {
+            groupDao = getDao(Group.class);
+        }
+        return groupDao;
+    }
+
+
     /**
      * Close the database connections and clear any cached DAOs.
      */
@@ -150,5 +167,6 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
         activityDao = null;
         userDao = null;
         challengeDao = null;
+        groupDao = null;
     }
 }
