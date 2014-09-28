@@ -1,5 +1,7 @@
 package de.ferienakademie.neverrest.model;
 
+import com.j256.ormlite.field.DatabaseField;
+
 import java.util.Date;
 
 /**
@@ -7,6 +9,9 @@ import java.util.Date;
  */
 public abstract class SensorData {
 
+    public static final String COL_CREATION_DATE = "creationDate";
+
+    @DatabaseField(columnName = COL_CREATION_DATE)
     private Date creationDate;
 
     public Date getCreationDate() {

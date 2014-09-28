@@ -30,10 +30,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.model.LocationData;
 
@@ -101,6 +103,9 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize database
+        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+
         mCoordinateView = (TextView) findViewById(R.id.coordinates);
         mAltitudeView = (TextView) findViewById(R.id.altitude);
         mDistanceView = (TextView) findViewById(R.id.distance);
@@ -110,7 +115,7 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
         mNewButton = (Button) findViewById(R.id.newButton);
         mNewButton.setOnClickListener(this);
 
-        mDatabaseHandler = new DatabaseHandler(this);
+        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
 
         setUpMapIfNeeded();
     }
@@ -216,7 +221,11 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
         mSpeed = mLocation.getSpeed();
 
         // save new location in database
-        mDatabaseHandler.insertGPSDate(new LocationData(mLocation));
+        try {
+            mDatabaseHandler.getLocationDataDao().create(new LocationData(mLocation));
+        } catch (SQLException e) {
+            Log.e(TAG, e.getMessage());
+        }
 
         updateTextView();
         updateMap();
