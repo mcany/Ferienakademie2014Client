@@ -12,6 +12,9 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import de.ferienakademie.neverrest.model.LocationData;
+import de.ferienakademie.neverrest.shared.beans.Activity;
+import de.ferienakademie.neverrest.shared.beans.Challenge;
+import de.ferienakademie.neverrest.shared.beans.User;
 
 /**
  * Created by explicat on 9/28/14.
@@ -23,10 +26,13 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     // name of the database file for your application -- change to something appropriate for your app
     private static final String DATABASE_NAME = "de.ferienakademie.neverrest.android.database";
     // any time you make changes to your database objects, you may have to increase the database version
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 7;
 
     // the DAO object we use to access the SimpleData table
     private Dao<LocationData, Long> locationDataDao = null;
+    private Dao<Activity, String> activityDao = null;
+    private Dao<User, String> userDao = null;
+    private Dao<Challenge, Long> challengeDao = null;
 
 
     public DatabaseHandler(Context context) {
@@ -41,6 +47,9 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
         try {
             Log.i(TAG, "onCreate");
             TableUtils.createTable(connectionSource, LocationData.class);
+            TableUtils.createTable(connectionSource, Activity.class);
+            TableUtils.createTable(connectionSource, User.class);
+            TableUtils.createTable(connectionSource, Challenge.class);
         } catch (SQLException e) {
             Log.e(TAG, "Can't create database", e);
             throw new RuntimeException(e);
@@ -69,7 +78,11 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
             Log.i(TAG, "onUpgrade");
+
             TableUtils.dropTable(connectionSource, LocationData.class, true);
+            TableUtils.dropTable(connectionSource, Activity.class, true);
+            TableUtils.dropTable(connectionSource, User.class, true);
+            TableUtils.dropTable(connectionSource, Challenge.class, true);
 
             // after we drop the old databases, we create the new ones
             onCreate(db, connectionSource);
@@ -78,8 +91,10 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
             throw new RuntimeException(e);
         }
     }
+
+
     /**
-     * Returns the Database Access Object (DAO) for our SimpleData class. It will create it or just give the cached
+     * Returns the Database Access Object (DAO) for our LocationData class. It will create it or just give the cached
      * value.
      */
     public Dao<LocationData, Long> getLocationDataDao() throws SQLException {
@@ -89,6 +104,42 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
         return locationDataDao;
     }
 
+
+    /**
+     * Returns the Database Access Object (DAO) for our LocationData class. It will create it or just give the cached
+     * value.
+     */
+    public Dao<Activity, String> getActivityDao() throws SQLException {
+        if (activityDao == null) {
+            activityDao = getDao(Activity.class);
+        }
+        return activityDao;
+    }
+
+
+    /**
+     * Returns the Database Access Object (DAO) for our LocationData class. It will create it or just give the cached
+     * value.
+     */
+    public Dao<User, String> getUserDao() throws SQLException {
+        if (userDao == null) {
+            userDao = getDao(User.class);
+        }
+        return userDao;
+    }
+
+
+    /**
+     * Returns the Database Access Object (DAO) for our Challenge class. It will create it or just give the cached
+     * value.
+     */
+    public Dao<Challenge, Long> getChallengeDao() throws SQLException {
+        if (challengeDao == null) {
+            challengeDao = getDao(Challenge.class);
+        }
+        return challengeDao;
+    }
+
     /**
      * Close the database connections and clear any cached DAOs.
      */
@@ -96,5 +147,8 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     public void close() {
         super.close();
         locationDataDao = null;
+        activityDao = null;
+        userDao = null;
+        challengeDao = null;
     }
 }
