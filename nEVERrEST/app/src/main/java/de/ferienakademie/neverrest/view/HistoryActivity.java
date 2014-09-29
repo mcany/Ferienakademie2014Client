@@ -25,11 +25,12 @@ public class HistoryActivity extends Activity {
 
         final ListView listview = (ListView) findViewById(R.id.historyList);
 
-        Challenge c1 = new Challenge("iPhone", "Hier könnte Ihre Werbung stehen", R.drawable.sampleimage);
-        Challenge c2 = new Challenge("Nexus123", "Die wo ich jetzt schon hab", R.drawable.ic_launcher);
         ArrayList<Challenge> list = new ArrayList<Challenge>();
-        list.add(c1);
-        list.add(c2);
+
+        for (int i = 0; i < 25; i++) {
+            Challenge c = new Challenge("Challenge " + i, "Details " + i, R.drawable.ic_launcher);
+            list.add(c);
+        }
 
         final HistoryListAdapter adapter = new HistoryListAdapter(getApplicationContext(), list);
         listview.setAdapter(adapter);
