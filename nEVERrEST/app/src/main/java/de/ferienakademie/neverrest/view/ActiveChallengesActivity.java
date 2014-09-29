@@ -1,12 +1,10 @@
 package de.ferienakademie.neverrest.view;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,7 +24,6 @@ public class ActiveChallengesActivity extends ListActivity {
         int [] progress = {10, 20, 0, 100};
         Resources res = getResources();
         Drawable[] icons = new Drawable[] {res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer)};
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.active_challenge_item, R.id.firstLine, values);
         ActiveChallengesAdapter adapter = new ActiveChallengesAdapter(this, challenges, icons, progress, date);
         setListAdapter(adapter);
     }
