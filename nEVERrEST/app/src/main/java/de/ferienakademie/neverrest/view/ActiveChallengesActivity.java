@@ -25,8 +25,8 @@ public class ActiveChallengesActivity extends ListActivity {
 
     protected void onCreate(Bundle  savedInstanceState){
         super.onCreate(savedInstanceState);
-        Challenge dummyChallenge = new Challenge("Robeeeeert","test", 1 );
-        challenges[0] = dummyChallenge;
+        challenges[0] = new Challenge("Robeeeeert Gollum1","test1", 1 );
+        challenges[1] = new Challenge("Robeeeeert Gollum2","test2", 2);
 
         String [] challenges = new String [] {"Ork", "Gollum", "Root 66", "Pluto"};
         Date[] date = new Date [] {new Date(97,1,15), new Date(14,3,5), new Date(14,5,3), new Date(14,9, 21), new Date()};
