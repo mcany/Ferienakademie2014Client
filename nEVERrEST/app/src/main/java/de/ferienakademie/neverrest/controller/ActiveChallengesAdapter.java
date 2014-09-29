@@ -1,6 +1,7 @@
 package de.ferienakademie.neverrest.controller;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.widget.ArrayAdapter;
 
@@ -49,8 +50,14 @@ public class ActiveChallengesAdapter extends ArrayAdapter<String> {
         Date today = new Date();
         Date lastTime = date[position];
         double timeDifference = (today.getTime() - lastTime.getTime())/3600.0/1000/24.0;
-
         textViewActivityLastTime.setText("Last activity " + (int) Math.round(timeDifference) + " days ago.");
+        if(timeDifference<7){
+            textViewActivityLastTime.setTextColor(Color.parseColor("#00FFFF"));
+        } else if(timeDifference >=7 && timeDifference < 13){
+            textViewActivityLastTime.setTextColor(Color.parseColor("#AAAAFF"));
+        } else {
+            textViewActivityLastTime.setTextColor(Color.parseColor("#FF0000"));
+        }
         progressBar.setProgress(progress[position]);
         imageView.setImageDrawable(icons[position]);
 
