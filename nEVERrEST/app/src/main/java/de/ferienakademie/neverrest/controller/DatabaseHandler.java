@@ -1,135 +1,154 @@
 package de.ferienakademie.neverrest.controller;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
-import android.location.Location;
 import android.util.Log;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import java.sql.SQLException;
 
 import de.ferienakademie.neverrest.model.LocationData;
+import de.ferienakademie.neverrest.shared.beans.Activity;
+import de.ferienakademie.neverrest.shared.beans.Challenge;
+import de.ferienakademie.neverrest.shared.beans.User;
 
 /**
- * Created by isabelmax on 26.09.14.
+ * Created by explicat on 9/28/14.
  */
-public class DatabaseHandler extends SQLiteOpenHelper {
+public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 
-    private static final String LOGCAT = "logcat";
+    public final String TAG = DatabaseHandler.class.getSimpleName();
 
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "SensorData";
-    private static final String[] TABLE_NAMES = {"GPSData", "HeartRateData"};
+    // name of the database file for your application -- change to something appropriate for your app
+    private static final String DATABASE_NAME = "de.ferienakademie.neverrest.android.database";
+    // any time you make changes to your database objects, you may have to increase the database version
+    private static final int DATABASE_VERSION = 7;
 
-    //columns gps data table
-    private static final String COL_ID = "id";
-    private static final String COL_TIMESTAMP = "timeStamp";
-    private static final String COL_LONGITUDE = "longitude";
-    private static final String COL_LATITUDE = "latitude";
-    private static final String COL_ALTITUDE = "altitude";
-    private static final String COL_SPEED = "speed";
-    private static final String COL_SYNC_SERVER = "synchronized";
+    // the DAO object we use to access the SimpleData table
+    private Dao<LocationData, Long> locationDataDao = null;
+    private Dao<Activity, String> activityDao = null;
+    private Dao<User, String> userDao = null;
+    private Dao<Challenge, Long> challengeDao = null;
 
-    private static final String[] COLUMS_GPSDATA = {COL_ID, COL_TIMESTAMP, COL_LONGITUDE, COL_LATITUDE, COL_ALTITUDE, COL_SPEED, COL_SYNC_SERVER};
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-
-
-
+    /**
+     * This is called when the database is first created. Usually you should call createTable statements here to create
+     * the tables that will store your data.
+     */
     @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String CREATE_GPS_TABLE = "CREATE TABLE " + TABLE_NAMES[0] + " ( " + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL_TIMESTAMP + " INTEGER, " + COL_LONGITUDE + " REAL, " + COL_LATITUDE
-                + " REAL, " + COL_ALTITUDE + " REAL, " + COL_SPEED + " REAL, " + COL_SYNC_SERVER + " INTEGER);";
-        sqLiteDatabase.execSQL(CREATE_GPS_TABLE);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
-        // drop older database table if exists
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAMES[0]);
-
-        // create new database table
-        this.onCreate(sqLiteDatabase);
-    }
-
-    // insert a list of GPS Data to the database
-    public void insertGPSDate(LocationData gpsData) {
-
-        String insertStatement = "INSERT INTO " + TABLE_NAMES[0] + "(" ;
-        for (int i = 1; i < COLUMS_GPSDATA.length; i++) {
-           if(i > 1) {
-               insertStatement += ", ";
-           }
-            insertStatement += COLUMS_GPSDATA[i];
-        }
-        insertStatement += ") VALUES (";
-
-        // creation date in seconds (not ms!!) since 01.01.1970, because sqlite can only store integers, not longs
-        Long timeStamp = gpsData.getCreationDate().getTime()/1000;
-        insertStatement += timeStamp + ", ";
-
-        double longitude = gpsData.getLatLng().longitude;
-        insertStatement += longitude + ", ";
-        double latitude = gpsData.getLatLng().latitude;
-        insertStatement += latitude + ", ";
-        double altitude = gpsData.getmLocation().getAltitude();
-        insertStatement += altitude + ", ";
-        double speed = gpsData.getmLocation().getSpeed();
-        insertStatement += speed + ", ";
-        insertStatement += "0);";
-
-        SQLiteDatabase db = getWritableDatabase();
-        db.execSQL(insertStatement);
-
-        Log.e(LOGCAT, "Inserted: Time: " + timeStamp +  " Longitude: " + longitude + " Latitude: " + latitude + " Altitude: " + altitude + " Speed: " + speed + " Synced: false");
-
-    }
-
-
-    public List<LocationData> getUnsyncedLocationData() {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAMES[0], COLUMS_GPSDATA, COL_SYNC_SERVER + " = 0", new String[]{}, null, null, null);
-        cursor.moveToFirst();
-        List<LocationData> returnedList = new LinkedList<LocationData>();
+    public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
         try {
-            while(!cursor.isAfterLast()) {
-                int timeStamp = cursor.getInt(1);
-                double longitude = cursor.getDouble(2);
-                double latitude = cursor.getDouble(3);
-                double altitude = cursor.getDouble(4);
-                double speed = cursor.getDouble(5);
-                int isSyncedInt = cursor.getInt(6);
-
-                Location location = new Location("");
-                location.setLongitude(longitude);
-                location.setLatitude(latitude);
-                location.setAltitude(altitude);
-                location.setSpeed((float) speed);
-                // convert seconds to milliseconds
-                Date creationDate = new Date(timeStamp * 1000);
-
-                LocationData locationData = new LocationData(location, creationDate);
-                returnedList.add(locationData);
-
-                Log.d(LOGCAT, "Time: " + timeStamp + " Long: " + longitude + " Lat: " + latitude + " Alt: " + altitude + " Speed: " + speed + " syncstatus: " + (isSyncedInt == 1));
-                cursor.moveToNext();
-            }
+            Log.i(TAG, "onCreate");
+            TableUtils.createTable(connectionSource, LocationData.class);
+            TableUtils.createTable(connectionSource, Activity.class);
+            TableUtils.createTable(connectionSource, User.class);
+            TableUtils.createTable(connectionSource, Challenge.class);
+        } catch (SQLException e) {
+            Log.e(TAG, "Can't create database", e);
+            throw new RuntimeException(e);
         }
-        finally {
-            cursor.close();
+
+        // here we try inserting data in the on-create as a test
+        /*
+        try {
+            Dao<LocationData2, Long> dao = getLocationDataDao();
+            // create some entries in the onCreate
+            LocationData2 data = new LocationData2(new Location("sample location 1"));
+            dao.create(data);
+            data = new LocationData2(new Location("sample location 2"));
+            dao.create(data);
+        } catch (SQLException e) {
+            Log.e(TAG, e.getMessage());
         }
-        return returnedList;
+        */
+
+    }
+    /**
+     * This is called when your application is upgraded and it has a higher version number. This allows you to adjust
+     * the various data to match the new version number.
+     */
+    @Override
+    public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
+        try {
+            Log.i(TAG, "onUpgrade");
+
+            TableUtils.dropTable(connectionSource, LocationData.class, true);
+            TableUtils.dropTable(connectionSource, Activity.class, true);
+            TableUtils.dropTable(connectionSource, User.class, true);
+            TableUtils.dropTable(connectionSource, Challenge.class, true);
+
+            // after we drop the old databases, we create the new ones
+            onCreate(db, connectionSource);
+        } catch (SQLException e) {
+            Log.e(TAG, "Can't drop databases", e);
+            throw new RuntimeException(e);
+        }
     }
 
+
+    /**
+     * Returns the Database Access Object (DAO) for our LocationData class. It will create it or just give the cached
+     * value.
+     */
+    public Dao<LocationData, Long> getLocationDataDao() throws SQLException {
+        if (locationDataDao == null) {
+            locationDataDao = getDao(LocationData.class);
+        }
+        return locationDataDao;
+    }
+
+
+    /**
+     * Returns the Database Access Object (DAO) for our LocationData class. It will create it or just give the cached
+     * value.
+     */
+    public Dao<Activity, String> getActivityDao() throws SQLException {
+        if (activityDao == null) {
+            activityDao = getDao(Activity.class);
+        }
+        return activityDao;
+    }
+
+
+    /**
+     * Returns the Database Access Object (DAO) for our LocationData class. It will create it or just give the cached
+     * value.
+     */
+    public Dao<User, String> getUserDao() throws SQLException {
+        if (userDao == null) {
+            userDao = getDao(User.class);
+        }
+        return userDao;
+    }
+
+
+    /**
+     * Returns the Database Access Object (DAO) for our Challenge class. It will create it or just give the cached
+     * value.
+     */
+    public Dao<Challenge, Long> getChallengeDao() throws SQLException {
+        if (challengeDao == null) {
+            challengeDao = getDao(Challenge.class);
+        }
+        return challengeDao;
+    }
+
+    /**
+     * Close the database connections and clear any cached DAOs.
+     */
+    @Override
+    public void close() {
+        super.close();
+        locationDataDao = null;
+        activityDao = null;
+        userDao = null;
+        challengeDao = null;
+    }
 }
