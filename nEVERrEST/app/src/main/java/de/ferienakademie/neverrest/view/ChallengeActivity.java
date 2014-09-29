@@ -8,24 +8,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import de.ferienakademie.neverrest.R;
-import de.ferienakademie.neverrest.shared.beans.Challenge;
+import de.ferienakademie.neverrest.model.Challenge;
 
 public class ChallengeActivity extends Activity {
 
     Challenge challenge;
     TextView heading;
     ImageView challengeImage;
+    
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_challenge);
-        challenge = (Challenge) savedInstanceState.get("Challenge");
+         challenge = (Challenge) getIntent().getSerializableExtra("Challenge");
+
         //Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm", de.ferienakademie.neverrest.shared.beans.Activity.Type.CYCLING,"des",100.0,100);
         //challenge = dummyChallenge;
         heading = (TextView) findViewById(R.id.heading);
-        heading.setText(challenge.getTitle());
+        heading.setText(challenge.getName());
      //   challenge.getPercentageCompleted();
     }
 

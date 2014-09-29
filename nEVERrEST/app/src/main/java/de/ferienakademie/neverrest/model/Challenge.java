@@ -3,10 +3,12 @@ package de.ferienakademie.neverrest.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
+
 /**
  * Created by arno on 29/09/14.
  */
-public class Challenge implements Parcelable {
+public class Challenge implements Serializable {
 
     private String name;
     private String details;
@@ -40,17 +42,5 @@ public class Challenge implements Parcelable {
 
     public void setImageName(int imageName) {
         this.imageName = imageName;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(name);
-        parcel.writeString(details);
-        parcel.writeInt(imageName);
     }
 }

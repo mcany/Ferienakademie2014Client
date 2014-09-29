@@ -13,7 +13,6 @@ import java.util.Date;
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.ActiveChallengesAdapter;
 import de.ferienakademie.neverrest.model.Challenge;
-
 /**
  * Created by Christoph on 29.09.2014.
  */
@@ -25,6 +24,7 @@ public class ActiveChallengesActivity extends ListActivity {
 
     protected void onCreate(Bundle  savedInstanceState){
         super.onCreate(savedInstanceState);
+        challenges = new Challenge[2];
         challenges[0] = new Challenge("Robeeeeert Gollum1","test1", 1 );
         challenges[1] = new Challenge("Robeeeeert Gollum2","test2", 2);
 
@@ -40,7 +40,7 @@ public class ActiveChallengesActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
        Intent challengeActivity = new Intent(this, ChallengeActivity.class);
-        challengeActivity.putExtra("Challenge", challenges[0]);
+        challengeActivity.putExtra("Challenge", challenges[position]);
         startActivity(challengeActivity);
     }
 
