@@ -339,7 +339,7 @@ public class MainActivity extends FragmentActivity
                     {
                         Log.e(TAG,e.getMessage());
                     }
-                } else {
+
                     unbindService(this);
                     long duration = System.currentTimeMillis()-startingTime;
                     mActivity.setDuration(((double) duration));
