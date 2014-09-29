@@ -28,7 +28,9 @@ public class HistoryActivity extends Activity {
         ArrayList<Challenge> list = new ArrayList<Challenge>();
 
         for (int i = 0; i < 25; i++) {
-            Challenge c = new Challenge("Challenge " + i, "Details " + i, R.drawable.ic_launcher);
+            Challenge c = new Challenge();
+            c.setTitle("Challange " + i);
+            c.setDescription("Description " + i);
             list.add(c);
         }
 

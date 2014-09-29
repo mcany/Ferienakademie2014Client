@@ -11,11 +11,11 @@ import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
+import de.ferienakademie.neverrest.model.Activity;
+import de.ferienakademie.neverrest.model.Challenge;
+import de.ferienakademie.neverrest.model.Group;
 import de.ferienakademie.neverrest.model.LocationData;
-import de.ferienakademie.neverrest.shared.beans.Activity;
-import de.ferienakademie.neverrest.shared.beans.Challenge;
-import de.ferienakademie.neverrest.shared.beans.Group;
-import de.ferienakademie.neverrest.shared.beans.User;
+import de.ferienakademie.neverrest.model.User;
 
 /**
  * Created by explicat on 9/28/14.

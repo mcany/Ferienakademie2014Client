@@ -4,8 +4,6 @@ import com.j256.ormlite.field.DatabaseField;
 
 import java.util.Date;
 
-import de.ferienakademie.neverrest.shared.beans.Activity;
-
 /**
  * Created by explicat on 9/25/14.
  */
