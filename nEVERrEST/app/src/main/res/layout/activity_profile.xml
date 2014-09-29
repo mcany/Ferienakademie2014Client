@@ -1,0 +1,183 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/userName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/default_vertical_padding"
+        android:text="%s"
+        android:textSize="24dp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/default_vertical_padding">
+
+        <ImageView
+            android:id="@+id/userAvatar"
+            android:layout_width="150dp "
+            android:layout_height="200dp"
+            android:layout_gravity="left"
+            android:scaleType="fitXY"
+            android:src="@drawable/sampleimage" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/userSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Size: %d cm" />
+
+            <TextView
+                android:id="@+id/userWeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Weight: %d kg" />
+
+            <TextView
+                android:id="@+id/userGender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Gender: %s" />
+
+            <TextView
+                android:id="@+id/userAge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Age: %d" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <HorizontalScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/default_vertical_padding">
+
+            <ImageView
+                android:id="@+id/badge1"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:padding="2dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_launcher" />
+
+            <ImageView
+                android:id="@+id/badge2"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:padding="2dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_launcher" />
+
+            <ImageView
+                android:id="@+id/badge3"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:padding="2dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_launcher" />
+
+            <ImageView
+                android:id="@+id/badge4"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:padding="2dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_launcher" />
+
+            <ImageView
+                android:id="@+id/badge5"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:padding="2dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_launcher" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/default_vertical_padding">
+
+        <ImageView
+            android:id="@+id/piechart"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/sampleimage" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/distancesVerticalTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:text="Distances (vertical):" />
+
+            <TextView
+                android:id="@+id/distancesVertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="%d km Bike, %d km Running" />
+
+            <TextView
+                android:id="@+id/distancesHorizontalTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Distances (horizontal):" />
+
+            <TextView
+                android:id="@+id/distancesHorizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="%d km Bike, %d km Running" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/wholeHistoryButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="See whole history" />
+
+</LinearLayout>
