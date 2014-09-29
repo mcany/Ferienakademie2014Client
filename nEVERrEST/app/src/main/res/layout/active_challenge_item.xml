@@ -9,6 +9,7 @@
         android:layout_height="100dip"
         android:layout_alignParentTop="true"
         android:layout_marginRight="6dip"
+        android:layout_marginLeft="6dip"
         android:contentDescription="TODO"
         android:src="@drawable/ic_launcher" />
 
@@ -34,17 +35,19 @@
         android:gravity="center_vertical"
         android:paddingRight="6dip"
         android:paddingLeft="0dip"
+        android:progressDrawable="@drawable/greenprogress"
         />
 
     <ImageButton
+        android:id="@+id/infoButton"
         android:layout_width="wrap_content"
         android:layout_height="50dip"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_launcher"
         android:layout_above="@id/progressBar"
         android:layout_gravity="right"
-
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="6dip"/>
 
     <TextView
         android:id="@+id/thirdLine"
