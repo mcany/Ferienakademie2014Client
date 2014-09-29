@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.UUID;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
@@ -54,6 +55,11 @@ public class MainActivity extends FragmentActivity
         implements ServiceConnection, OnClickListener, NavigationDrawerCallbacks {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+
+    ///////// DATABASE ELEMENTS /////////
+    private de.ferienakademie.neverrest.shared.beans.Activity mActivity;
+
+
 
     ///////// UI ELEMENTS /////////
     private TextView mCoordinateView;
@@ -228,7 +234,9 @@ public class MainActivity extends FragmentActivity
 
         // save new location in database
         try {
-            mDatabaseHandler.getLocationDataDao().create(new LocationData(mLocation));
+            LocationData mLocationData = new LocationData(mLocation);
+            mLocationData.setActivity(mActivity);
+            mDatabaseHandler.getLocationDataDao().create(mLocationData);
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -316,12 +324,32 @@ public class MainActivity extends FragmentActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnStartGPSTracking:
-                Log.d(TAG, "Toggle Button pressed.");
+                Log.d(
+                        TAG, "Toggle Button pressed.");
+                long startingTime = 0;
                 if (mBtnGPSTracking.isChecked()) {
                     Intent serviceIntent = new Intent(this, GPSService.class);
                     bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
+                    startingTime = System.currentTimeMillis();
+                    mActivity = new de.ferienakademie.neverrest.shared.beans.Activity(UUID.randomUUID().toString(),startingTime,0.0,0.0,"", de.ferienakademie.neverrest.shared.beans.Activity.Type.RUNNING);
+                    try {
+                        mDatabaseHandler.getActivityDao().create(mActivity);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.e(TAG,e.getMessage());
+                    }
                 } else {
                     unbindService(this);
+                    long duration = System.currentTimeMillis()-startingTime;
+                    mActivity.setDuration(((double) duration));
+                    try {
+                        mDatabaseHandler.getActivityDao().update(mActivity);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.e(TAG,e.getMessage());
+                    }
                 }
                 break;
         }
