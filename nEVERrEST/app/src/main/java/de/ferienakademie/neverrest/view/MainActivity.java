@@ -1,5 +1,9 @@
 package de.ferienakademie.neverrest.view;
 
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +16,13 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +31,7 @@ import android.widget.ToggleButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -32,6 +40,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.UUID;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
@@ -40,11 +49,28 @@ import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.model.LocationData;
 
 import static android.view.View.OnClickListener;
+import static de.ferienakademie.neverrest.view.NavigationDrawerFragment.NavigationDrawerCallbacks;
 
-public class MainActivity extends FragmentActivity implements ServiceConnection, OnClickListener {
+public class MainActivity extends FragmentActivity
+        implements ServiceConnection, OnClickListener, NavigationDrawerCallbacks {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
+    ///////// DATABASE ELEMENTS /////////
+    private de.ferienakademie.neverrest.shared.beans.Activity mActivity;
+
+
+
+    ///////// UI ELEMENTS /////////
+    private TextView mCoordinateView;
+    private TextView mDistanceView;
+    private TextView mSpeedView;
+    private TextView mAltitudeView;
+    private ToggleButton mBtnGPSTracking;
+    private Button mNewButton;
+
+    ///////// MAP AND LOCATION STUFF /////////
+    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LocationManager mLocationManager;
     private Location mLocation;
     private LatLng mLatLng;
@@ -53,18 +79,19 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
     private String mProvider;
     private Marker mMarker;
     private float[] mDistance;
-    private float mVelocity;
     private double mAltitude;
-
-    private TextView mCoordinateView;
-    private TextView mDistanceView;
-    private TextView mSpeedView;
-    private TextView mAltitudeView;
-    private ToggleButton mBtnGPSTracking;
-    private Button mNewButton;
     private float mSpeed;
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    ///////// NAVIGATION DRAWER STUFF /////////
+    /**
+     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     */
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    private CharSequence mTitle;
 
 
     private DatabaseHandler mDatabaseHandler;
@@ -84,27 +111,28 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
         }
     };
 
-    public void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                updateMap();
-
-            }
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mTitle = getTitle();
+
         // Initialize database
         DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+
+        // Set up the drawer
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout));
+
+
+        // Initialize database
+        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
+
 
         mCoordinateView = (TextView) findViewById(R.id.coordinates);
         mAltitudeView = (TextView) findViewById(R.id.altitude);
@@ -114,8 +142,6 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
         mBtnGPSTracking.setOnClickListener(this);
         mNewButton = (Button) findViewById(R.id.newButton);
         mNewButton.setOnClickListener(this);
-
-        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
 
         setUpMapIfNeeded();
     }
@@ -132,7 +158,6 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
     @Override
     protected void onPause() {
         super.onPause();
-        Log.e(TAG, "removed");
         setUpMapIfNeeded();
     }
 
@@ -143,7 +168,6 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
     }
 
     private void handleLocation() {
-
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             mProvider = LocationManager.GPS_PROVIDER;
@@ -160,26 +184,17 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
 
         if (mLocation != null) {
             mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-            mVelocity = mLocation.getSpeed() * 3.6f;
             mLocationList.add(mLocation);
             mLatLngList.add(mLatLng);
 
             mAltitude = mLocation.getAltitude();
-            mSpeed = mLocation.getSpeed();
+            mSpeed = mLocation.getSpeed() * 3.6f;
 
             updateTextView();
 
         } else {
             updateTextView();
         }
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
     }
 
     @Override
@@ -195,12 +210,11 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
     }
 
     public void updateLocation() {
-
         mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
         Log.e(TAG, String.valueOf(mLatLng.latitude) + ", " + String.valueOf(mLatLng.longitude));
 
-        mVelocity = mLocation.getSpeed();
+        mSpeed = mLocation.getSpeed();
         mAltitude = mLocation.getAltitude();
 
         mLocationList.add(mLocation);
@@ -217,12 +231,12 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
                     mLatLngList.get(size - 1).longitude, tmp);
             mDistance[0] += tmp[0];
         }
-        mAltitude = mLocation.getAltitude();
-        mSpeed = mLocation.getSpeed();
 
         // save new location in database
         try {
-            mDatabaseHandler.getLocationDataDao().create(new LocationData(mLocation));
+            LocationData mLocationData = new LocationData(mLocation);
+            mLocationData.setActivity(mActivity);
+            mDatabaseHandler.getLocationDataDao().create(mLocationData);
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -231,6 +245,19 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
         updateMap();
     }
 
+    public void setUpMapIfNeeded() {
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (mMap == null) {
+            // Try to obtain the map from the SupportMapFragment.
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                    .getMap();
+            // Check if we were successful in obtaining the map.
+            if (mMap != null) {
+                updateMap();
+
+            }
+        }
+    }
 
     /**
      * This is where we can add markers or lines, add listeners or move the camera. In this case, we
@@ -253,7 +280,11 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
                 }
 
                 // update Marker position
-                if (mMarker != null) {
+                if (mMarker == null) {
+                    mMarker = mMap.addMarker(new MarkerOptions()
+                            .position(mLatLng)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher)));
+                } else {
                     mMarker.setPosition(mLatLng);
                 }
 
@@ -264,9 +295,6 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
                         .target(mLatLng).tilt(75).bearing(mLocation.getBearing())
                         .zoom(16).build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                mMap.addMarker(new MarkerOptions().position(
-                        mLatLng));
 
             }
         }
@@ -296,16 +324,119 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnStartGPSTracking:
-                Log.d(TAG, "Toggle Button pressed.");
+                Log.d(
+                        TAG, "Toggle Button pressed.");
+                long startingTime = 0;
                 if (mBtnGPSTracking.isChecked()) {
                     Intent serviceIntent = new Intent(this, GPSService.class);
                     bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
+                    startingTime = System.currentTimeMillis();
+                    mActivity = new de.ferienakademie.neverrest.shared.beans.Activity(UUID.randomUUID().toString(),startingTime,0.0,0.0,"", de.ferienakademie.neverrest.shared.beans.Activity.Type.RUNNING);
+                    try {
+                        mDatabaseHandler.getActivityDao().create(mActivity);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.e(TAG,e.getMessage());
+                    }
                 } else {
                     unbindService(this);
+                    long duration = System.currentTimeMillis()-startingTime;
+                    mActivity.setDuration(((double) duration));
+                    try {
+                        mDatabaseHandler.getActivityDao().update(mActivity);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.e(TAG,e.getMessage());
+                    }
                 }
                 break;
-            case R.id.newButton:
-                startActivity(new Intent(this, MyActivity.class));
         }
     }
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+
+        // update the main content by replacing fragments
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .commit();
+    }
+
+    public void onSectionAttached(int number) {
+        switch (number) {
+            case 1:
+                mTitle = getString(R.string.title_section1);
+                break;
+            case 2:
+                mTitle = getString(R.string.title_section2);
+                break;
+            case 3:
+                mTitle = getString(R.string.title_section3);
+                break;
+        }
+    }
+
+    public void restoreActionBar() {
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(mTitle);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+            // Only show items in the action bar relevant to this screen
+            // if the drawer is not showing. Otherwise, let the drawer
+            // decide what to show in the action bar.
+            getMenuInflater().inflate(R.menu.main, menu);
+            restoreActionBar();
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        public PlaceholderFragment() {
+
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_main, container, false);
+        }
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            ((MainActivity) activity).onSectionAttached(
+                    getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+    }
+
 }

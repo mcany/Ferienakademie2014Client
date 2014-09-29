@@ -1,0 +1,17 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="?android:attr/listPreferredItemHeight"
+android:padding="0dip" >
+
+
+ <TextView
+        android:id="@+id/tableSection"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:singleLine="true"
+        android:textStyle="bold"
+        android:background="#B4B4B4"
+        android:textSize="16sp" />
+
+</RelativeLayout>
