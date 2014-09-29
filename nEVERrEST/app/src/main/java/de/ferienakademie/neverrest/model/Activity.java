@@ -87,7 +87,7 @@ public final class Activity {
     }
 
 
-    public SportsType getType() {
+    public SportsType getSportsType() {
         return type;
     }
 
@@ -116,7 +116,7 @@ public final class Activity {
         this.userUuid = userUuid;
     }
 
-    public void setType(SportsType type) {
+    public void setSportsType(SportsType type) {
         this.type = type;
     }
 

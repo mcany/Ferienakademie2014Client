@@ -5,5 +5,6 @@ package de.ferienakademie.neverrest.model;
  */
 public enum SportsType {
     RUNNING,
-    CYCLING;
+    CYCLING,
+    HIKING;
 }

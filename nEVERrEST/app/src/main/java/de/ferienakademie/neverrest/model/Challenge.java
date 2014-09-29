@@ -1,18 +1,16 @@
 package de.ferienakademie.neverrest.model;
 
-import com.j256.ormlite.table.DatabaseTable;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import com.j256.ormlite.field.DatabaseField;
+        import com.j256.ormlite.table.DatabaseTable;
+        import android.graphics.Bitmap;
+        import android.graphics.BitmapFactory;
+        import com.j256.ormlite.field.DatabaseField;
 
 
-import java.io.Serializable;
+        import java.io.Serializable;
 
 /**
  * Created by explicat on 9/28/14.
  */
-
-
 @DatabaseTable(tableName = Challenge.TABLE_CHALLENGE)
 public class Challenge implements Serializable {
 
@@ -37,7 +35,7 @@ public class Challenge implements Serializable {
     private String title;
 
     @DatabaseField(columnName = COL_TYPE)
-    private SportsType type;
+    private MetrikType type;
 
     @DatabaseField(columnName = COL_DESCRIPTION)
     private String description;
@@ -75,7 +73,7 @@ public class Challenge implements Serializable {
     public Challenge(
             String uuid,
             String title,
-            SportsType type,
+            MetrikType type,
             String description,
             String iconPath,
             double totalEffort,
@@ -107,7 +105,7 @@ public class Challenge implements Serializable {
     }
 
 
-    public SportsType getType() {
+    public MetrikType getType() {
         return type;
     }
 
@@ -152,7 +150,7 @@ public class Challenge implements Serializable {
         this.title = title;
     }
 
-    public void setType(SportsType type) {
+    public void setType(MetrikType type) {
         this.type = type;
     }
 
