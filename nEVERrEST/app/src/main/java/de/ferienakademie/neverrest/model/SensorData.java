@@ -21,8 +21,7 @@ public abstract class SensorData {
         this.mActivity = mActivity;
     }
 
-    @DatabaseField(columnName = COL_ACTIVITY)
-
+    @DatabaseField(columnName = COL_ACTIVITY, foreign = true)
     private Activity mActivity;
 
     public Date getCreationDate() {
