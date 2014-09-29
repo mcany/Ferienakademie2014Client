@@ -1,16 +1,18 @@
 package de.ferienakademie.neverrest.model;
 
-
+import com.j256.ormlite.table.DatabaseTable;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+
 
 import java.io.Serializable;
 
 /**
  * Created by explicat on 9/28/14.
  */
+
+
 @DatabaseTable(tableName = Challenge.TABLE_CHALLENGE)
 public class Challenge implements Serializable {
 

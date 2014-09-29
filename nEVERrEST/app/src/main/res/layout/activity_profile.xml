@@ -11,7 +11,7 @@
         android:id="@+id/userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_vertical_padding"
+        android:paddingBottom="@dimen/padding_medium"
         android:text="%s"
         android:textSize="24dp" />
 
@@ -19,7 +19,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="@dimen/default_vertical_padding">
+        android:paddingBottom="@dimen/padding_medium">
 
         <ImageView
             android:id="@+id/userAvatar"
@@ -73,50 +73,11 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/lastBadges"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="@dimen/default_vertical_padding">
-
-            <ImageView
-                android:id="@+id/badge1"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:padding="2dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_launcher" />
-
-            <ImageView
-                android:id="@+id/badge2"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:padding="2dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_launcher" />
-
-            <ImageView
-                android:id="@+id/badge3"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:padding="2dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_launcher" />
-
-            <ImageView
-                android:id="@+id/badge4"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:padding="2dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_launcher" />
-
-            <ImageView
-                android:id="@+id/badge5"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:padding="2dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_launcher" />
+            android:paddingBottom="@dimen/padding_medium">
 
         </LinearLayout>
 
@@ -126,7 +87,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="@dimen/default_vertical_padding">
+        android:paddingBottom="@dimen/padding_medium">
 
         <ImageView
             android:id="@+id/piechart"
