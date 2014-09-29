@@ -331,7 +331,7 @@ public class MainActivity extends FragmentActivity
                     Intent serviceIntent = new Intent(this, GPSService.class);
                     bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
                     startingTime = System.currentTimeMillis();
-                    mActivity = new de.ferienakademie.neverrest.shared.beans.Activity(UUID.randomUUID().toString(),startingTime,0.0,0.0,"", de.ferienakademie.neverrest.shared.beans.Activity.Type.RUNNING);
+                    mActivity = new de.ferienakademie.neverrest.shared.beans.Activity(UUID.randomUUID().toString(),0l,0.0,0.0,"", de.ferienakademie.neverrest.shared.beans.Activity.Type.RUNNING);
                     try {
                         mDatabaseHandler.getActivityDao().create(mActivity);
                     }
