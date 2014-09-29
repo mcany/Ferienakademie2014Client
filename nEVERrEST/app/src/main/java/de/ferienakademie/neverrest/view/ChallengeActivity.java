@@ -21,13 +21,11 @@ public class ChallengeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_challenge);
-        // TODO fix
+        challenge = (Challenge) savedInstanceState.get("Challenge");
         //Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm", de.ferienakademie.neverrest.shared.beans.Activity.Type.CYCLING,"des",100.0,100);
         //challenge = dummyChallenge;
         heading = (TextView) findViewById(R.id.heading);
-        //heading.setText(challenge.getTitle());
-
-
+        heading.setText(challenge.getTitle());
      //   challenge.getPercentageCompleted();
     }
 

@@ -28,6 +28,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".view.ChallengeActivity"
+            android:label="nEVEReEST"
+            android:screenOrientation="portrait"/>
+
         <service android:name=".controller.GPSService" />
 
         <meta-data
