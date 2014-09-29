@@ -19,10 +19,10 @@ import de.ferienakademie.neverrest.controller.ActiveChallengesAdapter;
  * Created by Christoph on 29.09.2014.
  */
 public class ActiveChallengesActivity extends ListActivity {
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle  savedInstanceState){
         super.onCreate(savedInstanceState);
         String [] challenges = new String [] {"Ork", "Gollum", "Root 66", "Pluto"};
-        Date[] date = new Date [] {new Date(97,1,15), new Date(14,3,5), new Date(14,5,3), new Date(14,9, 21)};
+        Date[] date = new Date [] {new Date(97,1,15), new Date(14,3,5), new Date(14,5,3), new Date(14,9, 21), new Date()};
         int [] progress = {10, 20, 0, 100};
         Resources res = getResources();
         Drawable[] icons = new Drawable[] {res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer)};

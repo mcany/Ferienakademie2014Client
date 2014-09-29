@@ -50,7 +50,7 @@ public class ActiveChallengesAdapter extends ArrayAdapter<String> {
         Date lastTime = date[position];
         double timeDifference = (today.getTime() - lastTime.getTime())/3600.0/24.0;
 
-        textViewActivityLastTime.setText((int) Math.round(timeDifference));
+        textViewActivityLastTime.setText((int) Math.floor(timeDifference));
         progressBar.setProgress(progress[position]);
         imageView.setImageDrawable(icons[position]);
 
