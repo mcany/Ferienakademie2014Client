@@ -11,8 +11,6 @@ import java.io.Serializable;
 /**
  * Created by explicat on 9/28/14.
  */
-
-
 @DatabaseTable(tableName = Challenge.TABLE_CHALLENGE)
 public class Challenge implements Serializable {
 
