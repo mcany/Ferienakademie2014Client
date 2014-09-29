@@ -33,7 +33,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     private Dao<LocationData, Long> locationDataDao = null;
     private Dao<Activity, String> activityDao = null;
     private Dao<User, String> userDao = null;
-    private Dao<Challenge, Long> challengeDao = null;
+    private Dao<Challenge, String> challengeDao = null;
     private Dao<Group, String> groupDao = null;
 
 
@@ -137,7 +137,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
      * Returns the Database Access Object (DAO) for our Challenge class. It will create it or just give the cached
      * value.
      */
-    public Dao<Challenge, Long> getChallengeDao() throws SQLException {
+    public Dao<Challenge, String> getChallengeDao() throws SQLException {
         if (challengeDao == null) {
             challengeDao = getDao(Challenge.class);
         }
