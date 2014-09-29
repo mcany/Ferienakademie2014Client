@@ -24,6 +24,7 @@ import android.widget.ToggleButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -39,10 +40,21 @@ import de.ferienakademie.neverrest.model.LocationData;
 
 import static android.view.View.OnClickListener;
 
-public class MainActivity extends FragmentActivity implements ServiceConnection, OnClickListener {
+public class MainActivity extends FragmentActivity
+        implements ServiceConnection, OnClickListener, NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
+    ///////// UI ELEMENTS /////////
+    private TextView mCoordinateView;
+    private TextView mDistanceView;
+    private TextView mSpeedView;
+    private TextView mAltitudeView;
+    private ToggleButton mBtnGPSTracking;
+    private Button mNewButton;
+
+    ///////// MAP AND LOCATION STUFF /////////
+    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LocationManager mLocationManager;
     private Location mLocation;
     private LatLng mLatLng;
@@ -51,18 +63,19 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
     private String mProvider;
     private Marker mMarker;
     private float[] mDistance;
-    private float mVelocity;
     private double mAltitude;
-
-    private TextView mCoordinateView;
-    private TextView mDistanceView;
-    private TextView mSpeedView;
-    private TextView mAltitudeView;
-    private ToggleButton mBtnGPSTracking;
-    private Button mNewButton;
     private float mSpeed;
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    ///////// NAVIGATION DRAWER STUFF /////////
+    /**
+     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     */
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    private CharSequence mTitle;
 
 
     private DatabaseHandler mDatabaseHandler;
@@ -82,24 +95,15 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
         }
     };
 
-    public void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                updateMap();
-
-            }
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mTitle = getTitle();
 
         mCoordinateView = (TextView) findViewById(R.id.coordinates);
         mAltitudeView = (TextView) findViewById(R.id.altitude);
@@ -127,7 +131,6 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
     @Override
     protected void onPause() {
         super.onPause();
-        Log.e(TAG, "removed");
         setUpMapIfNeeded();
     }
 
@@ -138,7 +141,6 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
     }
 
     private void handleLocation() {
-
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             mProvider = LocationManager.GPS_PROVIDER;
@@ -155,12 +157,11 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
 
         if (mLocation != null) {
             mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-            mVelocity = mLocation.getSpeed() * 3.6f;
             mLocationList.add(mLocation);
             mLatLngList.add(mLatLng);
 
             mAltitude = mLocation.getAltitude();
-            mSpeed = mLocation.getSpeed();
+            mSpeed = mLocation.getSpeed() * 3.6f;
 
             updateTextView();
 
@@ -190,12 +191,11 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
     }
 
     public void updateLocation() {
-
         mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
         Log.e(TAG, String.valueOf(mLatLng.latitude) + ", " + String.valueOf(mLatLng.longitude));
 
-        mVelocity = mLocation.getSpeed();
+        mSpeed = mLocation.getSpeed();
         mAltitude = mLocation.getAltitude();
 
         mLocationList.add(mLocation);
@@ -212,8 +212,6 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
                     mLatLngList.get(size - 1).longitude, tmp);
             mDistance[0] += tmp[0];
         }
-        mAltitude = mLocation.getAltitude();
-        mSpeed = mLocation.getSpeed();
 
         // save new location in database
         mDatabaseHandler.insertGPSDate(new LocationData(mLocation));
@@ -222,6 +220,19 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
         updateMap();
     }
 
+    public void setUpMapIfNeeded() {
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (mMap == null) {
+            // Try to obtain the map from the SupportMapFragment.
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                    .getMap();
+            // Check if we were successful in obtaining the map.
+            if (mMap != null) {
+                updateMap();
+
+            }
+        }
+    }
 
     /**
      * This is where we can add markers or lines, add listeners or move the camera. In this case, we
@@ -244,7 +255,11 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
                 }
 
                 // update Marker position
-                if (mMarker != null) {
+                if (mMarker == null) {
+                    mMarker = mMap.addMarker(new MarkerOptions()
+                            .position(mLatLng)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher)));
+                } else {
                     mMarker.setPosition(mLatLng);
                 }
 
@@ -255,9 +270,6 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
                         .target(mLatLng).tilt(75).bearing(mLocation.getBearing())
                         .zoom(16).build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                mMap.addMarker(new MarkerOptions().position(
-                        mLatLng));
 
             }
         }
@@ -298,5 +310,10 @@ public class MainActivity extends FragmentActivity implements ServiceConnection,
             case R.id.newButton:
                 startActivity(new Intent(this, MyActivity.class));
         }
+    }
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+
     }
 }
