@@ -11,7 +11,7 @@
         android:id="@+id/challengeName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_vertical_padding"
+        android:paddingBottom="@dimen/padding_medium"
         android:text="%s"
         android:textSize="24dp" />
 
@@ -27,42 +27,42 @@
         android:id="@+id/challengeValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_vertical_padding"
+        android:paddingBottom="@dimen/padding_medium"
         android:text="Value: %s" />
 
     <TextView
         android:id="@+id/challengeSports"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_vertical_padding"
+        android:paddingBottom="@dimen/padding_medium"
         android:text="Sports: %s" />
 
     <TextView
         android:id="@+id/challengeStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_vertical_padding"
+        android:paddingBottom="@dimen/padding_medium"
         android:text="Started at: %s" />
 
     <TextView
         android:id="@+id/challengeFinish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_vertical_padding"
+        android:paddingBottom="@dimen/padding_medium"
         android:text="Finished at: %s" />
 
     <TextView
         android:id="@+id/challengeDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_vertical_padding"
+        android:paddingBottom="@dimen/padding_medium"
         android:text="Duration: %s" />
 
     <TextView
         android:id="@+id/challengeDurationDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_vertical_padding"
+        android:paddingBottom="@dimen/padding_medium"
         android:text="Duration Details: %s" />
 
 </LinearLayout>
