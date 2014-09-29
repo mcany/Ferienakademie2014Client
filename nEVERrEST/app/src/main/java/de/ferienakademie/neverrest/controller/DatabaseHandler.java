@@ -48,8 +48,8 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
         try {
             Log.i(TAG, "onCreate");
-            TableUtils.createTable(connectionSource, LocationData.class);
             TableUtils.createTable(connectionSource, Activity.class);
+            TableUtils.createTable(connectionSource, LocationData.class);
             TableUtils.createTable(connectionSource, User.class);
             TableUtils.createTable(connectionSource, Challenge.class);
             TableUtils.createTable(connectionSource, Group.class);
