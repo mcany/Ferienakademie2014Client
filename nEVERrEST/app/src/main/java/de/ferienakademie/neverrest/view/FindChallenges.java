@@ -1,6 +1,7 @@
 package de.ferienakademie.neverrest.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -23,6 +24,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.model.Challenge;
+import de.ferienakademie.neverrest.model.MetrikType;
 
 public class FindChallenges extends FragmentActivity {
 
@@ -120,9 +123,16 @@ public class FindChallenges extends FragmentActivity {
                     africaMarker.setVisible(false);
                     for (LatLng coordinateOfTheChallenge : africaChallenges)
                     {
-                        mMap.addMarker(new MarkerOptions().position(coordinateOfTheChallenge));
+                        mMap.addMarker(new MarkerOptions().position(coordinateOfTheChallenge).title("Challenge Mt. Everest"));
                     }
                     //mMap.animateCamera(CameraUpdateFactory.zoomTo(4.0f));
+                }
+                else {
+                    Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm",MetrikType.HORIZONTALDISTANCE,"des","",100.0,0.0,100,0,false);
+
+                    Intent intent = new Intent(getBaseContext(),ChallengeActivity.class);
+                    intent.putExtra("Challenge", dummyChallenge);
+                    startActivity(intent);
                 }
             }
         });
