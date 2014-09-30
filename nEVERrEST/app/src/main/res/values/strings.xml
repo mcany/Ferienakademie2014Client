@@ -13,8 +13,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="title_activity_challenge">ChallengeActivity</string>
-    <string name="heading_placing" >test</string>
+    <string name="heading_placing">test</string>
     <string name="startButton">Start</string>
-    <string name="cancelButton" >Cancel</string>
+    <string name="cancelButton">Cancel</string>
+    <string name="title_activity_find_challenges">FindChallenges</string>
 
 </resources>
