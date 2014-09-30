@@ -40,6 +40,7 @@ import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.model.LocationData;
+import de.ferienakademie.neverrest.model.SportsType;
 
 import static android.view.View.OnClickListener;
 import static de.ferienakademie.neverrest.view.NavigationDrawerFragment.NavigationDrawerCallbacks;
@@ -48,6 +49,11 @@ public class MainMenuActivity extends FragmentActivity
         implements NeverrestInterface, ServiceConnection, OnClickListener, NavigationDrawerCallbacks {
 
     public static final String TAG = MainMenuActivity.class.getSimpleName();
+
+    ///////// DATABASE ELEMENTS /////////
+    private de.ferienakademie.neverrest.model.Activity mActivity;
+
+
 
     ///////// UI ELEMENTS /////////
     private TextView mCoordinateView;
@@ -70,10 +76,18 @@ public class MainMenuActivity extends FragmentActivity
     private float mSpeed;
 
     ///////// NAVIGATION DRAWER STUFF /////////
-    private CharSequence mTitle;
-    private int mDrawerPosition;
+    /**
+     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     */
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private int mDrawerPosition;
     private boolean mIsCreated;
+
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    private CharSequence mTitle;
+
 
     private DatabaseHandler mDatabaseHandler;
     private GPSService mLocationService;
@@ -105,28 +119,6 @@ public class MainMenuActivity extends FragmentActivity
         mBtnGPSTracking.setOnClickListener(this);
 
         setUpMapIfNeeded();
-
-        mIsCreated = true;
-        mTitle = getTitle();
-        setUpNavigationDrawer();
-
-        // Initialize database
-        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
-        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
-    }
-
-    public void setUpNavigationDrawer() {
-        mDrawerPosition = getIntent().getIntExtra("POSITION", 0);
-
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer_main);
-        mNavigationDrawerFragment.setPosition(mDrawerPosition);
-
-        // Set up the drawer
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer_main,
-                (DrawerLayout) findViewById(R.id.drawer_layout_main));
-        onNavigationDrawerItemSelected(mDrawerPosition);
-
     }
 
     @Override
@@ -149,7 +141,6 @@ public class MainMenuActivity extends FragmentActivity
 
         super.onDestroy();
     }
-
 
     private void handleLocation() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);

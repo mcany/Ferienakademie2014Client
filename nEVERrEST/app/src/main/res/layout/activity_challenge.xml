@@ -8,19 +8,110 @@
     android:gravity="center_horizontal"
     tools:context=".ChallengeActivity">
 
-    <LinearLayout
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/container_challenge"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:paddingTop="0dp">
 
         <TextView
-            android:text="@string/hello_world"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:text="@string/app_name"
+            android:background="#CCCCCC"
+            android:gravity="center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:id="@+id/heading" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/heading">
+
+            <LinearLayout
+                android:id="@+id/first_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="30"
+                android:paddingLeft="10dp"
+                android:layout_marginBottom="30dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:background="#ABCDEF">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_weight="50"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/imageView"
+                    android:src="@drawable/ic_launcher"
+                    android:layout_below="@+id/textView"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="50"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/textViewTime"
+                    android:gravity="center"
+                    android:text="%s"
+                    android:layout_below="@+id/textView"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="70"
+
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_below="@id/first_layout"
+                android:background="#ABCDEF">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="50"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/textView_progress"
+                    android:gravity="center"
+                    android:text="%s% done"
+                    android:layout_below="@+id/textView"
+                    />
+
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cancelBtn"
+                    android:id="@+id/buttonCancel" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/buttonStart"
+                    android:text="@string/startBtn"
+                    android:layout_alignParentRight="true"
+                    />
+            </RelativeLayout>
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
 this as a sliding drawer on the left side for left-to-right
@@ -38,4 +129,6 @@ android:layout_gravity="left" instead. -->
         tools:layout="@layout/fragment_navigation_drawer" />
 
 
+
 </android.support.v4.widget.DrawerLayout>
+

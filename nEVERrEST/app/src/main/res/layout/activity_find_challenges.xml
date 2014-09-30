@@ -1,0 +1,63 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/containerFindChallenges"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+
+<fragment
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/mapFindChallenges"
+    tools:context=".view.FindChallenges"
+    android:name="com.google.android.gms.maps.SupportMapFragment"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="10"
+        android:id="@+id/southAmericaView"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="199dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="10"
+        android:id="@+id/northAmericaView"
+        android:layout_above="@+id/southAmericaView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="101dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="30"
+        android:id="@+id/europaView"
+        android:layout_alignTop="@+id/northAmericaView"
+        android:layout_toRightOf="@+id/northAmericaView"
+        android:layout_toEndOf="@+id/northAmericaView"
+        android:layout_marginLeft="43dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="5"
+        android:id="@+id/asiaView"
+        android:layout_toLeftOf="@+id/europaView"
+        android:layout_toStartOf="@+id/europaView"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/europaView" />
+
+</RelativeLayout>
+

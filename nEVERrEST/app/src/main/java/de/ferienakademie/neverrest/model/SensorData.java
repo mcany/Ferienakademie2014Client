@@ -10,9 +10,17 @@ import java.util.Date;
 public abstract class SensorData {
 
     public static final String COL_CREATION_DATE = "creationDate";
+    public static final String COL_ACTIVITY = "activity";
 
     @DatabaseField(columnName = COL_CREATION_DATE)
     private Date creationDate;
+
+    public void setActivity(Activity mActivity) {
+        this.mActivity = mActivity;
+    }
+
+    @DatabaseField(columnName = COL_ACTIVITY, foreign = true)
+    private Activity mActivity;
 
     public Date getCreationDate() {
         return creationDate;

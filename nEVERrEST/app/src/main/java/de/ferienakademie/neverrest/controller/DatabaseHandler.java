@@ -11,11 +11,11 @@ import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
+import de.ferienakademie.neverrest.model.Activity;
+import de.ferienakademie.neverrest.model.Challenge;
+import de.ferienakademie.neverrest.model.Group;
 import de.ferienakademie.neverrest.model.LocationData;
-import de.ferienakademie.neverrest.shared.beans.Activity;
-import de.ferienakademie.neverrest.shared.beans.Challenge;
-import de.ferienakademie.neverrest.shared.beans.Group;
-import de.ferienakademie.neverrest.shared.beans.User;
+import de.ferienakademie.neverrest.model.User;
 
 /**
  * Created by explicat on 9/28/14.
@@ -33,8 +33,8 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     private Dao<LocationData, Long> locationDataDao = null;
     private Dao<Activity, String> activityDao = null;
     private Dao<User, String> userDao = null;
-    private Dao<Challenge, Long> challengeDao = null;
-    private Dao<Group, Long> groupDao = null;
+    private Dao<Challenge, String> challengeDao = null;
+    private Dao<Group, String> groupDao = null;
 
 
     public DatabaseHandler(Context context) {
@@ -48,8 +48,8 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
         try {
             Log.i(TAG, "onCreate");
-            TableUtils.createTable(connectionSource, LocationData.class);
             TableUtils.createTable(connectionSource, Activity.class);
+            TableUtils.createTable(connectionSource, LocationData.class);
             TableUtils.createTable(connectionSource, User.class);
             TableUtils.createTable(connectionSource, Challenge.class);
             TableUtils.createTable(connectionSource, Group.class);
@@ -137,7 +137,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
      * Returns the Database Access Object (DAO) for our Challenge class. It will create it or just give the cached
      * value.
      */
-    public Dao<Challenge, Long> getChallengeDao() throws SQLException {
+    public Dao<Challenge, String> getChallengeDao() throws SQLException {
         if (challengeDao == null) {
             challengeDao = getDao(Challenge.class);
         }
@@ -149,7 +149,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
      * Returns the Database Access Object (DAO) for our Challenge class. It will create it or just give the cached
      * value.
      */
-    public Dao<Group, Long> getGroupDao() throws SQLException {
+    public Dao<Group, String> getGroupDao() throws SQLException {
         if (groupDao == null) {
             groupDao = getDao(Group.class);
         }

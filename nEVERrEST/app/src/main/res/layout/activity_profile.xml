@@ -12,17 +12,244 @@
         android:id="@+id/container_profile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:padding="@dimen/activity_horizontal_margin"
+        tools:context=".ProfileActivity">
 
-        <TextView
-            android:id="@+id/name"
-            android:text="PROFILE"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/padding_medium"
+                android:text="%s"
+                android:textSize="24dp"
+                android:textStyle="bold"
+                android:gravity="center_vertical"/>
+
+            <Button
+                android:id="@+id/enableEditingButton"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="Edit Profile" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/padding_medium">
+
+            <ImageView
+                android:id="@+id/userAvatar"
+                android:layout_width="150dp "
+                android:layout_height="200dp"
+                android:layout_gravity="left"
+                android:scaleType="fitXY"
+                android:src="@drawable/sampleimage" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <!-- Size -->
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Size:"
+                        android:textSize="@dimen/text_medium" />
+
+                    <EditText
+                        android:id="@+id/userSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="%d"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="cm"
+                        android:textSize="@dimen/text_medium" />
+
+
+                    -->
+
+                </LinearLayout>
+
+                <!-- Weight -->
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Weight:"
+                        android:textSize="@dimen/text_medium" />
+
+                    <EditText
+                        android:id="@+id/userWeight"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="%d"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="kg"
+                        android:textSize="@dimen/text_medium" />
+
+                </LinearLayout>
+
+                <!-- Gender -->
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Gender:"
+                        android:textSize="@dimen/text_medium" />
+
+                    <Spinner
+                        android:id="@+id/userGender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/text_medium">
+                    </Spinner>
+
+                </LinearLayout>
+
+                <!-- Age -->
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Age:"
+                        android:textSize="@dimen/text_medium" />
+
+                    <EditText
+                        android:id="@+id/userAge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:text="%s"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="years"
+                        android:textSize="@dimen/text_medium" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <HorizontalScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/lastBadges"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/padding_medium">
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/padding_medium">
+
+            <ImageView
+                android:id="@+id/piechart"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/sampleimage" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/distancesVerticalTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:text="Distances (vertical):" />
+
+                <TextView
+                    android:id="@+id/distancesVertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="%d km Bike, %d km Running" />
+
+                <TextView
+                    android:id="@+id/distancesHorizontalTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Distances (horizontal):" />
+
+                <TextView
+                    android:id="@+id/distancesHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="%d km Bike, %d km Running" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/wholeHistoryButton"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="See whole history" />
 
     </LinearLayout>
-
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
  this as a sliding drawer on the left side for left-to-right
  languages and on the right side for right-to-left languages.
@@ -39,3 +266,5 @@
         tools:layout="@layout/fragment_navigation_drawer" />
 
 </android.support.v4.widget.DrawerLayout>
+
+>>>>>>> origin/master

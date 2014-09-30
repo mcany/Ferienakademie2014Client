@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".view.MainMenuActivity"
+            android:name=".view.FindChallenges"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
@@ -27,15 +27,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.ChallengeActivity"
             android:label="nEVEReEST"
+<<<<<<< HEAD
+            android:screenOrientation="portrait" />
+=======
             android:screenOrientation="portrait"/>
         <activity
             android:name=".view.AktivitaetsActivity"
             android:label="nEVEReEST"
             android:screenOrientation="portrait"/>
+>>>>>>> a6bacb3c67fbfe9a84b41b4466857b7d0a3ea3ac
 
         <service android:name=".controller.GPSService" />
 
@@ -46,10 +49,12 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity
-            android:name=".view.ProfileActivity"
-            android:label="@string/title_activity_profile" />
 
     </application>
+    <!--
+         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
+         Google Maps Android API v2, but are recommended.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
 </manifest>
