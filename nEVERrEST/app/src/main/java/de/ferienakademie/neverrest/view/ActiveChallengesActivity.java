@@ -32,12 +32,11 @@ public class ActiveChallengesActivity extends ListActivity {
         challenges[0] = dummy;
         challenges[1] = dummy;
 
-        String [] challenges = new String [] {"Ork", "Gollum", "Root 66", "Pluto"};
         Date[] date = new Date [] {new Date(97,1,15), new Date(14,3,5), new Date(14,5,3), new Date(14,9, 21), new Date()};
         int [] progress = {10, 20, 0, 100};
         Resources res = getResources();
         Drawable[] icons = new Drawable[] {res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer)};
-        ActiveChallengesAdapter adapter = new ActiveChallengesAdapter(this, challenges, icons, progress, date);
+        ActiveChallengesAdapter adapter = new ActiveChallengesAdapter(this, challenges);
         setListAdapter(adapter);
     }
 
