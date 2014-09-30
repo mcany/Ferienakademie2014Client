@@ -15,7 +15,6 @@ import android.os.Bundle;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -27,12 +26,40 @@ import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.model.Challenge;
 import de.ferienakademie.neverrest.model.MetrikType;
 
-public class FindChallenges extends FragmentActivity {
+public class FindChallengesActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
-    private LatLng[] africaChallenges = {new LatLng(28.0289837,1.6666663),new LatLng(31.7945869,-7.0849336),new LatLng(-28.4792625,24.6727135),
-                                        new LatLng(-18.7792678,46.8344597), new LatLng(-4.0335162,21.7500603)};
+    //continents coordinates
+    final LatLng coordinatesAfrica = new LatLng(0.2136714,16.98485);
+    final LatLng coordinatesEurope = new LatLng(49.5,22);
+    final LatLng coordinatesAsia = new LatLng(29,100);
+    final LatLng coordinatesSouthAmerica = new LatLng(-21.7351043,-63.28125);
+    final LatLng coordinatesNorthAmerica = new LatLng(37.5,-110);
+    final LatLng coordinatesAustralia = new LatLng(-26.4390742,133.2813229);
+    final LatLng coordinatesAntarctica = new LatLng(-75,0);
+
+    //continents markers
+    private Marker markerAfrica = null;
+    private Marker markerEurope = null;
+    private Marker markerAsia = null;
+    private Marker markerSouthAmerica = null;
+    private Marker markerNorthAmerica = null;
+    private Marker markerAustralia = null;
+    private Marker markerAntarctica = null;
+
+    //continents challenges
+    private List<Challenge> challengesAfrica = null;
+    private List<Challenge> challengesEurope = null;
+    private List<Challenge> challengesAsia = null;
+    private List<Challenge> challengesSouthAmerica = null;
+    private List<Challenge> challengesNorthAmerica = null;
+    private List<Challenge> challengesAustralia = null;
+    private List<Challenge> challengesAntarctica = null;
+
+    //dummy challenges for Africa
+    private LatLng[] dummyChallengesAfrica = {new LatLng(28.0289837,1.6666663),new LatLng(31.7945869,-7.0849336),new LatLng(-28.4792625,24.6727135),
+            new LatLng(-18.7792678,46.8344597), new LatLng(-4.0335162,21.7500603)};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +67,7 @@ public class FindChallenges extends FragmentActivity {
         setContentView(R.layout.activity_find_challenges);
 
         setUpMapIfNeeded();
-        initializeMap();
+        resetMap();
     }
 
     @Override
@@ -54,7 +81,7 @@ public class FindChallenges extends FragmentActivity {
         if(mMap.getMaxZoomLevel() > 2.0f)
         {
             mMap.clear();
-            initializeMap();
+            resetMap();
         }
         else
         {
@@ -62,15 +89,14 @@ public class FindChallenges extends FragmentActivity {
         }
     }
 
-    private void initializeMap(){
+    private void resetMap(){
         mMap.getUiSettings().setZoomGesturesEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(false);
-        mMap.animateCamera( CameraUpdateFactory.zoomTo(2.0f) );
-
+        //initialize the first position of the camera
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAfrica, 2.0f)));
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         setUpMap();
-
     }
 
     /**
@@ -97,6 +123,7 @@ public class FindChallenges extends FragmentActivity {
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 setUpMap();
+                mMap.setOnInfoWindowClickListener(new FindChallengesActivityOnInfoWindowClickListener());
             }
         }
     }
@@ -108,35 +135,21 @@ public class FindChallenges extends FragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        final LatLng coordinatesAfrica = new LatLng(0.2136714,16.98485);
+
+        //TODO: get challenges from the DB
+
+        //create continent markers
+        markerAfrica = mMap.addMarker(new MarkerOptions().position(coordinatesAfrica).title(""+ dummyChallengesAfrica.length));
+        markerAfrica.showInfoWindow();
+        markerEurope = mMap.addMarker(new MarkerOptions().position(coordinatesEurope).title(""+ dummyChallengesAfrica.length));
+        markerAsia = mMap.addMarker(new MarkerOptions().position(coordinatesAsia).title(""+ dummyChallengesAfrica.length));
+        markerNorthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesNorthAmerica).title(""+ dummyChallengesAfrica.length));
+        markerSouthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesSouthAmerica).title(""+ dummyChallengesAfrica.length));
+        markerAustralia = mMap.addMarker(new MarkerOptions().position(coordinatesAustralia).title(""+ dummyChallengesAfrica.length));
+        markerAntarctica = mMap.addMarker(new MarkerOptions().position(coordinatesAntarctica).title(""+ dummyChallengesAfrica.length));
 
 
-
-        final Marker africaMarker = mMap.addMarker(new MarkerOptions().position(coordinatesAfrica).title(""+africaChallenges.length));
-        africaMarker.showInfoWindow();
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                if(marker.getPosition().equals(coordinatesAfrica)) {
-                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAfrica, 3.0f)));
-                    mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                    africaMarker.setVisible(false);
-                    for (LatLng coordinateOfTheChallenge : africaChallenges)
-                    {
-                        mMap.addMarker(new MarkerOptions().position(coordinateOfTheChallenge).title("Challenge Mt. Everest"));
-                    }
-                    //mMap.animateCamera(CameraUpdateFactory.zoomTo(4.0f));
-                }
-                else {
-                    Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm",MetrikType.HORIZONTALDISTANCE,"des","",100.0,0.0,100,0,false);
-
-                    Intent intent = new Intent(getBaseContext(),ChallengeActivity.class);
-                    intent.putExtra("Challenge", dummyChallenge);
-                    startActivity(intent);
-                }
-            }
-        });
-
+        //TODO: Change the image of the marker
 
         //Bitmap.Config conf = Bitmap.Config.ARGB_8888;
         //Bitmap bmp = Bitmap.createBitmap(200, 50, conf);
@@ -147,7 +160,7 @@ public class FindChallenges extends FragmentActivity {
         //canvas.drawText("TEXT", 0, 50, paint); // paint defines the text color, stroke width, size
         //mMap.addMarker(new MarkerOptions()
         //                .position(new LatLng(0,0))
-                                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker2))
+        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker2))
         //                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
         //                .anchor(0.5f, 1)
         //).setVisible(true);
@@ -203,5 +216,56 @@ public class FindChallenges extends FragmentActivity {
 
         return (int) ((nDP * conversionScale) + 0.5f) ;
 
+    }
+
+
+
+    class FindChallengesActivityOnInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener
+    {
+
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+            if(marker.getPosition().equals(coordinatesAfrica)) {
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAfrica, 3.0f)));
+                markerAfrica.setVisible(false);
+                for (LatLng coordinateOfTheChallenge : dummyChallengesAfrica)
+                {
+                    mMap.addMarker(new MarkerOptions().position(coordinateOfTheChallenge).title("Challenge Mt. Everest"));
+                }
+            }
+            else if(marker.getPosition().equals(coordinatesEurope)) {
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesEurope, 3.0f)));
+                markerEurope.setVisible(false);
+            }
+            else if(marker.getPosition().equals(coordinatesAsia)) {
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAsia, 3.0f)));
+                markerAsia.setVisible(false);
+            }
+            else if(marker.getPosition().equals(coordinatesNorthAmerica)) {
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesNorthAmerica, 3.0f)));
+                markerNorthAmerica.setVisible(false);
+            }
+            else if(marker.getPosition().equals(coordinatesSouthAmerica)) {
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesSouthAmerica, 3.0f)));
+                markerSouthAmerica.setVisible(false);
+            }
+            else if(marker.getPosition().equals(coordinatesAustralia)) {
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAustralia, 3.0f)));
+                markerAustralia.setVisible(false);
+            }
+            else if(marker.getPosition().equals(coordinatesAntarctica)) {
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAntarctica, 3.0f)));
+                markerAntarctica.setVisible(false);
+            }
+            else {
+                Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm",MetrikType.HORIZONTALDISTANCE,"des","",100.0,0.0,100,0,false);
+
+                Intent intent = new Intent(getBaseContext(),ChallengeActivity.class);
+                intent.putExtra("Challenge", dummyChallenge);
+                startActivity(intent);
+            }
+        }
     }
 }
