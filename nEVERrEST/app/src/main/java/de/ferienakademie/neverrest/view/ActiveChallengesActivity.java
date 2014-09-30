@@ -5,13 +5,20 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.ActiveChallengesAdapter;
+import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
 
 /**
@@ -21,29 +28,33 @@ import de.ferienakademie.neverrest.model.Challenge;
 
 public class ActiveChallengesActivity extends ListActivity {
 
-    Challenge[] challenges;
-
+    List<Challenge> challenges;
+    public static final String TAG = ActiveChallengesActivity.class.getSimpleName();
+    ActiveChallengesAdapter mAdapter;
+    DatabaseHandler mDatabaseHandler;
 
     protected void onCreate(Bundle  savedInstanceState){
         super.onCreate(savedInstanceState);
-        challenges = new Challenge[2];
-        Challenge dummy = new Challenge();
-        dummy.setTitle("Robert");
-        challenges[0] = dummy;
-        challenges[1] = dummy;
 
-        Date[] date = new Date [] {new Date(97,1,15), new Date(14,3,5), new Date(14,5,3), new Date(14,9, 21), new Date()};
-        int [] progress = {10, 20, 0, 100};
+
+        //TODO: delete this, when main activity is called before
+        DatabaseUtil.INSTANCE.initialize(this);
+        /*mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
+        try {
+            // how do I get objects from the database? Can I write queries? Now this is null
+            challenges = mDatabaseHandler.getChallengeDao().queryForAll();
+        }
+        catch (SQLException exception) {
+            Log.d(TAG, exception.getMessage());
+        }*/
         Resources res = getResources();
         Drawable[] icons = new Drawable[] {res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer),res.getDrawable(R.drawable.ic_drawer)};
-        ActiveChallengesAdapter adapter = new ActiveChallengesAdapter(this, challenges);
-        setListAdapter(adapter);
     }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
        Intent challengeActivity = new Intent(this, ChallengeActivity.class);
-        challengeActivity.putExtra("Challenge", challenges[position]);
+        challengeActivity.putExtra("Challenge", challenges.get(position));
         startActivity(challengeActivity);
     }
 
@@ -59,6 +70,16 @@ public class ActiveChallengesActivity extends ListActivity {
 
     protected void onResume(){
         super.onResume();
+        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
+        try {
+            // how do I get objects from the database? Can I write queries? Now this is null
+            challenges = mDatabaseHandler.getChallengeDao().queryForAll();
+        }
+        catch (SQLException exception) {
+            Log.d(TAG, exception.getMessage());
+        }
+        mAdapter = new ActiveChallengesAdapter(this, challenges);
+        setListAdapter(mAdapter);
 
     }
 
@@ -73,5 +94,9 @@ public class ActiveChallengesActivity extends ListActivity {
     protected void onDestroy(){
         super.onDestroy();
     }
+
+
+
+
 }
 

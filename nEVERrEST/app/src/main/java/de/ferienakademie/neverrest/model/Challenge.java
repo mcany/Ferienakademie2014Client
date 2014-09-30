@@ -7,6 +7,7 @@ package de.ferienakademie.neverrest.model;
 
 
         import java.io.Serializable;
+        import java.util.UUID;
 
 /**
  * Created by explicat on 9/28/14.
@@ -67,6 +68,7 @@ public class Challenge implements Serializable {
 
     public Challenge() {
         // ORMLite needs a no-arg constructor
+        this.uuid = UUID.randomUUID().toString();
     }
 
 

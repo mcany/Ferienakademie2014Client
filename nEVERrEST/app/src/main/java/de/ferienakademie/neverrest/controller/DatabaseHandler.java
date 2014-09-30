@@ -10,6 +10,8 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import de.ferienakademie.neverrest.model.Activity;
 import de.ferienakademie.neverrest.model.Challenge;
@@ -71,6 +73,8 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
             Log.e(TAG, e.getMessage());
         }
         */
+
+        createDummyChallenges();
 
     }
     /**
@@ -156,6 +160,43 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
         return groupDao;
     }
 
+    public List<Challenge> createDummyChallenges() {
+        List<Challenge> challenges = new LinkedList<Challenge>();
+        Challenge challenge1 = new Challenge();
+        challenge1.setTitle("Mt. Everest");
+        challenge1.setDescription("Very cool high mountain!");
+        challenge1.setStartingLatitude(27.98002);
+        challenge1.setStartingLongitude(86.921543);
+        Challenge challenge2 = new Challenge();
+        challenge2.setTitle("Mt. Coolio");
+        challenge2.setDescription("Very cool high mountain!");
+        challenge2.setStartingLatitude(10);
+        challenge2.setStartingLongitude(42);
+        Challenge challenge3 = new Challenge();
+        challenge3.setTitle("Root 66");
+        challenge3.setDescription("Very cool high mountain!");
+        challenge3.setStartingLatitude(12);
+        challenge3.setStartingLongitude(34);
+        Challenge challenge4 = new Challenge();
+        challenge4.setTitle("Gollum");
+        challenge4.setDescription("Very cool high mountain!");
+        challenge4.setStartingLatitude(0);
+        challenge4.setStartingLongitude(0);
+        challenges.add(challenge1);
+        challenges.add(challenge2);
+        challenges.add(challenge3);
+        challenges.add(challenge4);
+        try {
+            getChallengeDao().create(challenge1);
+            getChallengeDao().create(challenge2);
+            getChallengeDao().create(challenge3);
+            getChallengeDao().create(challenge4);
+        }
+        catch (SQLException exception) {
+            Log.d(TAG, exception.getMessage());
+        }
+        return challenges;
+    }
 
     /**
      * Close the database connections and clear any cached DAOs.
