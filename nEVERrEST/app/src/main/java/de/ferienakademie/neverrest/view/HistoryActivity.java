@@ -2,8 +2,6 @@ package de.ferienakademie.neverrest.view;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -28,7 +26,9 @@ public class HistoryActivity extends Activity {
         ArrayList<Challenge> list = new ArrayList<Challenge>();
 
         for (int i = 0; i < 25; i++) {
-            Challenge c = new Challenge("Challenge " + i, "Details " + i, R.drawable.ic_launcher);
+            Challenge c = new Challenge();
+            c.setTitle("Challange " + i);
+            c.setDescription("Description " + i);
             list.add(c);
         }
 

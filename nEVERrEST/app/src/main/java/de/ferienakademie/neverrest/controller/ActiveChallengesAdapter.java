@@ -15,24 +15,19 @@ import android.widget.TextView;
 import java.util.Date;
 
 import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.model.Challenge;
 
 /**
  * Created by Christoph on 29.09.2014.
  */
-public class ActiveChallengesAdapter extends ArrayAdapter<String> {
+public class ActiveChallengesAdapter extends ArrayAdapter<Challenge> {
     private final Context context;
-    private final String[] values;
-    private final Drawable[] icons;
-    private final int[] progress;
-    private final Date[] date;
+    private final Challenge[] values;
 
-    public ActiveChallengesAdapter(Context context, String[] challenges, Drawable[]icons, int[] progress, Date[]date) {
+    public ActiveChallengesAdapter(Context context, Challenge[] challenges) {
         super(context, R.layout.active_challenge_item, challenges);
         this.context = context;
         this.values = challenges;
-        this.icons = icons;
-        this.progress = progress;
-        this.date = date;
     }
 
     @Override
@@ -46,10 +41,10 @@ public class ActiveChallengesAdapter extends ArrayAdapter<String> {
         ProgressBar progressBar = (ProgressBar) rowView.findViewById(R.id.progressBar);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 
-        textViewActivityName.setText(values[position]);
+        textViewActivityName.setText(values[position].getTitle());
         Date today = new Date();
-        Date lastTime = date[position];
-        double timeDifference = (today.getTime() - lastTime.getTime())/3600.0/1000/24.0;
+        long lastTime = values[position].getTimestampLastModified();
+        double timeDifference = (today.getTime() - lastTime)/3600.0/1000/24.0;
         textViewActivityLastTime.setText("Last activity " + (int) Math.round(timeDifference) + " days ago.");
         if(timeDifference<7){
             textViewActivityLastTime.setTextColor(Color.parseColor("#00FFFF"));
@@ -58,9 +53,9 @@ public class ActiveChallengesAdapter extends ArrayAdapter<String> {
         } else {
             textViewActivityLastTime.setTextColor(Color.parseColor("#FF0000"));
         }
-        progressBar.setProgress(progress[position]);
-        imageView.setImageDrawable(icons[position]);
-
+        progressBar.setProgress((int) (values[position].getCompletedEffort()/values[position].getTotalEffort()));
+        Drawable iconChallenge = Drawable.createFromPath(values[position].getIconPath());
+        imageView.setImageDrawable(iconChallenge);
         return rowView;
     }
 }

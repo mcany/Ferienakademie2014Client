@@ -47,6 +47,7 @@ import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.model.LocationData;
+import de.ferienakademie.neverrest.model.SportsType;
 
 import static android.view.View.OnClickListener;
 import static de.ferienakademie.neverrest.view.NavigationDrawerFragment.NavigationDrawerCallbacks;
@@ -57,7 +58,7 @@ public class MainActivity extends FragmentActivity
     public static final String TAG = MainActivity.class.getSimpleName();
 
     ///////// DATABASE ELEMENTS /////////
-    private de.ferienakademie.neverrest.shared.beans.Activity mActivity;
+    private de.ferienakademie.neverrest.model.Activity mActivity;
 
 
 
@@ -331,7 +332,7 @@ public class MainActivity extends FragmentActivity
                     Intent serviceIntent = new Intent(this, GPSService.class);
                     bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
                     startingTime = System.currentTimeMillis();
-                    mActivity = new de.ferienakademie.neverrest.shared.beans.Activity(UUID.randomUUID().toString(), startingTime, 0.d, 0.d, 0.d, "", de.ferienakademie.neverrest.shared.beans.Activity.Type.RUNNING);
+                    mActivity = new de.ferienakademie.neverrest.model.Activity(UUID.randomUUID().toString(), startingTime, 0.d, 0.d, 0.d, "", SportsType.RUNNING);
 
                     try {
                         mDatabaseHandler.getActivityDao().create(mActivity);

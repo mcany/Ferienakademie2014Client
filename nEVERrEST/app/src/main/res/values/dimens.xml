@@ -8,5 +8,6 @@
     <dimen name="padding_medium">6dp</dimen>
     <dimen name="badge_size_small">70dp</dimen>
     <dimen name="padding_small">4dp</dimen>
+    <dimen name="text_medium">18sp</dimen>
 
 </resources>

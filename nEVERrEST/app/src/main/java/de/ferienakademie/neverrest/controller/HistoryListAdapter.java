@@ -2,15 +2,11 @@ package de.ferienakademie.neverrest.controller;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -39,9 +35,13 @@ public class HistoryListAdapter extends ArrayAdapter<Challenge> {
         TextView textView = (TextView) rowView.findViewById(R.id.firstLine);
         TextView textViewDetails = (TextView) rowView.findViewById(R.id.secondLine);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-        textView.setText(values.get(position).getName());
-        textViewDetails.setText(values.get(position).getDetails());
-        imageView.setImageResource(values.get(position).getImageName());
+        textView.setText(values.get(position).getTitle());
+        textViewDetails.setText(values.get(position).getDescription());
+
+        // Show image if there is one
+        if (values.get(position) != null && !values.get(position).getIconPath().isEmpty()) {
+            imageView.setImageBitmap(values.get(position).getIconAsBitmap());
+        }
         return rowView;
     }
 

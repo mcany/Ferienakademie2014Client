@@ -14,8 +14,8 @@
     <string name="action_example">Example action</string>
     <string name="title_activity_challenge">ChallengeActivity</string>
     <string name="heading_placing">test</string>
-    <string name="startButton">Start</string>
-    <string name="cancelButton">Cancel</string>
-    <string name="title_activity_find_challenges">FindChallenges</string>
+    <string name="startBtn">Start</string>
+    <string name="cancelBtn">Cancel</string>
+    <string name="title_activity_aktivitaets">AktivitaetsActivity</string>
 
 </resources>

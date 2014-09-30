@@ -32,10 +32,6 @@
             android:name=".view.ChallengeActivity"
             android:label="nEVEReEST"
             android:screenOrientation="portrait"/>
-        <activity
-            android:name=".view.AktivitaetsActivity"
-            android:label="nEVEReEST"
-            android:screenOrientation="portrait"/>
 
         <service android:name=".controller.GPSService" />
 
