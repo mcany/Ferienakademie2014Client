@@ -1,9 +1,6 @@
 package de.ferienakademie.neverrest.view;
 
 import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,12 +15,9 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -50,10 +44,10 @@ import de.ferienakademie.neverrest.model.LocationData;
 import static android.view.View.OnClickListener;
 import static de.ferienakademie.neverrest.view.NavigationDrawerFragment.NavigationDrawerCallbacks;
 
-public class MainActivity extends FragmentActivity
-        implements ServiceConnection, OnClickListener, NavigationDrawerCallbacks {
+public class MainMenuActivity extends FragmentActivity
+        implements NeverrestInterface, ServiceConnection, OnClickListener, NavigationDrawerCallbacks {
 
-    public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = MainMenuActivity.class.getSimpleName();
 
     ///////// UI ELEMENTS /////////
     private TextView mCoordinateView;
@@ -61,7 +55,6 @@ public class MainActivity extends FragmentActivity
     private TextView mSpeedView;
     private TextView mAltitudeView;
     private ToggleButton mBtnGPSTracking;
-    private Button mNewButton;
 
     ///////// MAP AND LOCATION STUFF /////////
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -77,16 +70,10 @@ public class MainActivity extends FragmentActivity
     private float mSpeed;
 
     ///////// NAVIGATION DRAWER STUFF /////////
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
     private CharSequence mTitle;
-
+    private int mDrawerPosition;
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private boolean mIsCreated;
 
     private DatabaseHandler mDatabaseHandler;
     private GPSService mLocationService;
@@ -105,24 +92,10 @@ public class MainActivity extends FragmentActivity
         }
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-        // Set up the drawer
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-
-
-        // Initialize database
-        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
-        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
-
+        setContentView(R.layout.activity_main_menu);
 
         mCoordinateView = (TextView) findViewById(R.id.coordinates);
         mAltitudeView = (TextView) findViewById(R.id.altitude);
@@ -130,10 +103,30 @@ public class MainActivity extends FragmentActivity
         mSpeedView = (TextView) findViewById(R.id.speed);
         mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
         mBtnGPSTracking.setOnClickListener(this);
-        mNewButton = (Button) findViewById(R.id.newButton);
-        mNewButton.setOnClickListener(this);
 
         setUpMapIfNeeded();
+
+        mIsCreated = true;
+        mTitle = getTitle();
+        setUpNavigationDrawer();
+
+        // Initialize database
+        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
+    }
+
+    public void setUpNavigationDrawer() {
+        mDrawerPosition = getIntent().getIntExtra("POSITION", 0);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer_main);
+        mNavigationDrawerFragment.setPosition(mDrawerPosition);
+
+        // Set up the drawer
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer_main,
+                (DrawerLayout) findViewById(R.id.drawer_layout_main));
+        onNavigationDrawerItemSelected(mDrawerPosition);
+
     }
 
     @Override
@@ -156,6 +149,7 @@ public class MainActivity extends FragmentActivity
 
         super.onDestroy();
     }
+
 
     private void handleLocation() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -325,28 +319,32 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        mDrawerPosition = position;
 
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        if (mIsCreated)
+            // update the main content by replacing fragments
+            switch (position) {
+                case 0:
+                    mTitle = getString(R.string.title_navigation_main_menu);
+                    break;
+                case 1:
+                    mTitle = getString(R.string.title_navigation_profile);
+                    Intent profileIntent = new Intent(this, ProfileActivity.class);
+                    profileIntent.putExtra("POSITION", position);
+                    startActivity(profileIntent);
+                    this.finish();
+                    break;
+                case 2:
+                    Intent challengeIntent = new Intent(this, ChallengeActivity.class);
+                    challengeIntent.putExtra("POSITION", position);
+                    startActivity(challengeIntent);
+                    this.finish();
+                    break;
+            }
+
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-        }
-    }
-
+    @Override
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -365,46 +363,6 @@ public class MainActivity extends FragmentActivity
             return true;
         }
         return super.onCreateOptionsMenu(menu);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_main, container, false);
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
     }
 
 }
