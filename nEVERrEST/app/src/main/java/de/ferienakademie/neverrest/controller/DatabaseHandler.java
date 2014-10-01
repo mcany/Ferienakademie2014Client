@@ -273,6 +273,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(55.749792)
 				.lon(37.632495)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.moskau)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("A8")
@@ -282,6 +283,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(48.6070949)
 				.lon(9.6330233)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.a8)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Sao Paulo - Rio de Janeiro")
@@ -291,6 +293,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(-22.9156912)
 				.lon(-43.449703)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.rio_de_janeiro)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Washington - New York")
@@ -300,7 +303,9 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(40.7056308)
 				.lon(-73.9780035)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.new_york)
 				.build());
+		/*
 		challenges.add(new Challenge.Builder()
 				.title("Machu Picchu")
 				.description("Hopefully you're not that ancient")
@@ -319,6 +324,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lon(-67.5960231)
 				.metricType(MetricType.HORIZONTALDISTANCE)
 				.build());
+		*/
 		challenges.add(new Challenge.Builder()
 				.title("Eurotunnel")
 				.description("Bring the queen a baguette")
@@ -327,6 +333,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(51.017884)
 				.lon(1.4805104)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.eurotunnel)
 				.build());
 		try {
 			for (Challenge challenge : challenges) {
