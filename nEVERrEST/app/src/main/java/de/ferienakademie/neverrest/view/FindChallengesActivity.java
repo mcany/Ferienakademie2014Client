@@ -1,7 +1,6 @@
 package de.ferienakademie.neverrest.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,8 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,7 +31,6 @@ import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
-import de.ferienakademie.neverrest.model.MetricType;
 
 public class FindChallengesActivity extends FragmentActivity {
 
@@ -342,11 +340,14 @@ public class FindChallengesActivity extends FragmentActivity {
                 }
             }
             else {
+				/*
+				TODO
                 Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm", MetricType.HORIZONTALDISTANCE,"des","",100.0,0.0,100,0,false,"Africa");
 
                 Intent intent = new Intent(getBaseContext(),ChallengeActivity.class);
                 intent.putExtra("Challenge", dummyChallenge);
                 startActivity(intent);
+                */
             }
         }
     }
