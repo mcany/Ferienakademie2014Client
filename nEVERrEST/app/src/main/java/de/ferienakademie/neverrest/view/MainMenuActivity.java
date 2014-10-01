@@ -6,6 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -18,7 +22,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -41,11 +44,12 @@ import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.controller.MetricCalculator;
 import de.ferienakademie.neverrest.model.LocationData;
+import de.ferienakademie.neverrest.model.User;
 
 import static android.view.View.OnClickListener;
 
 public class MainMenuActivity extends FragmentActivity
-        implements NeverrestInterface, ServiceConnection, OnClickListener {
+        implements NeverrestInterface, ServiceConnection, OnClickListener, SensorEventListener {
 
     public static final int NUMBER_RECENT_POINTS = 5; // for outlier detection and smoothing
     public static final String TAG = MainMenuActivity.class.getSimpleName();
@@ -80,6 +84,44 @@ public class MainMenuActivity extends FragmentActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private int mDrawerPosition;
     private boolean mIsCreated;
+
+    ///// SENSOR DATA /////
+    private SensorManager sensorManager;
+    private Sensor accelor;
+    private int mSamplingRate = 80;
+    private float mSamplingTimeMillis = 1000 / mSamplingRate;
+    private float mSamplingTimeMicro = 1000000 / mSamplingRate;
+    private float[] mMovingAvgX = new float[4];
+    private float[] mMovingAvgY = new float[4];
+    private float[] mMovingAvgZ = new float[4];
+
+    private int counterMovingAvg;
+    private float[] mSamplesFilteredX = new float[30 * mSamplingRate / 4];
+    private float[] mSamplesFilteredY = new float[30 * mSamplingRate / 4];
+    private float[] mSamplesFilteredZ = new float[30 * mSamplingRate / 4];
+
+    private float mSumX = 0;
+    private float mSumY = 0;
+    private float mSumZ = 0;
+
+    private float burnedKcal = 0;
+    private int counterSamplesFiltered = 0;
+
+   /*
+    private int mRingbufferSize = mSamplingRate * 30;
+    private int mCopySize = mSamplingRate * 5;
+
+
+    int mBufferPosition = 0;
+    int counter = 0;
+    private float[] mAccXRingBuffer = new float[mRingbufferSize];
+    private float[] mAccYRingBuffer = new float[mRingbufferSize];
+    private float[] mAccZRingBuffer = new float[mRingbufferSize];
+
+    private float[] mAccXProcessingBuffer = new float[mCopySize];
+    private float[] mAccYProcessingBuffer = new float[mCopySize];
+    private float[] mAccZProcessingBuffer = new float[mCopySize];
+*/
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -117,6 +159,10 @@ public class MainMenuActivity extends FragmentActivity
 
         setUpNavigationDrawer();
         setUpMapIfNeeded();
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accelor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+
     }
 
     @Override
@@ -124,8 +170,12 @@ public class MainMenuActivity extends FragmentActivity
         super.onResume();
 
         handleLocation();
+        if (accelor != null) {
 
-        Log.e(TAG, "requested");
+            sensorManager.registerListener(this, accelor, 25000, 0);
+
+            Log.e(TAG, "requested");
+        }
     }
 
     @Override
@@ -134,11 +184,6 @@ public class MainMenuActivity extends FragmentActivity
         setUpMapIfNeeded();
     }
 
-    @Override
-    protected void onDestroy() {
-
-        super.onDestroy();
-    }
 
     private void handleLocation() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -381,6 +426,157 @@ public class MainMenuActivity extends FragmentActivity
             return true;
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    float alpha = 0.9f;
+    float beta = 0.1f;
+    float gx;
+    float gy;
+    float gz;
+    float ax;
+    float ay;
+    float az;
+    float xOld;
+    float yOld;
+    float zOld;
+
+    long timeOld;
+    long timeNew;
+    long timeDiff;
+    int timeDiffSec;
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        float[] values = sensorEvent.values.clone();
+
+        if (timeOld == 0) {
+            timeOld = System.nanoTime();
+        }
+
+        // LP filter
+        gz = gx + beta * values[0];
+        gy = gy + beta * values[1];
+        gz = gz + beta * values[2];
+
+        // raw Acceleration without g
+        float xNew = values[0] - gx;
+        float yNew = values[1] - gy;
+        float zNew = values[2] - gz;
+
+        ax = alpha * (ax + xNew - xOld);
+        ay = alpha * (ay + yNew - yOld);
+        az = alpha * (az + zNew - zOld);
+
+        xOld = xNew;
+        yOld = yNew;
+        zOld = zNew;
+
+        mMovingAvgX[counterMovingAvg] = ax;
+        mMovingAvgY[counterMovingAvg] = ay;
+        mMovingAvgZ[counterMovingAvg] = az;
+
+
+        counterMovingAvg++;
+
+        if (counterMovingAvg == 3) {
+            counterMovingAvg = 0;
+
+            mSamplesFilteredX[counterSamplesFiltered]
+                    = 0.25f * (mMovingAvgX[0] + mMovingAvgX[1] + mMovingAvgX[2] + mMovingAvgX[3]);
+            if (mSamplesFilteredX[counterSamplesFiltered] < 0.15f) {
+                mSamplesFilteredX[counterSamplesFiltered] = 0.0f;
+            }
+           mSamplesFilteredY[counterSamplesFiltered]
+                    = 0.25f * (mMovingAvgY[0] + mMovingAvgY[1] + mMovingAvgY[2] + mMovingAvgY[3]);
+            if (mSamplesFilteredY[counterSamplesFiltered] < 0.15f) {
+                mSamplesFilteredY[counterSamplesFiltered] = 0.0f;
+            }
+            mSamplesFilteredZ[counterSamplesFiltered]
+                    = 0.25f * (mMovingAvgZ[0] + mMovingAvgZ[1] + mMovingAvgZ[2] + mMovingAvgZ[3]);
+            if (mSamplesFilteredZ[counterSamplesFiltered] < 0.15f) {
+                mSamplesFilteredZ[counterSamplesFiltered] = 0.0f;
+            }
+            Log.d(TAG, String.valueOf(mSamplesFilteredX[counterSamplesFiltered]) + ", "
+                    + String.valueOf(mSamplesFilteredY[counterSamplesFiltered]) + ", "
+                    + String.valueOf(mSamplesFilteredZ[counterSamplesFiltered]));
+            counterSamplesFiltered++;
+        }
+
+        if (counterSamplesFiltered == mSamplesFilteredX.length - 1) {
+
+            if (timeOld != 0) {
+                timeNew = System.nanoTime();
+                timeDiff = (int) ((timeNew - timeOld) / 1000000000);
+                Log.d(TAG, String.valueOf(timeDiff));
+                timeOld = timeNew;
+
+            }
+
+            for (int i = 0; i < mSamplesFilteredX.length; i++) {
+                mSumX += Math.abs(mSamplesFilteredX[i]);
+                mSumY += Math.abs(mSamplesFilteredY[i]);
+                mSumZ += Math.abs(mSamplesFilteredZ[i]);
+            }
+            float tmp = mSumX + mSumY + mSumZ;
+
+            // W * kg^-1
+
+            double energyExpEstVal = 0.104 + 0.023 * tmp;
+//78 male; statistisches Bundesamt, 62,6 kg female
+            // user.getMass();
+            // user.getMale();
+
+            burnedKcal += ((70.7 * tmp/timeDiff) / 4.1868) / 1000;
+
+            mSumX = 0;
+            mSumY = 0;
+            mSumZ = 0;
+            counterSamplesFiltered = 0;
+
+
+            Toast.makeText(this, String.valueOf(burnedKcal), Toast.LENGTH_SHORT).show();
+
+        }
+
+     /*   mAccXRingBuffer[mBufferPosition] = values[0];
+        mAccYRingBuffer[mBufferPosition] = values[1];
+        mAccZRingBuffer[mBufferPosition] = values[2];
+        mBufferPosition = (mBufferPosition + 1) % mRingbufferSize;
+        counter++;
+
+        if (counter == mCopySize) {
+            counter = 0;
+            if ((mBufferPosition - mCopySize) >= 0) {
+                System.arraycopy(mAccXRingBuffer, (mBufferPosition - mCopySize), mAccXProcessingBuffer, 0, mCopySize);
+                System.arraycopy(mAccYRingBuffer, (mBufferPosition - mCopySize), mAccYProcessingBuffer, 0, mCopySize);
+                System.arraycopy(mAccZRingBuffer, (mBufferPosition - mCopySize), mAccZProcessingBuffer, 0, mCopySize);
+
+            }else{
+                System.arraycopy(mAccXRingBuffer,mRingbufferSize-(mCopySize-mBufferPosition),mAccXProcessingBuffer,0,(mCopySize-mBufferPosition));
+                System.arraycopy(mAccXRingBuffer,0,mAccXProcessingBuffer,(mCopySize-mBufferPosition),mBufferPosition);
+
+                System.arraycopy(mAccYRingBuffer,mRingbufferSize-(mCopySize-mBufferPosition),mAccYProcessingBuffer,0,(mCopySize-mBufferPosition));
+                System.arraycopy(mAccYRingBuffer,0,mAccYProcessingBuffer,(mCopySize-mBufferPosition),mBufferPosition);
+
+                System.arraycopy(mAccZRingBuffer,mRingbufferSize-(mCopySize-mBufferPosition),mAccZProcessingBuffer,0,(mCopySize-mBufferPosition));
+                System.arraycopy(mAccZRingBuffer,0,mAccZProcessingBuffer,(mCopySize-mBufferPosition),mBufferPosition);
+            }
+
+        }
+*/
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (accelor != null) {
+            sensorManager.unregisterListener(this);
+        }
     }
 
 }

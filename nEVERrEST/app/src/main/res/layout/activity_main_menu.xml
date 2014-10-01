@@ -9,12 +9,7 @@
     tools:context=".MainMenuActivity">
 
     <LinearLayout
-<<<<<<< HEAD:nEVERrEST/app/src/main/res/layout/activity_main.xml
-
-        android:id="@+id/container"
-=======
         android:id="@+id/layout_main_menu"
->>>>>>> ab1dbd533524c9f1217681952493fae98d45381f:nEVERrEST/app/src/main/res/layout/activity_main_menu.xml
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -37,26 +32,40 @@
             android:paddingRight="0dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:background="#ABCDEF">
+            >
 
             <ImageView
                 android:layout_width="0dp"
-                android:layout_weight="50"
+                android:layout_weight="30"
                 android:layout_height="fill_parent"
                 android:id="@+id/imageView"
                 android:src="@drawable/ic_launcher"
                 android:layout_below="@+id/textView"
                 />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="50"
+                android:layout_weight="70"
                 android:layout_height="fill_parent"
-                android:id="@+id/textViewTime"
                 android:gravity="center"
-                android:text="%s"
-                android:layout_below="@+id/textView"
-                />
+                android:orientation="vertical"
+               >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="50"
+                    android:text="@string/startBtn"
+                    />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="50"
+                    android:text="@string/startBtn"
+
+                    />
+
+                 </LinearLayout>
 
         </LinearLayout>
 
@@ -67,11 +76,8 @@
             android:textOff="Start Tracking"
             android:textOn="Stop GPS Tracking" />
 
-<<<<<<< HEAD:nEVERrEST/app/src/main/res/layout/activity_main.xml
 
 
-=======
->>>>>>> ab1dbd533524c9f1217681952493fae98d45381f:nEVERrEST/app/src/main/res/layout/activity_main_menu.xml
         <fragment
             android:layout_width="match_parent"
             android:layout_height="200dp"
