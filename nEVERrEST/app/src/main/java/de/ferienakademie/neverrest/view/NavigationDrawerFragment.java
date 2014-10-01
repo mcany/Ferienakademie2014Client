@@ -59,6 +59,7 @@ public class NavigationDrawerFragment extends Fragment {
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+    private int position;
 
     public NavigationDrawerFragment() {
     }
@@ -104,9 +105,10 @@ public class NavigationDrawerFragment extends Fragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
+                        getString(R.string.title_navigation_main_menu),
+                        getString(R.string.title_navigation_profile),
+                        getString(R.string.title_navigation_challenges),
+                        getString(R.string.title_navigation_settings)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -270,6 +272,15 @@ public class NavigationDrawerFragment extends Fragment {
 
     private ActionBar getActionBar() {
         return getActivity().getActionBar();
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+        selectItem(position);
+    }
+
+    public int getPosition() {
+        return position;
     }
 
     /**

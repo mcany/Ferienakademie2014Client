@@ -1,9 +1,15 @@
 package de.ferienakademie.neverrest.view;
 
-import android.app.Activity;
+import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,61 +18,42 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 
-/**
- * Created by arno on 29/09/14.
- */
-public class ProfileActivity extends Activity {
+import static android.view.View.OnClickListener;
 
-    // user
-    TextView userName;
-    TextView userGender;
-    TextView userAge;
-    TextView userSize;
-    TextView userWeight;
-    // stats
-    TextView totalDistance;
-    TextView totalAltitude;
+public class ProfileActivity extends FragmentActivity
+        implements NeverrestInterface, OnClickListener {
 
-    // image view
-    ImageView userAvatar;
+    public static final String TAG = ProfileActivity.class.getSimpleName();
+    private static final String ARG_SECTION_NUMBER = "section_number";
 
-    // linear layouts
-    LinearLayout userData;
-    LinearLayout badgeLayout;
-    LinearLayout globalStatistics;
+    ///////// NAVIGATION DRAWER STUFF /////////
 
-    public LinearLayout createBadge(int image, String text, Context context) {
-        int padding = getResources().getDimensionPixelSize(R.dimen.padding_small);
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    ///////// NAVIGATION DRAWER STUFF /////////
+    private CharSequence mTitle;
+    private int mDrawerPosition;
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private boolean mIsCreated;
+    private DatabaseHandler mDatabaseHandler;
 
-        LinearLayout layout = new LinearLayout(context);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layout.setLayoutParams(layoutParams);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(0, 0, padding, 0);
-
-        ImageView imageView = new ImageView(context);
-        ViewGroup.LayoutParams imageParams = new ViewGroup.LayoutParams(getResources().getDimensionPixelSize(R.dimen.badge_size_small), getResources().getDimensionPixelSize(R.dimen.badge_size_small));
-        imageView.setLayoutParams(imageParams);
-        imageView.setImageResource(image);
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-
-        TextView textView = new TextView(context);
-        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        textParams.gravity = Gravity.CENTER;
-        textView.setLayoutParams(textParams);
-        textView.setText(text);
-
-        layout.addView(imageView);
-        layout.addView(textView);
-
-        return layout;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        mIsCreated = true;
+        mTitle = getTitle();
+
+        setUpNavigationDrawer();
+
+        // Initialize database
+        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
 
         userAvatar = (ImageView) findViewById(R.id.userAvatar);
         userAvatar.setOnClickListener(new View.OnClickListener() {
@@ -114,9 +101,152 @@ public class ProfileActivity extends Activity {
         userGender.setText(String.format(userGender.getText().toString(), "male"));
         userAge.setText(String.format(userAge.getText().toString(), 42));
         userSize.setText(String.format(userSize.getText().toString(), 180));
-        userWeight.setText(String.format(userWeight.getText().toString(), 75));
+        userWeight.setText(String.format(userWeight.getText().toString(), 120));
         // ... and stats
         totalDistance.setText(String.format(totalDistance.getText().toString(), "biking: 12km, hiking: 23km, running: 14km"));
         totalAltitude.setText(String.format(totalAltitude.getText().toString(), "biking: 854km, hiking: 451km, running: 673km"));
+
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.e(TAG, "requested");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+    }
+
+    // user
+    TextView userName;
+    TextView userGender;
+    TextView userAge;
+    TextView userSize;
+    TextView userWeight;
+    // stats
+    TextView totalDistance;
+    TextView totalAltitude;
+
+    // image view
+    ImageView userAvatar;
+
+    // linear layouts
+    LinearLayout userData;
+    LinearLayout badgeLayout;
+    LinearLayout globalStatistics;
+
+    public LinearLayout createBadge(int image, String text, Context context) {
+        int padding = getResources().getDimensionPixelSize(R.dimen.padding_small);
+
+        LinearLayout layout = new LinearLayout(context);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layout.setLayoutParams(layoutParams);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(0, 0, padding, 0);
+
+        ImageView imageView = new ImageView(context);
+        ViewGroup.LayoutParams imageParams = new ViewGroup.LayoutParams(getResources().getDimensionPixelSize(R.dimen.badge_size_small), getResources().getDimensionPixelSize(R.dimen.badge_size_small));
+        imageView.setLayoutParams(imageParams);
+        imageView.setImageResource(image);
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
+        TextView textView = new TextView(context);
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        textParams.gravity = Gravity.CENTER;
+        textView.setLayoutParams(textParams);
+        textView.setText(text);
+
+        layout.addView(imageView);
+        layout.addView(textView);
+
+        return layout;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        mDrawerPosition = position;
+
+        if (mIsCreated) {
+
+            // update the main content by replacing fragments
+            switch (position) {
+                case Constants.ACTIVITY_MAIN_MENU:
+                    Intent mainIntent = new Intent(this, FindChallengesActivity.class);
+                    mainIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(mainIntent);
+                    this.finish();
+                    break;
+                case Constants.ACTIVITY_PROFILE:
+                    mTitle = getString(R.string.title_navigation_profile);
+                    break;
+                case Constants.ACTIVITY_CHALLENGE_OVERVIEW:
+                    Intent challengeIntent = new Intent(this, ActiveChallengesActivity.class);
+                    challengeIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(challengeIntent);
+                    this.finish();
+                    break;
+            }
+        }
+    }
+
+    public void restoreActionBar() {
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(mTitle);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+            // Only show items in the action bar relevant to this screen
+            // if the drawer is not showing. Otherwise, let the drawer
+            // decide what to show in the action bar.
+            getMenuInflater().inflate(R.menu.main, menu);
+            restoreActionBar();
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void setUpNavigationDrawer() {
+        mDrawerPosition = getIntent().getIntExtra(Constants.EXTRA_POSITION, 0);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer_profile);
+        mNavigationDrawerFragment.setPosition(mDrawerPosition);
+
+        // Set up the drawer
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer_profile,
+                (DrawerLayout) findViewById(R.id.drawer_layout_profile));
+        onNavigationDrawerItemSelected(mDrawerPosition);
+    }
+
 }

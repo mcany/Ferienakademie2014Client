@@ -26,7 +26,7 @@ public final class Activity {
     private Double energy;
 
     @DatabaseField(columnName = COL_ADDITIONAL_LIFETIME)
-    private Double additionalLiftime;
+    private Double additionalLifetime;
 
     @DatabaseField(columnName = COL_TIMESTAMP)
     private Long timestamp;
@@ -47,7 +47,7 @@ public final class Activity {
             Long timestamp,
             Double duration,
             Double energy,
-            Double additionalLiftime,
+            Double additionalLifetime,
             String userUuid,
             SportsType type) {
 
@@ -55,7 +55,7 @@ public final class Activity {
         this.timestamp = timestamp;
         this.duration = duration;
         this.energy=energy;
-        this.additionalLiftime=additionalLiftime;
+        this.additionalLifetime = additionalLifetime;
         this.userUuid = userUuid;
         this.type = type;
 
@@ -91,8 +91,8 @@ public final class Activity {
         return type;
     }
 
-    public Double getAdditionalLiftime() {
-        return additionalLiftime;
+    public Double getAdditionalLifetime() {
+        return additionalLifetime;
     }
 
 
@@ -119,5 +119,6 @@ public final class Activity {
     public void setSportsType(SportsType type) {
         this.type = type;
     }
+
 
 }

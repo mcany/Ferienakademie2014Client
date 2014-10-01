@@ -5,20 +5,12 @@ package de.ferienakademie.neverrest.model;
  */
 public class Energy {
 
-    public static double grundumsatz(User user) {
-        double mass = user.getMass();
-        double height = user.getHeight();
-        double age = user.getAge();
-        double s=-674.08;
-        if(user.getMale()) {
-            s = 20.93;
-        }
-        double grundumsatz = (41.87 * mass + 26.17 * height - 20.93 * age + s);
-        return grundumsatz;
-    }
 
-    public static double energieverbrauch(double PAL, double duration, double grundumsatz) {
-        double energieverbrauch = PAL * duration * (grundumsatz/24.0);
+
+    public static double energieverbrauch(Activity activity, User user) {
+        double PAL = getPAL(activity);
+        double grundumsatz = grundumsatz(user);
+        double energieverbrauch = PAL * activity.getDuration() * (grundumsatz/24.0);
         return energieverbrauch;
     }
 
@@ -26,7 +18,7 @@ public class Energy {
         double grundumsatz = grundumsatz(user);
 
 
-        double energyConsumption = (grundumsatz/24)*activity.getDuration()*1.4242424242424;
+        double energyConsumption = (grundumsatz/24)*activity.getDuration()*(getPAL(activity)+1);
 
         double met = energyConsumption/(user.getMass())*activity.getDuration();
 
@@ -38,6 +30,18 @@ public class Energy {
     }
 
 
+    private static double grundumsatz(User user) {
+        double mass = user.getMass();
+        double height = user.getHeight();
+        double age = user.getAge();
+        double s=-674.08;
+        if(user.getMale()) {
+            s = 20.93;
+        }
+        double grundumsatz = (41.87 * mass + 26.17 * height - 20.93 * age + s);
+        return grundumsatz;
+    }
+
     private static double getLifeTimeForMetPerWeek(double met) {
 
         if(met>27.5) {
@@ -47,6 +51,29 @@ public class Energy {
     }
 
     private static double getExpectedLifeTime(User user) {
-        return 42;
+        if(user.getMale()) {
+            return 81.0;
+        }
+
+        if(!user.getMale()) {
+            return 85.0;
+        }
+
+        return 0.0;
+    }
+
+    private static double getPAL(Activity activity) {
+        switch (activity.getSportsType()) {
+            case CYCLING:
+                return 3.456;
+            case HIKING:
+                return 8.064;
+            case RUNNING:
+                double velocity=6;
+                return 0.1423- 0.0357*velocity + 0.13954 * Math.pow(velocity,2);
+        }
+
+        return 1.5;
+
     }
 }

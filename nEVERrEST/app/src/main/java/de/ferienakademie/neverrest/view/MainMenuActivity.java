@@ -1,9 +1,6 @@
 package de.ferienakademie.neverrest.view;
 
 import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,12 +15,9 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -41,34 +35,29 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
-import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.controller.MetricCalculator;
 import de.ferienakademie.neverrest.model.LocationData;
-import de.ferienakademie.neverrest.model.SportsType;
 
 import static android.view.View.OnClickListener;
-import static de.ferienakademie.neverrest.view.NavigationDrawerFragment.NavigationDrawerCallbacks;
 
-public class MainActivity extends FragmentActivity
-        implements ServiceConnection, OnClickListener, NavigationDrawerCallbacks {
+public class MainMenuActivity extends FragmentActivity
+        implements NeverrestInterface, ServiceConnection, OnClickListener {
 
-    public static final String TAG = MainActivity.class.getSimpleName();
     public static final int NUMBER_RECENT_POINTS = 5; // for outlier detection and smoothing
+    public static final String TAG = MainMenuActivity.class.getSimpleName();
+
 
     ///////// DATABASE ELEMENTS /////////
     private de.ferienakademie.neverrest.model.Activity mActivity;
 
 
-
     ///////// UI ELEMENTS /////////
 
     private ToggleButton mBtnGPSTracking;
-    private Button mNewButton;
 
     ///////// MAP AND LOCATION STUFF /////////
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -89,6 +78,8 @@ public class MainActivity extends FragmentActivity
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private int mDrawerPosition;
+    private boolean mIsCreated;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -113,30 +104,18 @@ public class MainActivity extends FragmentActivity
         }
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_menu);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
-        // Initialize database
-        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
-
-        // Set up the drawer
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        mIsCreated = true;
 
 
-        // Initialize database
-        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
-        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
         mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
         mBtnGPSTracking.setOnClickListener(this);
 
+        setUpNavigationDrawer();
         setUpMapIfNeeded();
     }
 
@@ -213,7 +192,7 @@ public class MainActivity extends FragmentActivity
             recentPoints = mLocationDataList;
         }
 
-        if (! MetricCalculator.isValid(current, recentPoints)) {
+        if (!MetricCalculator.isValid(current, recentPoints)) {
             Log.d(TAG, "Ignoring current location");
             return;
         }
@@ -244,9 +223,7 @@ public class MainActivity extends FragmentActivity
 
         // save new location in database
         try {
-            LocationData mLocationData = new LocationData(mLocation);
-            mLocationData.setActivity(mActivity);
-            mDatabaseHandler.getLocationDataDao().create(mLocationData);
+            mDatabaseHandler.getLocationDataDao().create(new LocationData(mLocation));
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -312,7 +289,6 @@ public class MainActivity extends FragmentActivity
     }
 
     private void updateTextView() {
-       
     }
 
     @Override
@@ -331,62 +307,62 @@ public class MainActivity extends FragmentActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnStartGPSTracking:
-                Log.d(
-                        TAG, "Toggle Button pressed.");
-                long startingTime = 0;
+                Log.d(TAG, "Toggle Button pressed.");
                 if (mBtnGPSTracking.isChecked()) {
                     Intent serviceIntent = new Intent(this, GPSService.class);
                     bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
-                    startingTime = System.currentTimeMillis();
-                    mActivity = new de.ferienakademie.neverrest.model.Activity(UUID.randomUUID().toString(), startingTime, 0.d, 0.d, 0.d, "", SportsType.RUNNING);
-
-                    try {
-                        mDatabaseHandler.getActivityDao().create(mActivity);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.e(TAG,e.getMessage());
-                    }
-
+                } else {
                     unbindService(this);
-                    long duration = System.currentTimeMillis()-startingTime;
-                    mActivity.setDuration(((double) duration));
-                    try {
-                        mDatabaseHandler.getActivityDao().update(mActivity);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.e(TAG,e.getMessage());
-                    }
                 }
                 break;
         }
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void setUpNavigationDrawer() {
+        mDrawerPosition = getIntent().getIntExtra(Constants.EXTRA_POSITION, -1);
 
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer_main);
+        mNavigationDrawerFragment.setPosition(mDrawerPosition);
+
+        // Set up the drawer
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer_main,
+                (DrawerLayout) findViewById(R.id.drawer_layout_main));
+        onNavigationDrawerItemSelected(mDrawerPosition);
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        mDrawerPosition = position;
+
+        if (mIsCreated) {
+            // update the main content by replacing fragments
+            switch (position) {
+                case Constants.ACTIVITY_MAIN_MENU:
+                    Intent mainIntent = new Intent(this, FindChallengesActivity.class);
+                    mainIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(mainIntent);
+                    this.finish();
+                    break;
+                case Constants.ACTIVITY_PROFILE:
+                    mTitle = getString(R.string.title_navigation_profile);
+                    Intent profileIntent = new Intent(this, ProfileActivity.class);
+                    profileIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(profileIntent);
+                    this.finish();
+                    break;
+                case Constants.ACTIVITY_CHALLENGE_OVERVIEW:
+                    Intent challengeIntent = new Intent(this, ActiveChallengesActivity.class);
+                    challengeIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(challengeIntent);
+                    this.finish();
+                    break;
+            }
         }
     }
 
+    @Override
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -405,46 +381,6 @@ public class MainActivity extends FragmentActivity
             return true;
         }
         return super.onCreateOptionsMenu(menu);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_main, container, false);
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
     }
 
 }

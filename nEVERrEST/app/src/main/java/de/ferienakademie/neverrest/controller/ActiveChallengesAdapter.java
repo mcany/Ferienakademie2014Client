@@ -55,7 +55,7 @@ public class ActiveChallengesAdapter extends ArrayAdapter<Challenge> {
             textViewActivityLastTime.setTextColor(Color.parseColor("#FF0000"));
         }
         progressBar.setMax((int) values.get(position).getTotalEffort());
-        progressBar.setProgress((int) values.get(position).getCompletedEffort()+400);
+        progressBar.setProgress((int) values.get(position).getCompletedEffort());
         Drawable iconChallenge = Drawable.createFromPath(values.get(position).getIconPath());
         imageView.setImageDrawable(iconChallenge);
         return rowView;

@@ -1,19 +1,20 @@
 <!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
-<android.support.v4.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/drawer_layout_main"
     android:gravity="center_horizontal"
-    tools:context=".MainActivity">
+    tools:context=".MainMenuActivity">
 
-    <!-- As the main content view, the view below consumes the entire
-     space available using match_parent in both dimensions. -->
     <LinearLayout
+<<<<<<< HEAD:nEVERrEST/app/src/main/res/layout/activity_main.xml
 
         android:id="@+id/container"
+=======
+        android:id="@+id/layout_main_menu"
+>>>>>>> ab1dbd533524c9f1217681952493fae98d45381f:nEVERrEST/app/src/main/res/layout/activity_main_menu.xml
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -66,8 +67,11 @@
             android:textOff="Start Tracking"
             android:textOn="Stop GPS Tracking" />
 
+<<<<<<< HEAD:nEVERrEST/app/src/main/res/layout/activity_main.xml
 
 
+=======
+>>>>>>> ab1dbd533524c9f1217681952493fae98d45381f:nEVERrEST/app/src/main/res/layout/activity_main_menu.xml
         <fragment
             android:layout_width="match_parent"
             android:layout_height="200dp"
@@ -84,7 +88,7 @@
     <!-- The drawer is given a fixed width in dp and extends the full height of
          the container. -->
     <fragment
-        android:id="@+id/navigation_drawer"
+        android:id="@+id/navigation_drawer_main"
         android:layout_width="@dimen/navigation_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
