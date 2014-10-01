@@ -12,4 +12,10 @@ public class EnergyTest extends TestCase{
         double grundumsatz = Energy.grundumsatz(user);
         assertEquals(9703.68, grundumsatz, 0.001);
     }
+
+    public void testGewonneneLebenszeitInMillis() {
+        User user = new User("42", "Fritz", "PW", true, 150, 150, 25, 2);
+        Activity activity = new Activity("42",123456789,10.0,"42",SportsType.RUNNING);
+        double gewonneneLebenszeit = Energy.gewonneneLebenszeitInMillis(activity,user);
+    }
 }
