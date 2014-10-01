@@ -17,7 +17,7 @@ public class Energy {
         double PAL = getPAL(activity);
         double grundumsatz = grundumsatz(user);
         double energieverbrauch = PAL * activity.getDuration() * (grundumsatz/24.0);
-        return energieverbrauch;
+        return kiloJouleToCalories(energieverbrauch);
     }
 
     public static long gewonneneLebenszeitInMillis(Activity activity, User user) {
@@ -82,7 +82,7 @@ public class Energy {
             case HIKING:
                 return 8.064;
             case RUNNING:
-                double PAL=0.0;
+                double PAL=-1.0;
                 try {
                     List<LocationData> locationDatas = DatabaseUtil.INSTANCE.getDatabaseHandler().getLocationDataDao().queryForEq(SensorData.COL_ACTIVITY,activity.getUuid());
                     for(LocationData locationData : locationDatas) {
@@ -96,6 +96,12 @@ public class Energy {
                 return PAL;
         }
 
-        return 1.5;
+        //standard PAL
+        return 1.0;
     }
+
+    private static double kiloJouleToCalories(double kiloJoule) {
+        return kiloJoule*239.005736;
+    }
+
 }

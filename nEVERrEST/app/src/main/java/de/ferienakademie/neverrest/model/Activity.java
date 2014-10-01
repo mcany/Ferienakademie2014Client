@@ -78,8 +78,10 @@ public final class Activity {
         return type;
     }
 
+    //returns the additional lifetime in milliseconds for this activity
+    //returns -1 if something unexpected happened
     public double getAdditionalLifetimeInMilliseconds() {
-        long additionalLifetimeInMilliseconds = 0;
+        long additionalLifetimeInMilliseconds = -1;
         try {
             additionalLifetimeInMilliseconds = Energy.gewonneneLebenszeitInMillis(this,DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForId(userUuid));
         } catch (SQLException exception) {
@@ -88,8 +90,10 @@ public final class Activity {
         return additionalLifetimeInMilliseconds;
     }
 
-    public double getConsumptedEnergyInKiloCalories() {
-        double energieverbrauchInKiloCalories = 0.0;
+    //returns consumped calories for this activity
+    //returns -1 if something unexpected happened
+    public double getConsumptedEnergyInCalories() {
+        double energieverbrauchInKiloCalories = -1.0;
         try {
             energieverbrauchInKiloCalories = Energy.energieverbrauch(this, DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForId(userUuid));
         } catch(SQLException exception) {
@@ -118,6 +122,5 @@ public final class Activity {
     public void setSportsType(SportsType type) {
         this.type = type;
     }
-
 
 }
