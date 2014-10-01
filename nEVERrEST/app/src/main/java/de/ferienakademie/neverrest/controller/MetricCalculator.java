@@ -87,7 +87,12 @@ public class MetricCalculator {
      */
     public static LocationData smoothLocationData(LocationData current, List<LocationData> recentPoints) {
 
+        if (recentPoints.size() < weights.length - 1) {
+            return current;
+        }
+
         assert(recentPoints.size() == weights.length - 1);
+
 
         double latitude = current.getLatitude() * weights[weights.length - 1];
         double longitude = current.getLongitude() * weights[weights.length - 1];
@@ -103,6 +108,6 @@ public class MetricCalculator {
 
         LocationData ret = new LocationData(current.getCreationDate(), latitude, longitude, altitude, speed);
         ret.setActivity(current.getActivity());
-        return new LocationData(current.getCreationDate(), latitude, longitude, altitude, speed);
+        return ret;
     }
 }
