@@ -1,7 +1,7 @@
 package de.ferienakademie.neverrest.view;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -14,14 +14,17 @@ import de.ferienakademie.neverrest.model.Challenge;
  * Created by arno on 29/09/14.
  * adapted from http://www.vogella.com/tutorials/AndroidListView/article.html
  */
-public class HistoryActivity extends Activity {
+
+public class HistoryActivity extends FragmentActivity implements NeverrestInterface {
+
+    private ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        final ListView listview = (ListView) findViewById(R.id.historyList);
+        mListView = (ListView) findViewById(R.id.historyList);
 
         ArrayList<Challenge> list = new ArrayList<Challenge>();
 
@@ -33,6 +36,23 @@ public class HistoryActivity extends Activity {
         }
 
         final HistoryListAdapter adapter = new HistoryListAdapter(getApplicationContext(), list);
-        listview.setAdapter(adapter);
+        mListView.setAdapter(adapter);
+
+
+    }
+
+    @Override
+    public void setUpNavigationDrawer() {
+
+    }
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+
+    }
+
+    @Override
+    public void restoreActionBar() {
+
     }
 }

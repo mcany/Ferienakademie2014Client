@@ -37,22 +37,18 @@ import java.util.LinkedList;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
-import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.model.LocationData;
-import de.ferienakademie.neverrest.model.SportsType;
 
 import static android.view.View.OnClickListener;
-import static de.ferienakademie.neverrest.view.NavigationDrawerFragment.NavigationDrawerCallbacks;
 
 public class MainMenuActivity extends FragmentActivity
-        implements NeverrestInterface, ServiceConnection, OnClickListener, NavigationDrawerCallbacks {
+        implements NeverrestInterface, ServiceConnection, OnClickListener {
 
     public static final String TAG = MainMenuActivity.class.getSimpleName();
 
     ///////// DATABASE ELEMENTS /////////
     private de.ferienakademie.neverrest.model.Activity mActivity;
-
 
 
     ///////// UI ELEMENTS /////////
@@ -111,6 +107,8 @@ public class MainMenuActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        mIsCreated = true;
+
         mCoordinateView = (TextView) findViewById(R.id.coordinates);
         mAltitudeView = (TextView) findViewById(R.id.altitude);
         mDistanceView = (TextView) findViewById(R.id.distance);
@@ -118,6 +116,7 @@ public class MainMenuActivity extends FragmentActivity
         mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
         mBtnGPSTracking.setOnClickListener(this);
 
+        setUpNavigationDrawer();
         setUpMapIfNeeded();
     }
 
@@ -275,10 +274,12 @@ public class MainMenuActivity extends FragmentActivity
     }
 
     private void updateTextView() {
-        mAltitudeView.setText("Altitude: " + mAltitude);
-        mCoordinateView.setText("Latitude: " + mLocation.getLatitude() + ", Longitude: " + mLocation.getLongitude());
-        mSpeedView.setText("Speed: " + mSpeed);
-        mDistanceView.setText("Distance: " + mDistance[0]);
+        if (mLocation != null) {
+            mAltitudeView.setText("Altitude: " + mAltitude);
+            mCoordinateView.setText("Latitude: " + mLocation.getLatitude() + ", Longitude: " + mLocation.getLongitude());
+            mSpeedView.setText("Speed: " + mSpeed);
+            mDistanceView.setText("Distance: " + mDistance[0]);
+        }
     }
 
     @Override
@@ -309,30 +310,47 @@ public class MainMenuActivity extends FragmentActivity
     }
 
     @Override
+    public void setUpNavigationDrawer() {
+        mDrawerPosition = getIntent().getIntExtra(Constants.EXTRA_POSITION, -1);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer_main);
+        mNavigationDrawerFragment.setPosition(mDrawerPosition);
+
+        // Set up the drawer
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer_main,
+                (DrawerLayout) findViewById(R.id.drawer_layout_main));
+        onNavigationDrawerItemSelected(mDrawerPosition);
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
         mDrawerPosition = position;
 
-        if (mIsCreated)
+        if (mIsCreated) {
             // update the main content by replacing fragments
             switch (position) {
-                case 0:
-                    mTitle = getString(R.string.title_navigation_main_menu);
+                case Constants.ACTIVITY_MAIN_MENU:
+                    Intent mainIntent = new Intent(this, FindChallengesActivity.class);
+                    mainIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(mainIntent);
+                    this.finish();
                     break;
-                case 1:
+                case Constants.ACTIVITY_PROFILE:
                     mTitle = getString(R.string.title_navigation_profile);
                     Intent profileIntent = new Intent(this, ProfileActivity.class);
-                    profileIntent.putExtra("POSITION", position);
+                    profileIntent.putExtra(Constants.EXTRA_POSITION, position);
                     startActivity(profileIntent);
                     this.finish();
                     break;
-                case 2:
-                    Intent challengeIntent = new Intent(this, ChallengeActivity.class);
-                    challengeIntent.putExtra("POSITION", position);
+                case Constants.ACTIVITY_CHALLENGE_OVERVIEW:
+                    Intent challengeIntent = new Intent(this, ActiveChallengesActivity.class);
+                    challengeIntent.putExtra(Constants.EXTRA_POSITION, position);
                     startActivity(challengeIntent);
                     this.finish();
                     break;
             }
-
+        }
     }
 
     @Override
