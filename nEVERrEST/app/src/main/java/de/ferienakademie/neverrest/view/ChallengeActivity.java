@@ -1,6 +1,7 @@
 package de.ferienakademie.neverrest.view;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,6 +37,7 @@ public class ChallengeActivity extends FragmentActivity
     private Challenge mChallenge;
     private TextView mHeading;
     private ImageView mChallengeImage;
+    private TextView mDetailsTextView;
     private Button mStartButton;
     private Button mAbortButton;
 
@@ -92,6 +94,10 @@ public class ChallengeActivity extends FragmentActivity
         params.width = (int) (size.x * 0.86);
         progressBar.setMax((int) mChallenge.getTotalEffort());
         progressBar.setProgress((int) (mChallenge.getTotalEffort() - mChallenge.getCompletedEffort()));
+        mDetailsTextView = (TextView) findViewById(R.id.textViewDetails);
+        //List<Activity> activitiesOfChallange = DatabaseUtil.INSTANCE.getDatabaseHandler().getActivityDao().queryForEq(de.ferienakademie.neverrest.model.Activity.C)
+        //int duration =
+        mDetailsTextView.setText(mChallenge.getCompletedEffort() + " of " + mChallenge.getTotalEffort() + "\n" );
     }
 
 

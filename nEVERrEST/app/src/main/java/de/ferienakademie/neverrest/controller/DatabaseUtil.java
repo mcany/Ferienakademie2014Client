@@ -44,6 +44,8 @@ public enum DatabaseUtil {
 		List<Challenge> challenges = new LinkedList<Challenge>();
 		challenges.add(new Challenge.Builder()
 				.title("Trans-Siberian Railway")
+				.timestampStarted(123456789)
+				.completedEffort(5000)
 				.description("Choo Choo")
 				.totalEffort(9228)
 				.continentName(context.getString(R.string.continent_asia))
@@ -98,7 +100,7 @@ public enum DatabaseUtil {
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Bike tour along Donau")
-				.description("Als fuhre ich am Ufer der Donau entlang, ...")
+				.description("Einst fuhr ich am Ufer der Donau entlang, ...")
 				.totalEffort(2850)
 				.continentName(context.getString(R.string.continent_europe))
 				.lat(48.99763)
