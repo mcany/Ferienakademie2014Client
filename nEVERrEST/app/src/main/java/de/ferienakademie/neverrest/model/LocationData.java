@@ -49,6 +49,15 @@ public class LocationData extends SensorData {
         this.altitude = location.getAltitude();
     }
 
+
+    public LocationData(Date creationDate, double latitude, double longitude, double altitude, float speed) {
+        this.creationDate = creationDate;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.altitude = altitude;
+        this.speed = speed;
+    }
+
     public double getLatitude() {
         return latitude;
     }
