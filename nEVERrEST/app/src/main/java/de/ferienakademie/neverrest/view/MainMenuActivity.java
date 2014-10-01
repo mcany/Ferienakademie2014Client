@@ -70,10 +70,9 @@ public class MainMenuActivity extends FragmentActivity
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LocationManager mLocationManager;
     private LinkedList<LocationData> mLocationDataList = new LinkedList<LocationData>();
-    private long lastShown = -1;
     private String mProvider;
     private Marker mMarker;
-    private float[] mDistance = new float[1];
+    private float mDistance = 0.f;
 
 
 
@@ -104,7 +103,6 @@ public class MainMenuActivity extends FragmentActivity
                     Location location = (Location) msg.obj;
                     LocationData currentPosition = new LocationData(new Date(), location.getLatitude(), location.getLongitude(), location.getAltitude(), location.getSpeed());
                     updateLocation(currentPosition);
-                    updateTextView();
                     break;
             }
         }
@@ -114,9 +112,9 @@ public class MainMenuActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
         mSportsType = (SportsType) getIntent().getSerializableExtra(MainMenuActivity.SPORTS_TYPE);
         mIsCreated = true;
-
 
         mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
         mBtnGPSTracking.setOnClickListener(this);
@@ -128,23 +126,12 @@ public class MainMenuActivity extends FragmentActivity
     @Override
     protected void onResume() {
         super.onResume();
-
+        setUpMapIfNeeded();
         initLocationHandler();
 
-        Log.e(TAG, "requested");
+        Log.d(TAG, "requested");
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        setUpMapIfNeeded();
-    }
-
-    @Override
-    protected void onDestroy() {
-
-        super.onDestroy();
-    }
 
     private void initLocationHandler() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -162,31 +149,16 @@ public class MainMenuActivity extends FragmentActivity
                 LocationData previous = mLocationDataList.getLast();
                 if (previous.getLatitude() != currentPosition.getLatitude()
                         || previous.getLongitude() != currentPosition.getLongitude()) {
-                    mLocationDataList.add(currentPosition);
-
+                    updateLocation(currentPosition);
                 }
             } else {
-                mLocationDataList.add(currentPosition);
+                updateLocation(currentPosition);
             }
         }
-        updateTextView();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 
     public void updateLocation(LocationData currentPosition) {
-
         List<LocationData> recentPoints;
         if (mLocationDataList.size() >= 5) {
             recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS + 1), mLocationDataList.size() - 1);
@@ -195,7 +167,7 @@ public class MainMenuActivity extends FragmentActivity
         }
 
         if (!MetricCalculator.isValid(currentPosition, recentPoints)) {
-            Log.d(TAG, "Ignoring current location");
+            Log.d(TAG, "Ignoring current location. Looks like an outlier");
             return;
         }
 
@@ -213,7 +185,7 @@ public class MainMenuActivity extends FragmentActivity
                     currentPosition.getLatitude(),
                     currentPosition.getLongitude(), tmp);
 
-            mDistance[0] += tmp[0];
+            mDistance += tmp[0];
         }
 
         // save new location in database
@@ -222,8 +194,8 @@ public class MainMenuActivity extends FragmentActivity
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
         }
+        mLocationDataList.add(currentPosition);
 
-        updateTextView();
         updateMap();
     }
 
@@ -235,8 +207,8 @@ public class MainMenuActivity extends FragmentActivity
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
+                // TODO this won't draw the track
                 updateMap();
-
             }
         }
     }
@@ -289,18 +261,19 @@ public class MainMenuActivity extends FragmentActivity
 
     }
 
-    private void updateTextView() {
 
-        if (null != mLocationDataList && mLocationDataList.size() > 0) {
-            LocationData currentPosition = mLocationDataList.getLast();
-
-            //mAltitudeView.setText("Altitude: " + currentPosition.getAltitude());
-            //mCoordinateView.setText("Latitude: " + currentPosition.getLatitude() + ", Longitude: " + currentPosition.getLongitude());
-            //mSpeedView.setText("Speed: " + currentPosition.getSpeed());
-            //mDistanceView.setText("Distance: " + mDistance[0]);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
         }
-
+        return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
