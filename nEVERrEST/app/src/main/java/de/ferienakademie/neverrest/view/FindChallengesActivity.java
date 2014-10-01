@@ -1,5 +1,7 @@
 package de.ferienakademie.neverrest.view;
 
+
+import android.app.Dialog;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -14,9 +16,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -90,6 +95,9 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
     //dummy challenges for Africa
     private LatLng[] dummyChallengesAfrica = {new LatLng(28.0289837, 1.6666663), new LatLng(31.7945869, -7.0849336), new LatLng(-28.4792625, 24.6727135),
             new LatLng(-18.7792678, 46.8344597), new LatLng(-4.0335162, 21.7500603)};
+
+
+    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,7 +188,8 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
         }
 
         //create continent markers
-        markerAfrica = mMap.addMarker(new MarkerOptions().position(coordinatesAfrica).title("" + dummyChallengesAfrica.length));
+        markerAfrica = mMap.addMarker(new MarkerOptions().position(coordinatesAfrica).title(""+ dummyChallengesAfrica.length));
+
         //markerAfrica.showInfoWindow();
         markerAfrica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
@@ -345,7 +354,34 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
     class FindChallengesActivityOnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, marker.getTitle())));
+            //marker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(clickedMarkerImage, marker.getTitle())));
+            // custom dialog
+            final Dialog dialog = new Dialog(context);
+            dialog.setContentView(R.layout.custom_dialog_map_challenge_info);
+            dialog.setTitle(marker.getTitle());
+
+            // set the custom dialog components - text, image and button
+            TextView description = (TextView) dialog.findViewById(R.id.challengeDescription);
+            description.setText("Android custom dialog example!");
+            TextView details = (TextView) dialog.findViewById(R.id.challengeDetails);
+            details.setText("foo bar foo bar foo bar");
+            ImageView image = (ImageView) dialog.findViewById(R.id.challengeImage);
+            image.setImageResource(R.drawable.ic_launcher);
+
+
+            Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonAcceptChallenge);
+            // if button is clicked, close the custom dialog
+            dialogButton.setOnClickListener(new View.OnClickListener() {
+               @Override
+                public void onClick(View v) {
+                   Intent intent = new Intent(context, ChallengeActivity.class);
+                   //intent.putExtra("Challenge", marker.getTitle());
+                   startActivity(intent);
+                }
+            });
+
+           dialog.show();
+
             return false;
         }
     }
@@ -412,16 +448,10 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
                     mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
                             .title(mChallenge.getTitle()));
                 }
-            } else {
-
-                Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm", MetricType.HORIZONTALDISTANCE, "des", "", 100.0, 0.0, 100, 0, false, "Africa",
-                        0.0, 0.0);
-
-                Intent intent = new Intent(getBaseContext(), ChallengeActivity.class);
-                intent.putExtra(Constants.EXTRA_CHALLENGE, dummyChallenge);
-                startActivity(intent);
-
             }
+            else {
+            }
+
         }
     }
 }

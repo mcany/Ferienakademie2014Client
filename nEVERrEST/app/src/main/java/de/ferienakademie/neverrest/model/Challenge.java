@@ -190,13 +190,13 @@ public class Challenge implements Serializable {
         this.timestampStarted = timestampStarted;
     }
 
-    public String getContinentName() {
-        return continentName;
-    }
+    //public String getContinentName() {
+    //    return continentName;
+    //}
 
-    public void setContinentName(String continentName) {
-        this.continentName = continentName;
-    }
+   // public void setContinentName(String continentName) {
+   //     this.continentName = continentName;
+   //}
 
     public void setTimestampLastModified(long timestampLastModified) {
         this.timestampLastModified = timestampLastModified;
