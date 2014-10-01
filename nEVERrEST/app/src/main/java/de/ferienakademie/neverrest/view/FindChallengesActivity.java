@@ -160,8 +160,9 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
-                setUpMap();
                 mMap.setOnInfoWindowClickListener(new FindChallengesActivityOnInfoWindowClickListener());
+                mMap.setOnMarkerClickListener(new FindChallengesActivityOnMarkerClickListener());
+                setUpMap();
             }
         }
     }
