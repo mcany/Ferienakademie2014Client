@@ -40,12 +40,14 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.GPSService;
+import de.ferienakademie.neverrest.controller.MetricCalculator;
 import de.ferienakademie.neverrest.model.LocationData;
 import de.ferienakademie.neverrest.model.SportsType;
 
@@ -56,6 +58,7 @@ public class MainActivity extends FragmentActivity
         implements ServiceConnection, OnClickListener, NavigationDrawerCallbacks {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+    public static final int NUMBER_RECENT_POINTS = 5; // for outlier detection and smoothing
 
     ///////// DATABASE ELEMENTS /////////
     private de.ferienakademie.neverrest.model.Activity mActivity;
@@ -77,6 +80,7 @@ public class MainActivity extends FragmentActivity
     private LatLng mLatLng;
     private LinkedList<Location> mLocationList;
     private LinkedList<LatLng> mLatLngList;
+    private LinkedList<LocationData> mLocationDataList = new LinkedList<LocationData>();
     private String mProvider;
     private Marker mMarker;
     private float[] mDistance;
@@ -211,9 +215,25 @@ public class MainActivity extends FragmentActivity
     }
 
     public void updateLocation() {
+        LocationData current = new LocationData(mLocation);
+
+        List<LocationData> recentPoints;
+        if (mLocationDataList.size() >= 5) {
+            recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS + 1), mLocationDataList.size() - 1);
+        } else {
+            recentPoints = mLocationDataList;
+        }
+
+        if (! MetricCalculator.isValid(current, recentPoints)) {
+            Log.d(TAG, "Ignoring current location");
+            return;
+        }
+
+        // TODO smoothing
+
         mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
-        Log.e(TAG, String.valueOf(mLatLng.latitude) + ", " + String.valueOf(mLatLng.longitude));
+        Log.d(TAG, String.valueOf(mLatLng.latitude) + ", " + String.valueOf(mLatLng.longitude));
 
         mSpeed = mLocation.getSpeed();
         mAltitude = mLocation.getAltitude();
