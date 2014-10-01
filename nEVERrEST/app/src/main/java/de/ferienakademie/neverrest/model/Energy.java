@@ -32,7 +32,7 @@ public class Energy {
 
 
         double estimatedLifeTime = getLifeTimeForMetPerWeek(user.getEstimatedTrainingSessionsPerWeek()*met);
-        long estimatedLifeTimeForThisActivity = Math.ceil(estimatedLifeTime / ((getExpectedLifeTime(user)-user.getAge())*52))*365.249*24*60*60*1000);
+        long estimatedLifeTimeForThisActivity = (long) (Math.ceil(estimatedLifeTime / ((getExpectedLifeTime(user)-user.getAge())*52))*365.249*24*60*60*1000);
         return estimatedLifeTimeForThisActivity;
     }
 
