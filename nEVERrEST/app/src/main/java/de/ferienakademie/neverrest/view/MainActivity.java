@@ -66,10 +66,7 @@ public class MainActivity extends FragmentActivity
 
 
     ///////// UI ELEMENTS /////////
-    private TextView mCoordinateView;
-    private TextView mDistanceView;
-    private TextView mSpeedView;
-    private TextView mAltitudeView;
+
     private ToggleButton mBtnGPSTracking;
     private Button mNewButton;
 
@@ -137,16 +134,8 @@ public class MainActivity extends FragmentActivity
         // Initialize database
         DatabaseUtil.INSTANCE.initialize(getApplicationContext());
         mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
-
-
-        mCoordinateView = (TextView) findViewById(R.id.coordinates);
-        mAltitudeView = (TextView) findViewById(R.id.altitude);
-        mDistanceView = (TextView) findViewById(R.id.distance);
-        mSpeedView = (TextView) findViewById(R.id.speed);
         mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
         mBtnGPSTracking.setOnClickListener(this);
-        mNewButton = (Button) findViewById(R.id.newButton);
-        mNewButton.setOnClickListener(this);
 
         setUpMapIfNeeded();
     }
@@ -323,10 +312,7 @@ public class MainActivity extends FragmentActivity
     }
 
     private void updateTextView() {
-        mAltitudeView.setText("Altitude: " + mAltitude);
-        mCoordinateView.setText("Latitude: " + mLocation.getLatitude() + ", Longitude: " + mLocation.getLongitude());
-        mSpeedView.setText("Speed: " + mSpeed);
-        mDistanceView.setText("Distance: " + mDistance[0]);
+       
     }
 
     @Override
