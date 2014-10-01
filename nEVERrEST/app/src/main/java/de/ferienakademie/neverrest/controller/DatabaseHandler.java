@@ -408,6 +408,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.metricType(MetricType.VERTICALDISTANCE)
 				.iconResourceId(R.drawable.mount_kilimanjaro)
 				.build());
+		/*
 		challenges.add(new Challenge.Builder()
 				.title("Mount Vinson")
 				.description("")
@@ -417,6 +418,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lon(-85.616667)
 				.metricType(MetricType.VERTICALDISTANCE)
 				.build());
+				*/
 		try {
 			for (Challenge challenge : challenges) {
 				getChallengeDao().create(challenge);
