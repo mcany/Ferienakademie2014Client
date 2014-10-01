@@ -6,7 +6,7 @@ import android.content.Context;
  * Created by explicat on 9/28/14.
  */
 public enum DatabaseUtil {
-    INSTANCE;
+    INSTANCE, DatabaseUtil;
 
     private DatabaseHandler databaseHandler;
 
