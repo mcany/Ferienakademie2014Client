@@ -1,8 +1,5 @@
 package de.ferienakademie.neverrest.model;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -46,7 +43,7 @@ public class Challenge implements Serializable {
     private String description;
 
     @DatabaseField(columnName = COL_ICON)
-    private String iconPath;
+	private int iconResourceId;
 
     @DatabaseField(columnName = COL_STARTING_LATITUDE)
     private double startingLatitude;
@@ -81,7 +78,7 @@ public class Challenge implements Serializable {
             String title,
             MetricType type,
             String description,
-            String iconPath,
+			int iconResourceId,
             double totalEffort,
             double completedEffort,
             long timestampStarted,
@@ -95,7 +92,7 @@ public class Challenge implements Serializable {
         this.title = title;
         this.type = type;
         this.description = description;
-        this.iconPath = iconPath;
+		this.iconResourceId = iconResourceId;
         this.totalEffort = totalEffort;
         this.completedEffort = completedEffort;
         this.timestampStarted = timestampStarted;
@@ -207,22 +204,19 @@ public class Challenge implements Serializable {
         this.finished = finished;
     }
 
-    public String getIconPath() {
-        return iconPath;
-    }
+	public int getIconResourceId() {
+		return iconResourceId;
+	}
 
-    public Bitmap getIconAsBitmap() {
-        return BitmapFactory.decodeFile(iconPath);
-    }
-
-    public void setIconPath(String iconPath) {
-        this.iconPath = iconPath;
-    }
+	public void setIconResourceId(int iconResourceId) {
+		this.iconResourceId = iconResourceId;
+	}
 
 
     public static class Builder {
 
-        private String uuid, title, description, iconPath, continentName;
+        private String uuid, title, description, continentName;
+		private int iconResourceId;
         private MetricType type;
         private double totalEffort, completedEffort, lat, lon;
         private long timestampStarted, timestampLastModified;
@@ -245,8 +239,8 @@ public class Challenge implements Serializable {
         }
 
 
-        public Builder iconPath(String iconPath) {
-            this.iconPath = iconPath;
+        public Builder iconResourceId(int iconResourceId) {
+			this.iconResourceId = iconResourceId;
             return this;
         }
 
@@ -311,7 +305,7 @@ public class Challenge implements Serializable {
                     title,
                     type,
                     description,
-                    iconPath,
+					iconResourceId,
                     totalEffort,
                     completedEffort,
                     timestampStarted,
