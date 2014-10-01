@@ -15,7 +15,6 @@ import java.util.List;
 
 import de.ferienakademie.neverrest.model.Activity;
 import de.ferienakademie.neverrest.model.Challenge;
-import de.ferienakademie.neverrest.model.Group;
 import de.ferienakademie.neverrest.model.LocationData;
 import de.ferienakademie.neverrest.model.User;
 
@@ -36,7 +35,6 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     private Dao<Activity, String> activityDao = null;
     private Dao<User, String> userDao = null;
     private Dao<Challenge, String> challengeDao = null;
-    private Dao<Group, String> groupDao = null;
 
 
     public DatabaseHandler(Context context) {
@@ -54,7 +52,6 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, LocationData.class);
             TableUtils.createTable(connectionSource, User.class);
             TableUtils.createTable(connectionSource, Challenge.class);
-            TableUtils.createTable(connectionSource, Group.class);
         } catch (SQLException e) {
             Log.e(TAG, "Can't create database", e);
             throw new RuntimeException(e);
@@ -90,7 +87,6 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, Activity.class, true);
             TableUtils.dropTable(connectionSource, User.class, true);
             TableUtils.dropTable(connectionSource, Challenge.class, true);
-            TableUtils.dropTable(connectionSource, Group.class, true);
 
             // after we drop the old databases, we create the new ones
             onCreate(db, connectionSource);
@@ -149,17 +145,6 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
     }
 
 
-    /**
-     * Returns the Database Access Object (DAO) for our Challenge class. It will create it or just give the cached
-     * value.
-     */
-    public Dao<Group, String> getGroupDao() throws SQLException {
-        if (groupDao == null) {
-            groupDao = getDao(Group.class);
-        }
-        return groupDao;
-    }
-
     public List<Challenge> createDummyChallenges() {
         List<Challenge> challenges = new LinkedList<Challenge>();
         Challenge challenge1 = new Challenge();
@@ -208,6 +193,5 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
         activityDao = null;
         userDao = null;
         challengeDao = null;
-        groupDao = null;
     }
 }
