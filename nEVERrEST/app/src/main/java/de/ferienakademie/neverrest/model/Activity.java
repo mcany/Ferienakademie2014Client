@@ -22,7 +22,7 @@ public final class Activity {
     private String uuid;
 
     @DatabaseField(columnName = COL_DURATION)
-    private Double duration;
+    private long duration;
 
     @DatabaseField(columnName = COL_TIMESTAMP)
     private Long timestamp;
@@ -41,7 +41,7 @@ public final class Activity {
     public Activity(
             String uuid,
             Long timestamp,
-            Double duration,
+            long duration,
             String userUuid,
             SportsType type) {
 
@@ -59,7 +59,7 @@ public final class Activity {
     }
 
 
-    public Double getDuration() {
+    public long getDuration() {
         return duration;
     }
 
@@ -103,7 +103,7 @@ public final class Activity {
         this.uuid = uuid;
     }
 
-    public void setDuration(Double duration) {
+    public void setDuration(long duration) {
         this.duration = duration;
     }
 

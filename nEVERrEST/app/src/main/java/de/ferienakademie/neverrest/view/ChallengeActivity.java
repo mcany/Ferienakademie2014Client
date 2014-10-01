@@ -29,6 +29,7 @@ import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
 import de.ferienakademie.neverrest.model.MetricType;
+import de.ferienakademie.neverrest.model.SportsType;
 
 import static android.view.View.OnClickListener;
 
@@ -134,13 +135,13 @@ public class ChallengeActivity extends FragmentActivity
 
                                 switch (which) {
                                     case 0:
-                                        intent.putExtra("Activity", "mit Challenge jar setzen");
+                                        intent.putExtra(MainMenuActivity.SPORTS_TYPE, SportsType.RUNNING);
                                         break;
                                     case 1:
-                                        intent.putExtra("Activity", "mit Challenge jar setzen");
+                                        intent.putExtra(MainMenuActivity.SPORTS_TYPE, SportsType.CYCLING);
                                         break;
                                     case 2:
-                                        intent.putExtra("Activity", "auch oben die Buttons");
+                                        intent.putExtra(MainMenuActivity.SPORTS_TYPE, SportsType.HIKING);
                                         break;
                                 }
                                 startActivity(intent);
