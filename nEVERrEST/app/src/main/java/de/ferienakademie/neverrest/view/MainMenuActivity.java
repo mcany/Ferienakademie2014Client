@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -73,6 +74,7 @@ public class MainMenuActivity extends FragmentActivity
     private String mProvider;
     private Marker mMarker;
     private float mDistance = 0.f;
+    private MediaPlayer mMediaPlayer;
 
 
     ///////// NAVIGATION DRAWER STUFF /////////
@@ -111,6 +113,9 @@ public class MainMenuActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+        mMediaPlayer = MediaPlayer.create(this, R.raw.sky);
+        mMediaPlayer.start();
 
         mSportsType = (SportsType) getIntent().getSerializableExtra(MainMenuActivity.SPORTS_TYPE);
         mIsCreated = true;

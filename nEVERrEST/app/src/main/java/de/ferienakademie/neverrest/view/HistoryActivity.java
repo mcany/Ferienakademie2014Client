@@ -2,10 +2,7 @@ package de.ferienakademie.neverrest.view;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -20,55 +17,28 @@ import de.ferienakademie.neverrest.model.Challenge;
 
 public class HistoryActivity extends FragmentActivity implements NeverrestInterface {
 
+    private ListView mListView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
+        mListView = (ListView) findViewById(R.id.historyList);
 
+        ArrayList<Challenge> list = new ArrayList<Challenge>();
 
-        ListView listviewSingle = (ListView) findViewById(R.id.historyListSingle);
-        ListView listviewGroup = (ListView) findViewById(R.id.historyListGroup);
-
-        ArrayList<Challenge> listSingle = new ArrayList<Challenge>();
-        ArrayList<Challenge> listGroup = new ArrayList<Challenge>();
-
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 25; i++) {
             Challenge c = new Challenge();
-            c.setTitle("Challenge Single " + i);
+            c.setTitle("Challange " + i);
             c.setDescription("Description " + i);
-            c.setIconPath("drawable://" + R.drawable.sampleimage);
-            listSingle.add(c);
+            list.add(c);
         }
 
+        final HistoryListAdapter adapter = new HistoryListAdapter(getApplicationContext(), list);
+        mListView.setAdapter(adapter);
 
-        for (int i = 0; i < 10; i++) {
-            Challenge c = new Challenge();
-            c.setTitle("Challenge Group" + i);
-            c.setDescription("Description " + i);
-            c.setIconPath("drawable://" + R.drawable.sampleimage);
-            listGroup.add(c);
-        }
 
-        final HistoryListAdapter adapterSingle = new HistoryListAdapter(getApplicationContext(), listSingle);
-        listviewSingle.setAdapter(adapterSingle);
-
-        listviewSingle.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Toast.makeText(HistoryActivity.this, "pressed challenge: " + position, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        final HistoryListAdapter adapterGroup = new HistoryListAdapter(getApplicationContext(), listGroup);
-        listviewGroup.setAdapter(adapterGroup);
-
-        listviewGroup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Toast.makeText(HistoryActivity.this, "pressed challenge: " + position, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
