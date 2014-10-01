@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="#ABCDEF">
-     />
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/drawer_layout_challenge"
+    android:gravity="center_horizontal"
+    android:background="#ABCDEF"
+    tools:context=".ChallengeActivity">
+
 
     <TextView
         android:text="@string/app_name"
@@ -14,6 +20,7 @@
         android:paddingLeft="10dip"
         android:paddingRight="0dip"
         android:id="@+id/heading" />
+
 
     <LinearLayout
         android:orientation="vertical"
@@ -38,8 +45,7 @@
                 android:layout_height="fill_parent"
                 android:id="@+id/imageView"
                 android:src="@drawable/ic_launcher"
-                android:layout_below="@+id/textView"
-                />
+                android:layout_below="@+id/textView" />
 
             <TextView
                 android:layout_width="0dp"
@@ -48,8 +54,7 @@
                 android:id="@+id/textViewTime"
                 android:gravity="center"
                 android:text="%s"
-                android:layout_below="@+id/textView"
-                />
+                android:layout_below="@+id/textView" />
 
         </LinearLayout>
 
@@ -73,25 +78,22 @@
                 android:gravity="center_vertical"
                 android:progressDrawable="@drawable/progress_challange_details"
                 android:progress="60"
-                android:background="@drawable/milena_und_chris"
-                />
+                android:background="@drawable/milena_und_chris" />
 
-          <!--  <TextView
-                android:layout_width="0dp"
-                android:layout_weight="50"
-                android:layout_height="fill_parent"
-                android:id="@+id/textView_progress"
-                android:gravity="center"
-                android:text="%s% done"
-                android:layout_below="@+id/textView"
-                />
+            <!--  <TextView
+                  android:layout_width="0dp"
+                  android:layout_weight="50"
+                  android:layout_height="fill_parent"
+                  android:id="@+id/textView_progress"
+                  android:gravity="center"
+                  android:text="%s% done"
+                  android:layout_below="@+id/textView" />
 
-
-            <ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id = "@+id/progressBarImage"
-                /> -->
+              <ImageView
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:id = "@+id/progressBarImage"
+                  /> -->
 
             <!--
       <de.ferienakademie.neverrest.view.VerticalProgressBar
@@ -102,10 +104,14 @@
           android:layout_height="fill_parent"/>-->
 
 
-
-
-
         </LinearLayout>
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Abort Challenge"
+            android:id="@+id/buttonAbort" />
 
         <RelativeLayout
 
@@ -117,20 +123,36 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Abort Challenge"
-                android:id="@+id/buttonAbort" />
+                android:text="@string/cancelBtn"
+                android:id="@+id/buttonCancel"
+                android:layout_alignParentLeft="true" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/buttonStart"
                 android:text="@string/startBtn"
-                android:layout_alignParentRight="true"
-                />
+                android:layout_alignParentRight="true" />
         </RelativeLayout>
-
 
 
     </LinearLayout>
 
-</RelativeLayout>
+
+    <!-- android:layout_gravity="start" tells DrawerLayout to treat
+this as a sliding drawer on the left side for left-to-right
+languages and on the right side for right-to-left languages.
+If you're not building against API 17 or higher, use
+android:layout_gravity="left" instead. --><!-- The drawer is given a fixed width in dp and extends the full height of
+         the container. -->
+    <fragment
+        android:id="@+id/navigation_drawer_challenge"
+        android:layout_width="@dimen/navigation_drawer_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:name="de.ferienakademie.neverrest.view.NavigationDrawerFragment"
+        tools:layout="@layout/fragment_navigation_drawer" />
+
+
+</android.support.v4.widget.DrawerLayout>
+

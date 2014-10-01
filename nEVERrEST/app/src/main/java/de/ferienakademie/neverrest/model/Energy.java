@@ -26,7 +26,7 @@ public class Energy {
         double grundumsatz = grundumsatz(user);
 
 
-        double energyConsumption = (grundumsatz/24)*activity.getDuration()*1.4242424242424;
+        double energyConsumption = (grundumsatz/24)*activity.getDuration()*(getPAL(activity)+1);
 
         double met = energyConsumption/(user.getMass())*activity.getDuration();
 
@@ -47,6 +47,29 @@ public class Energy {
     }
 
     private static double getExpectedLifeTime(User user) {
-        return 42;
+        if(user.getMale()) {
+            return 81.0;
+        }
+
+        if(!user.getMale()) {
+            return 85.0;
+        }
+
+        return 0.0;
+    }
+
+    private static double getPAL(Activity activity) {
+        switch (activity.getSportsType()) {
+            case CYCLING:
+                return 3.456;
+            case HIKING:
+                return 8.064;
+            case RUNNING:
+                double velocity=6;
+                return 0.1423- 0.0357*velocity + 0.13954 * Math.pow(velocity,2);
+        }
+
+        return 1.5;
+
     }
 }
