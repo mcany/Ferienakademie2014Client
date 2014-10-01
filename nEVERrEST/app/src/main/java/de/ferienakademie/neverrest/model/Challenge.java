@@ -28,13 +28,13 @@ public class Challenge implements Serializable {
     public static final String COL_TIMESTAMP_STARTED = "started";
     public static final String COL_TIMESTAMP_LAST_MODIFIED = "last_modified";
     public static final String COL_FINISHED = "finished";
-    public static final String COL_CONTINENT_NAME = "continentName";
+    //public static final String COL_CONTINENT_NAME = "continentName";
 
     @DatabaseField(columnName = COL_UUID, id = true)
     private String uuid;
 
-    @DatabaseField(columnName = COL_CONTINENT_NAME)
-    private String continentName;
+    //@DatabaseField(columnName = COL_CONTINENT_NAME)
+    //private String continentName;
 
     @DatabaseField(columnName = COL_TITLE)
     private String title;
@@ -86,8 +86,7 @@ public class Challenge implements Serializable {
             double completedEffort,
             long timestampStarted,
             long timestampLastModified,
-            boolean finished,
-            String continentName) {
+            boolean finished) {
 
         this.uuid = uuid;
         this.title = title;
@@ -99,7 +98,7 @@ public class Challenge implements Serializable {
         this.timestampStarted = timestampStarted;
         this.timestampLastModified = timestampLastModified;
         this.finished = finished;
-        this.continentName = continentName;
+        //this.continentName = continentName;
     }
 
 
@@ -186,13 +185,13 @@ public class Challenge implements Serializable {
         this.timestampStarted = timestampStarted;
     }
 
-    public String getContinentName() {
-        return continentName;
-    }
+    //public String getContinentName() {
+    //    return continentName;
+    //}
 
-    public void setContinentName(String continentName) {
-        this.continentName = continentName;
-    }
+   // public void setContinentName(String continentName) {
+   //     this.continentName = continentName;
+   //}
 
     public void setTimestampLastModified(long timestampLastModified) {
         this.timestampLastModified = timestampLastModified;
