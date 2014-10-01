@@ -2,9 +2,8 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp">
+    android:background="#ABCDEF">
+     />
 
     <TextView
         android:text="@string/app_name"
@@ -25,9 +24,8 @@
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_weight="30"
-            android:paddingLeft="10dp"
-            android:layout_marginBottom="30dp"
-            android:paddingRight="10dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:background="#ABCDEF">
@@ -54,16 +52,29 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="70"
-
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:layout_width="263dp"
+            android:layout_height="201dp"
+            android:orientation="horizontal"
+            android:rotation="90"
             android:layout_below="@id/first_layout"
-            android:background="#ABCDEF">
+            android:id="@+id/linearLayoutProgressBar"
+            android:weightSum="1"
+            android:layout_gravity="center"
+            android:layout_weight="36">
 
-            <TextView
+
+            <ProgressBar
+                android:id="@+id/ProgressBarImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:gravity="center_vertical"
+                android:progressDrawable="@drawable/progress_challange_details"
+                android:progress="60"
+                android:background="@drawable/milena_und_chris_"
+                />
+
+          <!--  <TextView
                 android:layout_width="0dp"
                 android:layout_weight="50"
                 android:layout_height="fill_parent"
@@ -74,14 +85,33 @@
                 />
 
 
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id = "@+id/progressBarImage"
+                /> -->
+
+            <!--
+      <de.ferienakademie.neverrest.view.VerticalProgressBar
+          style="?android:attr/progressBarStyleHorizontal"
+          android:id="@+id/verticalRatingBar1"
+          android:layout_width="wrap_content"
+          android:progress="50"
+          android:layout_height="fill_parent"/>-->
+
+
+
+
 
         </LinearLayout>
 
         <RelativeLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="50dp"
             android:paddingRight="50dp">
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

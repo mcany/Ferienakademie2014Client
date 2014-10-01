@@ -4,13 +4,23 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Matrix;
+import android.graphics.Point;
+import android.media.Image;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.sql.SQLException;
@@ -34,8 +44,8 @@ public class ChallengeActivity extends Activity implements View.OnClickListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_challenge);
          challenge = (Challenge) getIntent().getSerializableExtra("Challenge");
+        setContentView(R.layout.activity_challenge);
 
         //Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm", de.ferienakademie.neverrest.shared.beans.Activity.Type.CYCLING,"des",100.0,100);
         //challenge = dummyChallenge;
@@ -45,8 +55,23 @@ public class ChallengeActivity extends Activity implements View.OnClickListener 
         abortButton = (Button) findViewById(R.id.buttonAbort);
         startButton.setOnClickListener(this);
         abortButton.setOnClickListener(this);
-     //   challenge.getPercentageCompleted();
-    }
+        /*challengeImage = (ImageView) findViewById(R.id.progressBarImage);
+        Resources res = getResources();
+        challengeImage.setImageDrawable(res.getDrawable(R.drawable.milena_und_chris));
+        Matrix imageMatrix = challengeImage.getImageMatrix();
+     //   challenge.getPercentageCompleted();*/
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.ProgressBarImage);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        LinearLayout linearLayoutProgressBar = (LinearLayout) findViewById(R.id.linearLayoutProgressBar);
+        linearLayoutProgressBar.setMinimumHeight(size.x);
+        ViewGroup.LayoutParams params = linearLayoutProgressBar.getLayoutParams();
+// Changes the height and width to the specified *pixels*
+        params.height = (int) (size.x * 0.5);
+        params.width = (int)(size.x*0.86);
+   }
 
 
     @Override

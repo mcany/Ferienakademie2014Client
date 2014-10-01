@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <!-- taken from http://stackoverflow.com/questions/5745814/android-change-horizonal-progress-bar-color-->
+<!-- taken from http://stackoverflow.com/questions/5745814/android-change-horizonal-progress-bar-color-->
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
@@ -7,10 +7,10 @@
             <corners android:radius="5dip" />
             <gradient
                 android:angle="270"
-                android:centerColor="#ffa6a9a6"
+                android:centerColor="@android:color/transparent"
                 android:centerY="0.5"
-                android:endColor="#ff747674"
-                android:startColor="#ff9d9e9d"
+                android:endColor="@android:color/transparent"
+                android:startColor="@android:color/transparent"
                 />
         </shape>
     </item>
@@ -35,12 +35,12 @@
         <clip>
             <shape>
                 <corners
-                    android:radius="5dip" />
+                    android:radius="0dip" />
                 <gradient
                     android:angle="0"
-                    android:endColor="#ff1fc40b"
-                    android:startColor="#ff21990d"
-                     />
+                    android:endColor="#FFFFFF"
+                    android:startColor="#FFFFFF"
+                    />
             </shape>
         </clip>
     </item>
