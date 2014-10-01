@@ -277,6 +277,7 @@ public enum DatabaseUtil {
 				.lat(-36.4559169)
 				.lon(148.264588)
 				.metricType(MetricType.VERTICALDISTANCE)
+				.iconResourceId(R.drawable.mount_kilimanjaro)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Mount Vinson")
