@@ -1,13 +1,13 @@
 package de.ferienakademie.neverrest.model;
 
-        import com.j256.ormlite.table.DatabaseTable;
         import android.graphics.Bitmap;
-        import android.graphics.BitmapFactory;
-        import com.j256.ormlite.field.DatabaseField;
+import android.graphics.BitmapFactory;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
-        import java.io.Serializable;
-        import java.util.UUID;
+import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Created by explicat on 9/28/14.
@@ -28,15 +28,19 @@ public class Challenge implements Serializable {
     public static final String COL_TIMESTAMP_STARTED = "started";
     public static final String COL_TIMESTAMP_LAST_MODIFIED = "last_modified";
     public static final String COL_FINISHED = "finished";
+    public static final String COL_CONTINENT_NAME = "continentName";
 
     @DatabaseField(columnName = COL_UUID, id = true)
     private String uuid;
+
+    @DatabaseField(columnName = COL_CONTINENT_NAME)
+    private String continentName;
 
     @DatabaseField(columnName = COL_TITLE)
     private String title;
 
     @DatabaseField(columnName = COL_TYPE)
-    private MetrikType type;
+    private MetricType type;
 
     @DatabaseField(columnName = COL_DESCRIPTION)
     private String description;
@@ -75,14 +79,17 @@ public class Challenge implements Serializable {
     public Challenge(
             String uuid,
             String title,
-            MetrikType type,
+            MetricType type,
             String description,
             String iconPath,
             double totalEffort,
             double completedEffort,
             long timestampStarted,
             long timestampLastModified,
-            boolean finished) {
+            boolean finished,
+            String continentName,
+			double lat,
+			double lon) {
 
         this.uuid = uuid;
         this.title = title;
@@ -94,6 +101,9 @@ public class Challenge implements Serializable {
         this.timestampStarted = timestampStarted;
         this.timestampLastModified = timestampLastModified;
         this.finished = finished;
+        this.continentName = continentName;
+		this.startingLatitude = lat;
+		this.startingLongitude = lon;
     }
 
 
@@ -107,7 +117,7 @@ public class Challenge implements Serializable {
     }
 
 
-    public MetrikType getType() {
+    public MetricType getType() {
         return type;
     }
 
@@ -152,7 +162,7 @@ public class Challenge implements Serializable {
         this.title = title;
     }
 
-    public void setType(MetrikType type) {
+    public void setType(MetricType type) {
         this.type = type;
     }
 
@@ -180,8 +190,17 @@ public class Challenge implements Serializable {
         this.timestampStarted = timestampStarted;
     }
 
+    public String getContinentName() {
+        return continentName;
+    }
+
+    public void setContinentName(String continentName) {
+        this.continentName = continentName;
+    }
+
     public void setTimestampLastModified(long timestampLastModified) {
         this.timestampLastModified = timestampLastModified;
+
     }
 
     public void setFinished(boolean finished) {
@@ -199,4 +218,108 @@ public class Challenge implements Serializable {
     public void setIconPath(String iconPath) {
         this.iconPath = iconPath;
     }
+
+
+	public static class Builder {
+
+		private String uuid, title, description, iconPath, continentName;
+		private MetricType type;
+		private double totalEffort, completedEffort, lat, lon;
+		private long timestampStarted, timestampLastModified;
+		private boolean finished;
+
+
+		public Builder() {
+			this.uuid = UUID.randomUUID().toString();
+		}
+
+		public Builder title(String title) {
+			this.title = title;
+			return this;
+		}
+
+
+		public Builder description(String description) {
+			this.description = description;
+			return this;
+		}
+
+
+		public Builder iconPath(String iconPath) {
+			this.iconPath = iconPath;
+			return this;
+		}
+
+
+		public Builder continentName(String continentName) {
+			this.continentName = continentName;
+			return this;
+		}
+
+
+		public Builder metricType(MetricType type) {
+			this.type = type;
+			return this;
+		}
+
+
+		public Builder totalEffort(double totalEffort) {
+			this.totalEffort = totalEffort;
+			return this;
+		}
+
+
+		public Builder completedEffort(double completedEffort) {
+			this.completedEffort = completedEffort;
+			return this;
+		}
+
+
+		public Builder timestampStarted(long timestampStarted) {
+			this.timestampStarted = timestampStarted;
+			return this;
+		}
+
+
+		public Builder timestampLastModified(long timestampLastModified) {
+			this.timestampLastModified = timestampLastModified;
+			return this;
+		}
+
+
+		public Builder finished(boolean finished) {
+			this.finished = finished;
+			return this;
+		}
+
+
+		public Builder lat(double lat) {
+			this.lat = lat;
+			return this;
+		}
+
+
+		public Builder lon(double lon) {
+			this.lon = lon;
+			return this;
+		}
+
+
+		public Challenge build() {
+			return new Challenge(
+					uuid,
+					title,
+					type,
+					description,
+					iconPath,
+					totalEffort,
+					completedEffort,
+					timestampStarted,
+					timestampLastModified,
+					finished,
+					continentName,
+					lat,
+					lon);
+		}
+	}
 }
