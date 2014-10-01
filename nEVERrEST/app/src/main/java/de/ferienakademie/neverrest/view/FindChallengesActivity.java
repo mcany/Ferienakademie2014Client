@@ -11,24 +11,35 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
-import de.ferienakademie.neverrest.model.MetrikType;
+import de.ferienakademie.neverrest.model.MetricType;
 
 public class FindChallengesActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    public static final String TAG = FindChallengesActivity.class.getSimpleName();
+    final int notClickedMarkerImage = R.drawable.ic_launcher;
+    final int clickedMarkerImage = R.drawable.ic_launcher;
 
     //continents coordinates
     final LatLng coordinatesAfrica = new LatLng(0.2136714,16.98485);
@@ -49,13 +60,13 @@ public class FindChallengesActivity extends FragmentActivity {
     private Marker markerAntarctica = null;
 
     //continents challenges
-    private List<Challenge> challengesAfrica = null;
-    private List<Challenge> challengesEurope = null;
-    private List<Challenge> challengesAsia = null;
-    private List<Challenge> challengesSouthAmerica = null;
-    private List<Challenge> challengesNorthAmerica = null;
-    private List<Challenge> challengesAustralia = null;
-    private List<Challenge> challengesAntarctica = null;
+    private List<Challenge> challengesAfrica = new ArrayList<Challenge>();
+    private List<Challenge> challengesEurope = new ArrayList<Challenge>();
+    private List<Challenge> challengesAsia = new ArrayList<Challenge>();
+    private List<Challenge> challengesSouthAmerica = new ArrayList<Challenge>();
+    private List<Challenge> challengesNorthAmerica = new ArrayList<Challenge>();
+    private List<Challenge> challengesAustralia = new ArrayList<Challenge>();
+    private List<Challenge> challengesAntarctica = new ArrayList<Challenge>();
 
     //dummy challenges for Africa
     private LatLng[] dummyChallengesAfrica = {new LatLng(28.0289837,1.6666663),new LatLng(31.7945869,-7.0849336),new LatLng(-28.4792625,24.6727135),
@@ -122,8 +133,9 @@ public class FindChallengesActivity extends FragmentActivity {
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
-                setUpMap();
                 mMap.setOnInfoWindowClickListener(new FindChallengesActivityOnInfoWindowClickListener());
+                mMap.setOnMarkerClickListener(new FindChallengesActivityOnMarkerClickListener());
+                setUpMap();
             }
         }
     }
@@ -137,16 +149,42 @@ public class FindChallengesActivity extends FragmentActivity {
     private void setUpMap() {
 
         //TODO: get challenges from the DB
+        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+        DatabaseHandler databaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
+        try {
+            Iterator<Challenge> mChallengeIterator = databaseHandler.getChallengeDao().iterator();
+            while (mChallengeIterator.hasNext())
+            {
+                Challenge mChallenge = mChallengeIterator.next();
+                challengesAfrica.add(mChallenge);
+            }
+        }
+        catch (SQLException exception){
+            Log.d(TAG, exception.getMessage());
+        }
 
         //create continent markers
         markerAfrica = mMap.addMarker(new MarkerOptions().position(coordinatesAfrica).title(""+ dummyChallengesAfrica.length));
-        markerAfrica.showInfoWindow();
+        //markerAfrica.showInfoWindow();
+        markerAfrica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+
         markerEurope = mMap.addMarker(new MarkerOptions().position(coordinatesEurope).title(""+ dummyChallengesAfrica.length));
+        markerEurope.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+
         markerAsia = mMap.addMarker(new MarkerOptions().position(coordinatesAsia).title(""+ dummyChallengesAfrica.length));
+        markerAsia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+
         markerNorthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesNorthAmerica).title(""+ dummyChallengesAfrica.length));
+        markerNorthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+
         markerSouthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesSouthAmerica).title(""+ dummyChallengesAfrica.length));
+        markerSouthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+
         markerAustralia = mMap.addMarker(new MarkerOptions().position(coordinatesAustralia).title(""+ dummyChallengesAfrica.length));
+        markerAustralia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+
         markerAntarctica = mMap.addMarker(new MarkerOptions().position(coordinatesAntarctica).title(""+ dummyChallengesAfrica.length));
+        markerAntarctica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
 
         //TODO: Change the image of the marker
@@ -164,7 +202,6 @@ public class FindChallengesActivity extends FragmentActivity {
         //                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
         //                .anchor(0.5f, 1)
         //).setVisible(true);
-
 
 
 
@@ -218,49 +255,94 @@ public class FindChallengesActivity extends FragmentActivity {
 
     }
 
-
+    class FindChallengesActivityOnMarkerClickListener implements GoogleMap.OnMarkerClickListener
+    {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            marker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, marker.getTitle())));
+            return false;
+        }
+    }
 
     class FindChallengesActivityOnInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener
     {
-
         @Override
         public void onInfoWindowClick(Marker marker) {
             mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(marker.getPosition(), 3.0f)));
+            marker.setVisible(false);
 
             if(marker.getPosition().equals(coordinatesAfrica)) {
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAfrica, 3.0f)));
-                markerAfrica.setVisible(false);
+
                 for (LatLng coordinateOfTheChallenge : dummyChallengesAfrica)
                 {
                     mMap.addMarker(new MarkerOptions().position(coordinateOfTheChallenge).title("Challenge Mt. Everest"));
                 }
+
+                ListIterator<Challenge> challengeListIterator = challengesAfrica.listIterator();
+                while (challengeListIterator.hasNext())
+                {
+                    Challenge mChallenge = challengeListIterator.next();
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                            .title(mChallenge.getTitle()));
+                }
             }
             else if(marker.getPosition().equals(coordinatesEurope)) {
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesEurope, 3.0f)));
-                markerEurope.setVisible(false);
+                ListIterator<Challenge> challengeListIterator = challengesEurope.listIterator();
+                while (challengeListIterator.hasNext())
+                {
+                    Challenge mChallenge = challengeListIterator.next();
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                            .title(mChallenge.getTitle()));
+                }
             }
             else if(marker.getPosition().equals(coordinatesAsia)) {
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAsia, 3.0f)));
-                markerAsia.setVisible(false);
+                ListIterator<Challenge> challengeListIterator = challengesAsia.listIterator();
+                while (challengeListIterator.hasNext())
+                {
+                    Challenge mChallenge = challengeListIterator.next();
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                            .title(mChallenge.getTitle()));
+                }
             }
             else if(marker.getPosition().equals(coordinatesNorthAmerica)) {
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesNorthAmerica, 3.0f)));
-                markerNorthAmerica.setVisible(false);
+                ListIterator<Challenge> challengeListIterator = challengesNorthAmerica.listIterator();
+                while (challengeListIterator.hasNext())
+                {
+                    Challenge mChallenge = challengeListIterator.next();
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                            .title(mChallenge.getTitle()));
+                }
             }
             else if(marker.getPosition().equals(coordinatesSouthAmerica)) {
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesSouthAmerica, 3.0f)));
-                markerSouthAmerica.setVisible(false);
+                ListIterator<Challenge> challengeListIterator = challengesSouthAmerica.listIterator();
+                while (challengeListIterator.hasNext())
+                {
+                    Challenge mChallenge = challengeListIterator.next();
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                            .title(mChallenge.getTitle()));
+                }
             }
             else if(marker.getPosition().equals(coordinatesAustralia)) {
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAustralia, 3.0f)));
-                markerAustralia.setVisible(false);
+                ListIterator<Challenge> challengeListIterator = challengesAustralia.listIterator();
+                while (challengeListIterator.hasNext())
+                {
+                    Challenge mChallenge = challengeListIterator.next();
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
+                            .title(mChallenge.getTitle()));
+                }
             }
             else if(marker.getPosition().equals(coordinatesAntarctica)) {
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAntarctica, 3.0f)));
-                markerAntarctica.setVisible(false);
+                ListIterator<Challenge> challengeListIterator = challengesAntarctica.listIterator();
+                while (challengeListIterator.hasNext())
+                {
+                    Challenge mChallenge = challengeListIterator.next();
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                            .title(mChallenge.getTitle()));
+                }
             }
             else {
-                Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm",MetrikType.HORIZONTALDISTANCE,"des","",100.0,0.0,100,0,false);
+                Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm", MetricType.HORIZONTALDISTANCE,"des","",100.0,0.0,100,0,false,"Africa");
 
                 Intent intent = new Intent(getBaseContext(),ChallengeActivity.class);
                 intent.putExtra("Challenge", dummyChallenge);

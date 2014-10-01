@@ -28,15 +28,19 @@ public class Challenge implements Serializable {
     public static final String COL_TIMESTAMP_STARTED = "started";
     public static final String COL_TIMESTAMP_LAST_MODIFIED = "last_modified";
     public static final String COL_FINISHED = "finished";
+    public static final String COL_CONTINENT_NAME = "continentName";
 
     @DatabaseField(columnName = COL_UUID, id = true)
     private String uuid;
+
+    @DatabaseField(columnName = COL_CONTINENT_NAME)
+    private String continentName;
 
     @DatabaseField(columnName = COL_TITLE)
     private String title;
 
     @DatabaseField(columnName = COL_TYPE)
-    private MetrikType type;
+    private MetricType type;
 
     @DatabaseField(columnName = COL_DESCRIPTION)
     private String description;
@@ -75,14 +79,15 @@ public class Challenge implements Serializable {
     public Challenge(
             String uuid,
             String title,
-            MetrikType type,
+            MetricType type,
             String description,
             String iconPath,
             double totalEffort,
             double completedEffort,
             long timestampStarted,
             long timestampLastModified,
-            boolean finished) {
+            boolean finished,
+            String continentName) {
 
         this.uuid = uuid;
         this.title = title;
@@ -94,6 +99,7 @@ public class Challenge implements Serializable {
         this.timestampStarted = timestampStarted;
         this.timestampLastModified = timestampLastModified;
         this.finished = finished;
+        this.continentName = continentName;
     }
 
 
@@ -107,7 +113,7 @@ public class Challenge implements Serializable {
     }
 
 
-    public MetrikType getType() {
+    public MetricType getType() {
         return type;
     }
 
@@ -152,7 +158,7 @@ public class Challenge implements Serializable {
         this.title = title;
     }
 
-    public void setType(MetrikType type) {
+    public void setType(MetricType type) {
         this.type = type;
     }
 
@@ -180,8 +186,17 @@ public class Challenge implements Serializable {
         this.timestampStarted = timestampStarted;
     }
 
+    public String getContinentName() {
+        return continentName;
+    }
+
+    public void setContinentName(String continentName) {
+        this.continentName = continentName;
+    }
+
     public void setTimestampLastModified(long timestampLastModified) {
         this.timestampLastModified = timestampLastModified;
+
     }
 
     public void setFinished(boolean finished) {
