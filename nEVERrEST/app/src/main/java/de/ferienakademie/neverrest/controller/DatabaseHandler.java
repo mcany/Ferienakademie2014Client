@@ -193,6 +193,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(22.2243761)
 				.lon(22.1154785)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.sahara)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Route 66")
@@ -202,6 +203,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(39.0576271)
 				.lon(-89.7508269)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.route_66)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Tour de France")
@@ -211,6 +213,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(48.8588589)
 				.lon(2.3470599)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.tour_de_france)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Bike tour along Donau")
@@ -220,6 +223,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(48.99763)
 				.lon(2.476667)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.donauradweg)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Trans-Australian Railway")
@@ -229,6 +233,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(-41.7399978)
 				.lon(147.67)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.transaustralische_eisenbahn)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("South Pole Traverse")
@@ -238,6 +243,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lon(89.9899009)
 				.lon(0)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.suedpol)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Carlifornia State Route")
@@ -247,6 +253,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(36.7552565)
 				.lon(-121.7652093)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.california_state_route)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Germany North-South")
@@ -256,6 +263,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.lat(51.165691)
 				.lon(10.451526)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.deutschland_nord_sued)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("St. Petersburg - Moscow")
