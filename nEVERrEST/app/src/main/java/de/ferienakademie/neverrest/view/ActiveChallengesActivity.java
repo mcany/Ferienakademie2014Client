@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.ferienakademie.neverrest.R;
@@ -90,7 +91,7 @@ public class ActiveChallengesActivity extends FragmentActivity implements Neverr
         } catch (SQLException exception) {
             Log.d(TAG, exception.getMessage());
         }
-        mAdapter = new ActiveChallengesAdapter(this, challenges);
+        mAdapter = new ActiveChallengesAdapter(this, activeChallenges());
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
 
@@ -107,7 +108,6 @@ public class ActiveChallengesActivity extends FragmentActivity implements Neverr
     protected void onDestroy() {
         super.onDestroy();
     }
-
 
     @Override
     public void setUpNavigationDrawer() {
@@ -159,6 +159,15 @@ public class ActiveChallengesActivity extends FragmentActivity implements Neverr
         actionBar.setTitle(mTitle);
     }
 
+    private List<Challenge> activeChallenges() {
+        List<Challenge> activeChallenges = new LinkedList<Challenge>();
+        for (Challenge challenge : challenges) {
+            //if (challenge.getCompletedEffort() > 0) {
+            activeChallenges.add(challenge);
+            //}
+        }
+        return activeChallenges;
+    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
