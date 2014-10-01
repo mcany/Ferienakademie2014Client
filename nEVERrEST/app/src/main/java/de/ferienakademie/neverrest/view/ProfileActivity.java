@@ -17,9 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.SQLException;
+
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
+import de.ferienakademie.neverrest.model.User;
 
 import static android.view.View.OnClickListener;
 
@@ -40,6 +43,29 @@ public class ProfileActivity extends FragmentActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private boolean mIsCreated;
     private DatabaseHandler mDatabaseHandler;
+
+    public static final String USER_UUID = "123321123321";
+
+    // user
+    TextView userName;
+    TextView userGender;
+    TextView userAge;
+    TextView userSize;
+    TextView userWeight;
+    // stats
+    TextView totalDistance;
+    TextView totalAltitude;
+
+    // image view
+    ImageView userAvatar;
+
+    // user object
+    User currentUser;
+
+    // linear layouts
+    LinearLayout userData;
+    LinearLayout badgeLayout;
+    LinearLayout globalStatistics;
 
 
     @Override
@@ -85,7 +111,8 @@ public class ProfileActivity extends FragmentActivity
         userData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ProfileActivity.this, "Editing user data...", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ProfileActivity.this, ProfileEditActivity.class);
+                startActivity(intent);
             }
         });
         globalStatistics = (LinearLayout) findViewById(R.id.globalStatistics);
@@ -95,22 +122,47 @@ public class ProfileActivity extends FragmentActivity
                 Toast.makeText(ProfileActivity.this, "Showing details for global data...", Toast.LENGTH_SHORT).show();
             }
         });
-
-        // set placeholders for user
-        userName.setText(String.format(userName.getText().toString(), "FitFritz"));
-        userGender.setText(String.format(userGender.getText().toString(), "male"));
-        userAge.setText(String.format(userAge.getText().toString(), 42));
-        userSize.setText(String.format(userSize.getText().toString(), 180));
-        userWeight.setText(String.format(userWeight.getText().toString(), 120));
-        // ... and stats
-        totalDistance.setText(String.format(totalDistance.getText().toString(), "biking: 12km, hiking: 23km, running: 14km"));
-        totalAltitude.setText(String.format(totalAltitude.getText().toString(), "biking: 854km, hiking: 451km, running: 673km"));
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Initialize database
+        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+
+        try {
+            if (DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForEq("uuid", USER_UUID) != null &&
+                    DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForEq("uuid", USER_UUID).size() > 0) {
+                currentUser = DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForEq("uuid", USER_UUID).get(0);
+            } else {
+                currentUser = new User();
+                currentUser.setUuid(USER_UUID);
+                currentUser.setUsername("Fitter Fritz");
+                currentUser.setAge(54);
+                currentUser.setHeight(179);
+                currentUser.setMass(123);
+                currentUser.setMale(true);
+                DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().create(currentUser);
+            }
+
+            // set user data
+            userName.setText("Name: " +  currentUser.getUsername());
+            if (currentUser.getMale() == true) {
+                userGender.setText("Gender: male");
+            } else {
+                userGender.setText("Gender: female");
+            }
+            userAge.setText("Age: " +  (int) currentUser.getAge() + " years");
+            userSize.setText("Size: " + (int) currentUser.getHeight() + " cm");
+            userWeight.setText("Weight: " + (int) currentUser.getMass() + " kg");
+            // ... and stats
+            totalDistance.setText("Total distance: \n1324km (bike), 834km (run)");
+            totalAltitude.setText("Total altitude: \n12km (bike), 32km (run)");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         Log.e(TAG, "requested");
     }
@@ -125,24 +177,6 @@ public class ProfileActivity extends FragmentActivity
 
         super.onDestroy();
     }
-
-    // user
-    TextView userName;
-    TextView userGender;
-    TextView userAge;
-    TextView userSize;
-    TextView userWeight;
-    // stats
-    TextView totalDistance;
-    TextView totalAltitude;
-
-    // image view
-    ImageView userAvatar;
-
-    // linear layouts
-    LinearLayout userData;
-    LinearLayout badgeLayout;
-    LinearLayout globalStatistics;
 
     public LinearLayout createBadge(int image, String text, Context context) {
         int padding = getResources().getDimensionPixelSize(R.dimen.padding_small);

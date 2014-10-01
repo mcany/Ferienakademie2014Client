@@ -10,18 +10,23 @@
     android:background="#ABCDEF"
     tools:context=".ChallengeActivity">
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/container_challenge"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:paddingTop="0dp">
 
-    <TextView
-        android:text="@string/app_name"
-        android:background="#CCCCCC"
-        android:gravity="center_vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:paddingLeft="10dip"
-        android:paddingRight="0dip"
-        android:id="@+id/heading" />
-
-
+        <TextView
+            android:text="@string/app_name"
+            android:background="#CCCCCC"
+            android:gravity="center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:id="@+id/heading"
+            android:paddingLeft="10dip"
+            android:paddingRight="0dip"/>
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
@@ -51,7 +56,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="50"
                 android:layout_height="fill_parent"
-                android:id="@+id/textViewTime"
+                android:id="@+id/textViewDetails"
                 android:gravity="center"
                 android:text="%s"
                 android:layout_below="@+id/textView" />
@@ -78,7 +83,7 @@
                 android:gravity="center_vertical"
                 android:progressDrawable="@drawable/progress_challange_details"
                 android:progress="60"
-                android:background="@drawable/milena_und_chris" />
+                android:background="@drawable/mount_elbrus" />
 
             <!--  <TextView
                   android:layout_width="0dp"
@@ -107,11 +112,7 @@
         </LinearLayout>
 
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Abort Challenge"
-            android:id="@+id/buttonAbort" />
+
 
         <RelativeLayout
 
@@ -119,14 +120,11 @@
             android:layout_height="wrap_content"
             android:paddingLeft="50dp"
             android:paddingRight="50dp">
-
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/cancelBtn"
-                android:id="@+id/buttonCancel"
-                android:layout_alignParentLeft="true" />
-
+                android:text="Abort Challenge"
+                android:id="@+id/buttonAbort" />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -138,6 +136,7 @@
 
     </LinearLayout>
 
+</RelativeLayout>
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
 this as a sliding drawer on the left side for left-to-right

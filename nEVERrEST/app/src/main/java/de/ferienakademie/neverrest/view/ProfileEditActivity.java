@@ -15,14 +15,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.SQLException;
+
 import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
+import de.ferienakademie.neverrest.model.User;
 
 /**
  * Created by arno on 29/09/14.
  */
 public class ProfileEditActivity extends Activity {
-
-
     // user
     EditText userNameEdit;
     Spinner userGenderEdit;
@@ -33,6 +35,9 @@ public class ProfileEditActivity extends Activity {
     // button
     Button cancelButton;
     Button saveButton;
+
+    // the current user
+    User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +62,23 @@ public class ProfileEditActivity extends Activity {
         // Apply the adapter to the spinner
         userGenderEdit.setAdapter(adapter);
 
-        userNameEdit.setText("Name");
-        userGenderEdit.setSelection(0);
-        userAgeEdit.setText("123");
-        userSizeEdit.setText("234");
-        userWeightEdit.setText("345");
+        try {
+            if (DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForEq("uuid", ProfileActivity.USER_UUID) != null &&
+                    DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForEq("uuid", ProfileActivity.USER_UUID).size() > 0) {
+                currentUser = DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForEq("uuid", ProfileActivity.USER_UUID).get(0);
+                userNameEdit.setText(currentUser.getUsername());
+                if (currentUser.getMale() == true) {
+                    userGenderEdit.setSelection(0);
+                } else {
+                    userGenderEdit.setSelection(1);
+                }
+                userAgeEdit.setText("" + (int) currentUser.getAge());
+                userSizeEdit.setText("" + (int) currentUser.getHeight());
+                userWeightEdit.setText("" + (int) currentUser.getMass());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +91,21 @@ public class ProfileEditActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(ProfileEditActivity.this, "Saved stuff...", Toast.LENGTH_SHORT).show();
+                User currentUser = null;
+                try {
+                    currentUser = DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForEq("uuid", ProfileActivity.USER_UUID).get(0);
+                    currentUser.setUsername(userNameEdit.getText().toString());
+                    currentUser.setMale(userGenderEdit.getSelectedItemPosition() == 0 ? true : false);
+                    currentUser.setAge(Integer.valueOf(userAgeEdit.getText().toString()));
+                    currentUser.setHeight(Integer.valueOf(userSizeEdit.getText().toString()));
+                    currentUser.setMass(Integer.valueOf(userWeightEdit.getText().toString()));
+                    DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().update(currentUser);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
+                    finish();
+                }
+
             }
         });
 
