@@ -158,6 +158,8 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.continentName(context.getString(R.string.continent_asia))
 				.lat(54.5638511)
 				.lon(100.5932779)
+                .completedEffort(5000)
+                .timestampStarted(123456789)
 				.metricType(MetricType.HORIZONTALDISTANCE)
 				.build());
 		challenges.add(new Challenge.Builder()
@@ -207,7 +209,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Bike tour along Donau")
-				.description("Als fuhre ich am Ufer der Donau entlang, ...")
+				.description("Einst fuhr ich am Ufer der Donau entlang, ...")
 				.totalEffort(2850)
 				.continentName(context.getString(R.string.continent_europe))
 				.lat(48.99763)
