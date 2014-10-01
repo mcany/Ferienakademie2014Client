@@ -54,6 +54,8 @@ public class Energy {
         if(!user.getMale()) {
             return 85.0;
         }
+
+        return 0.0;
     }
 
     private static double getPAL(Activity activity) {
