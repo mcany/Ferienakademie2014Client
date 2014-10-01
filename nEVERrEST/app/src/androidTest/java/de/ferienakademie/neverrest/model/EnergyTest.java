@@ -30,7 +30,7 @@ public class EnergyTest extends TestCase{
         double result = 0;
         //test private methods
         try {
-            Method m = Class.forName("de.ferienakademie.neverrest.model.Energy").getDeclaredMethod("kiloJouleToCalories", User.class);
+            Method m = Class.forName("de.ferienakademie.neverrest.model.Energy").getDeclaredMethod("kiloJouleToCalories", Double.TYPE);
             m.setAccessible(true);
             result = ((Double)m.invoke(null, 1.0)).doubleValue();
         } catch (Exception e) {
