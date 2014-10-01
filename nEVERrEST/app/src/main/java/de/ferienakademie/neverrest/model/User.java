@@ -16,6 +16,7 @@ public final class User {
     public static final String COL_MASS = "mass";
     public static final String COL_HEIGHT = "height";
     public static final String COL_AGE = "age";
+    public static final String COL_ESTIMATED_TRAINING_SESSIONS_PER_WEEK= "estimatedTrainingSessionsPerWeek";
 
     @DatabaseField(columnName = COL_UUID)
     private String uuid;
@@ -38,6 +39,9 @@ public final class User {
     @DatabaseField(columnName = COL_AGE)
     private double age;
 
+    @DatabaseField(columnName = COL_ESTIMATED_TRAINING_SESSIONS_PER_WEEK)
+    private int estimatedTrainingSessionsPerWeek;
+
 
     public User() {
         // ORMLite needs a no-arg constructor
@@ -50,7 +54,8 @@ public final class User {
             boolean male,
             double mass,
             double height,
-            double age) {
+            double age,
+            int estimatedTrainingSessionsPerWeek) {
 
         this.uuid = uuid;
         this.username = username;
@@ -59,6 +64,7 @@ public final class User {
         this.mass = mass;
         this.height = height;
         this.age = age;
+        this.estimatedTrainingSessionsPerWeek=estimatedTrainingSessionsPerWeek;
 
     }
 
@@ -92,11 +98,13 @@ public final class User {
         return mass;
     }
 
-
     public double getHeight() {
         return height;
     }
 
+    public int getEstimatedTrainingSessionsPerWeek() {
+        return estimatedTrainingSessionsPerWeek;
+    }
 
     @Override
     public String toString() {

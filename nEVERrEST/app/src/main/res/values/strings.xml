@@ -18,7 +18,11 @@
     <string name="startBtn">Start</string>
     <string name="cancelBtn">Cancel</string>
     <string name="title_activity_aktivitaets">AktivitaetsActivity</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_challenge">ChallengeActivity</string>
-
+    <string name="continent_africa">Africa</string>
+    <string name="continent_europe">Europe</string>
+    <string name="continent_asia">Asia</string>
+    <string name="continent_australia">Australia</string>
+    <string name="continent_south_america">South America</string>
+    <string name="continent_north_america">North America</string>
+    <string name="continent_antarctica">Antarctica</string>
 </resources>
