@@ -36,12 +36,16 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.controller.MetricCalculator;
+import de.ferienakademie.neverrest.model.Activity;
 import de.ferienakademie.neverrest.model.LocationData;
+import de.ferienakademie.neverrest.model.SportsType;
 
 import static android.view.View.OnClickListener;
 
@@ -50,10 +54,12 @@ public class MainMenuActivity extends FragmentActivity
 
     public static final int NUMBER_RECENT_POINTS = 5; // for outlier detection and smoothing
     public static final String TAG = MainMenuActivity.class.getSimpleName();
+    public static final String SPORTS_TYPE = "sportsType";
 
 
     ///////// DATABASE ELEMENTS /////////
     private de.ferienakademie.neverrest.model.Activity mActivity;
+    private SportsType mSportsType;
 
 
     ///////// UI ELEMENTS /////////
@@ -84,7 +90,7 @@ public class MainMenuActivity extends FragmentActivity
     private CharSequence mTitle;
 
 
-    private DatabaseHandler mDatabaseHandler;
+    private DatabaseHandler mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
     private GPSService mLocationService;
     private Handler mUIHandler = new Handler() {
 
@@ -108,6 +114,7 @@ public class MainMenuActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        mSportsType = (SportsType) getIntent().getSerializableExtra(MainMenuActivity.SPORTS_TYPE);
         mIsCreated = true;
 
 
@@ -313,9 +320,27 @@ public class MainMenuActivity extends FragmentActivity
             case R.id.btnStartGPSTracking:
                 Log.d(TAG, "Toggle Button pressed.");
                 if (mBtnGPSTracking.isChecked()) {
+                    // Start new activity
+                    mActivity = new Activity(UUID.randomUUID().toString(), System.currentTimeMillis(),
+                            0L, "Some user id", mSportsType);
+                    try {
+                        mDatabaseHandler.getActivityDao().create(mActivity);
+                    } catch (SQLException e) {
+                        Log.e(TAG, e.getMessage());
+                        return;
+                    }
+
                     Intent serviceIntent = new Intent(this, GPSService.class);
                     bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
                 } else {
+                    // Stop tracking and finish activity
+
+                    mActivity.setDuration(System.currentTimeMillis() - mActivity.getTimestamp());
+                    try {
+                        mDatabaseHandler.getActivityDao().update(mActivity);
+                    } catch (SQLException e) {
+                        Log.e(TAG, e.getMessage());
+                    }
                     unbindService(this);
                 }
                 break;

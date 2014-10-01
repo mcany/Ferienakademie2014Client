@@ -106,6 +106,38 @@ public final class User {
         return estimatedTrainingSessionsPerWeek;
     }
 
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setMale(boolean male) {
+        this.male = male;
+    }
+
+    public void setMass(double mass) {
+        this.mass = mass;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public void setAge(double age) {
+        this.age = age;
+    }
+
+    public void setEstimatedTrainingSessionsPerWeek(int estimatedTrainingSessionsPerWeek) {
+        this.estimatedTrainingSessionsPerWeek = estimatedTrainingSessionsPerWeek;
+    }
+
     @Override
     public String toString() {
         return username + " (" + uuid + ")";
