@@ -2,10 +2,12 @@ package de.ferienakademie.neverrest.controller;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.widget.ArrayAdapter;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import java.util.List;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.model.Challenge;
+import de.ferienakademie.neverrest.model.MetricType;
 
 /**
  * Created by Christoph on 29.09.2014.
@@ -54,9 +57,8 @@ public class ActiveChallengesAdapter extends ArrayAdapter<Challenge> {
         }
         progressBar.setMax((int) values.get(position).getTotalEffort());
         progressBar.setProgress((int) values.get(position).getCompletedEffort());
-		/* TODO challenge.getIconResourceId should be uesd in challenge details screen, not as a small icon in list */
-        // Drawable iconChallenge = Drawable.createFromPath(values.get(position).getIconPath());
-        // imageView.setImageDrawable(iconChallenge);
+        Drawable iconChallenge = (values.get(position).getType() == MetricType.HORIZONTALDISTANCE) ? context.getResources().getDrawable(R.drawable.distance) : context.getResources().getDrawable(R.drawable.altitude);
+        imageView.setImageDrawable(iconChallenge);
         return rowView;
     }
 }
