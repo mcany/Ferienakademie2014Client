@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
@@ -96,6 +97,11 @@ public class ChallengeActivity extends FragmentActivity
         if(mChallenge.getType() == MetricType.HORIZONTALDISTANCE) {
             linearLayoutProgressBar.setRotation(180);
         }
+        Drawable iconChallenge = (mChallenge.getType() == MetricType.HORIZONTALDISTANCE) ? this.getResources().getDrawable(R.drawable.distance) : this.getResources().getDrawable(R.drawable.altitude);
+        ((ImageView)findViewById(R.id.imageChallengeType)).setImageDrawable(iconChallenge);
+        Drawable iconChallengeGroup =  this.getResources().getDrawable(R.drawable.single_200x200);
+        ((ImageView)findViewById(R.id.imageChallengeTypeGroup)).setImageDrawable(iconChallengeGroup);
+
     }
 
 
