@@ -36,12 +36,16 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.controller.MetricCalculator;
+import de.ferienakademie.neverrest.model.Activity;
 import de.ferienakademie.neverrest.model.LocationData;
+import de.ferienakademie.neverrest.model.SportsType;
 
 import static android.view.View.OnClickListener;
 
@@ -50,10 +54,12 @@ public class MainMenuActivity extends FragmentActivity
 
     public static final int NUMBER_RECENT_POINTS = 5; // for outlier detection and smoothing
     public static final String TAG = MainMenuActivity.class.getSimpleName();
+    public static final String SPORTS_TYPE = "sportsType";
 
 
     ///////// DATABASE ELEMENTS /////////
     private de.ferienakademie.neverrest.model.Activity mActivity;
+    private SportsType mSportsType;
 
 
     ///////// UI ELEMENTS /////////
@@ -64,10 +70,10 @@ public class MainMenuActivity extends FragmentActivity
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LocationManager mLocationManager;
     private LinkedList<LocationData> mLocationDataList = new LinkedList<LocationData>();
-    private long lastShown = -1;
     private String mProvider;
     private Marker mMarker;
-    private float[] mDistance = new float[1];
+    private float mDistance = 0.f;
+
 
 
     ///////// NAVIGATION DRAWER STUFF /////////
@@ -84,7 +90,7 @@ public class MainMenuActivity extends FragmentActivity
     private CharSequence mTitle;
 
 
-    private DatabaseHandler mDatabaseHandler;
+    private DatabaseHandler mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
     private GPSService mLocationService;
     private Handler mUIHandler = new Handler() {
 
@@ -97,7 +103,6 @@ public class MainMenuActivity extends FragmentActivity
                     Location location = (Location) msg.obj;
                     LocationData currentPosition = new LocationData(new Date(), location.getLatitude(), location.getLongitude(), location.getAltitude(), location.getSpeed());
                     updateLocation(currentPosition);
-                    updateTextView();
                     break;
             }
         }
@@ -108,8 +113,8 @@ public class MainMenuActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        mSportsType = (SportsType) getIntent().getSerializableExtra(MainMenuActivity.SPORTS_TYPE);
         mIsCreated = true;
-
 
         mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
         mBtnGPSTracking.setOnClickListener(this);
@@ -121,23 +126,12 @@ public class MainMenuActivity extends FragmentActivity
     @Override
     protected void onResume() {
         super.onResume();
-
+        setUpMapIfNeeded();
         initLocationHandler();
 
-        Log.e(TAG, "requested");
+        Log.d(TAG, "requested");
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        setUpMapIfNeeded();
-    }
-
-    @Override
-    protected void onDestroy() {
-
-        super.onDestroy();
-    }
 
     private void initLocationHandler() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -155,45 +149,40 @@ public class MainMenuActivity extends FragmentActivity
                 LocationData previous = mLocationDataList.getLast();
                 if (previous.getLatitude() != currentPosition.getLatitude()
                         || previous.getLongitude() != currentPosition.getLongitude()) {
-                    mLocationDataList.add(currentPosition);
-
+                    updateLocation(currentPosition);
                 }
             } else {
-                mLocationDataList.add(currentPosition);
+                updateLocation(currentPosition);
             }
         }
-        updateTextView();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 
     public void updateLocation(LocationData currentPosition) {
-
         List<LocationData> recentPoints;
-        if (mLocationDataList.size() >= 5) {
+        if (mLocationDataList.size() >= NUMBER_RECENT_POINTS) {
             recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS + 1), mLocationDataList.size() - 1);
         } else {
             recentPoints = mLocationDataList;
         }
 
+        boolean isValid = MetricCalculator.isValid(currentPosition, recentPoints);
+        Toast.makeText(getApplicationContext(), "Lat:" + currentPosition.getLatitude()
+                + " Long: "+ currentPosition.getLongitude()
+                + " Alt: " + currentPosition.getAltitude()
+                + " Valid: " + isValid,
+                Toast.LENGTH_LONG);
+
         if (!MetricCalculator.isValid(currentPosition, recentPoints)) {
-            Log.d(TAG, "Ignoring current location");
+            Log.d(TAG, "Ignoring current location. Looks like an outlier");
             return;
         }
 
         // Smoothing
         currentPosition = MetricCalculator.smoothLocationData(currentPosition, recentPoints);
+        if (null == currentPosition.getActivity()) {
+            currentPosition.setActivity(mActivity);
+        }
 
         // compute total distance
         int size = mLocationDataList.size();
@@ -206,7 +195,7 @@ public class MainMenuActivity extends FragmentActivity
                     currentPosition.getLatitude(),
                     currentPosition.getLongitude(), tmp);
 
-            mDistance[0] += tmp[0];
+            mDistance += tmp[0];
         }
 
         // save new location in database
@@ -215,8 +204,8 @@ public class MainMenuActivity extends FragmentActivity
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
         }
+        mLocationDataList.add(currentPosition);
 
-        updateTextView();
         updateMap();
     }
 
@@ -228,8 +217,8 @@ public class MainMenuActivity extends FragmentActivity
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
+                // TODO this won't draw the track
                 updateMap();
-
             }
         }
     }
@@ -282,18 +271,19 @@ public class MainMenuActivity extends FragmentActivity
 
     }
 
-    private void updateTextView() {
 
-        if (null != mLocationDataList && mLocationDataList.size() > 0) {
-            LocationData currentPosition = mLocationDataList.getLast();
-
-            //mAltitudeView.setText("Altitude: " + currentPosition.getAltitude());
-            //mCoordinateView.setText("Latitude: " + currentPosition.getLatitude() + ", Longitude: " + currentPosition.getLongitude());
-            //mSpeedView.setText("Speed: " + currentPosition.getSpeed());
-            //mDistanceView.setText("Distance: " + mDistance[0]);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
         }
-
+        return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -313,9 +303,27 @@ public class MainMenuActivity extends FragmentActivity
             case R.id.btnStartGPSTracking:
                 Log.d(TAG, "Toggle Button pressed.");
                 if (mBtnGPSTracking.isChecked()) {
+                    // Start new activity
+                    mActivity = new Activity(UUID.randomUUID().toString(), System.currentTimeMillis(),
+                            0L, "Some user id", mSportsType);
+                    try {
+                        mDatabaseHandler.getActivityDao().create(mActivity);
+                    } catch (SQLException e) {
+                        Log.e(TAG, e.getMessage());
+                        return;
+                    }
+
                     Intent serviceIntent = new Intent(this, GPSService.class);
                     bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
                 } else {
+                    // Stop tracking and finish activity
+
+                    mActivity.setDuration(System.currentTimeMillis() - mActivity.getTimestamp());
+                    try {
+                        mDatabaseHandler.getActivityDao().update(mActivity);
+                    } catch (SQLException e) {
+                        Log.e(TAG, e.getMessage());
+                    }
                     unbindService(this);
                 }
                 break;

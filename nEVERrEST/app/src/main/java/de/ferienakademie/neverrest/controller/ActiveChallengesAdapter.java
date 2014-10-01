@@ -17,6 +17,7 @@ import java.util.List;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.model.Challenge;
+import de.ferienakademie.neverrest.model.MetricType;
 
 /**
  * Created by Christoph on 29.09.2014.
@@ -56,7 +57,7 @@ public class ActiveChallengesAdapter extends ArrayAdapter<Challenge> {
         }
         progressBar.setMax((int) values.get(position).getTotalEffort());
         progressBar.setProgress((int) values.get(position).getCompletedEffort());
-        Drawable iconChallenge = Drawable.createFromPath(values.get(position).getIconPath());
+        Drawable iconChallenge = (values.get(position).getType() == MetricType.HORIZONTALDISTANCE) ? context.getResources().getDrawable(R.drawable.distance) : context.getResources().getDrawable(R.drawable.altitude);
         imageView.setImageDrawable(iconChallenge);
         return rowView;
     }
