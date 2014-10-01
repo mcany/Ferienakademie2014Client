@@ -39,9 +39,12 @@ public class HistoryListAdapter extends ArrayAdapter<Challenge> {
         textViewDetails.setText(values.get(position).getDescription());
 
         // Show image if there is one
+		/* TODO challenge.getIconResourceId should be uesd in challenge details screen, not as a small icon in list */
+		/*
         if (values.get(position) != null && !values.get(position).getIconPath().isEmpty()) {
             imageView.setImageBitmap(values.get(position).getIconAsBitmap());
         }
+        */
         return rowView;
     }
 

@@ -227,6 +227,7 @@ public enum DatabaseUtil {
 				.lat(51.1758057)
 				.lon(10.4541194)
 				.metricType(MetricType.VERTICALDISTANCE)
+				.iconResourceId(R.drawable.mount_elbrus)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Mount McKinley")
@@ -236,6 +237,7 @@ public enum DatabaseUtil {
 				.lat(63.0693955)
 				.lon(-151.0074323)
 				.metricType(MetricType.VERTICALDISTANCE)
+				.iconResourceId(R.drawable.mount_mckinley)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Mount Aconcagna")
@@ -245,6 +247,7 @@ public enum DatabaseUtil {
 				.lat(-32.653207)
 				.lon(-70.0108333)
 				.metricType(MetricType.VERTICALDISTANCE)
+				.iconResourceId(R.drawable.mount_aconcagna)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Kilimanjaro")
@@ -254,6 +257,7 @@ public enum DatabaseUtil {
 				.lat(-3.0696375)
 				.lon(37.3524428)
 				.metricType(MetricType.VERTICALDISTANCE)
+				.iconResourceId(R.drawable.mount_kilimanjaro)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Mount Everest")
@@ -263,6 +267,7 @@ public enum DatabaseUtil {
 				.lat(27.98002)
 				.lon(86.921543)
 				.metricType(MetricType.VERTICALDISTANCE)
+				.iconResourceId(R.drawable.mount_everest)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Mount Kosciuszko")
