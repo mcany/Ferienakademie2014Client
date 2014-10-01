@@ -162,9 +162,9 @@ public class ActiveChallengesActivity extends FragmentActivity implements Neverr
     private List<Challenge> activeChallenges() {
         List<Challenge> activeChallenges = new LinkedList<Challenge>();
         for (Challenge challenge : challenges) {
-            //if (challenge.getCompletedEffort() > 0) {
-            activeChallenges.add(challenge);
-            //}
+            if (challenge.getTimestampStarted() > 0) {
+                activeChallenges.add(challenge);
+            }
         }
         return activeChallenges;
     }
