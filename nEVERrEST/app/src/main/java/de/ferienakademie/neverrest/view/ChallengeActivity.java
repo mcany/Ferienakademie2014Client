@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,7 +13,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
 
 public class ChallengeActivity extends Activity implements View.OnClickListener  {
@@ -21,7 +27,9 @@ public class ChallengeActivity extends Activity implements View.OnClickListener 
     TextView heading;
     ImageView challengeImage;
     Button startButton;
-    Button cancelButton;
+    Button abortButton;
+    public static final String TAG = ChallengeActivity.class.getSimpleName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +42,9 @@ public class ChallengeActivity extends Activity implements View.OnClickListener 
         heading = (TextView) findViewById(R.id.heading);
         heading.setText(challenge.getTitle());
         startButton = (Button) findViewById(R.id.buttonStart);
-        cancelButton = (Button) findViewById(R.id.buttonCancel);
+        abortButton = (Button) findViewById(R.id.buttonAbort);
         startButton.setOnClickListener(this);
-        cancelButton.setOnClickListener(this);
+        abortButton.setOnClickListener(this);
      //   challenge.getPercentageCompleted();
     }
 
@@ -97,7 +105,36 @@ public class ChallengeActivity extends Activity implements View.OnClickListener 
                 });
                 builder.create().show();
                 break;
-            case R.id.buttonCancel: this.finish();
+            case R.id.buttonAbort:
+                // http://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-in-android
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                // Yes button clicked
+                                DatabaseHandler databaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
+                                try {
+                                    databaseHandler.getChallengeDao().delete(challenge);
+                                    List<Challenge> allChallengesTest = databaseHandler.getChallengeDao().queryForAll();
+                                }
+                                catch (SQLException exception){
+                                    Log.d(TAG, exception.getMessage());
+                                }
+                                ChallengeActivity.this.finish();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                dialog.cancel();
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builderYesNo = new AlertDialog.Builder(this);
+                builderYesNo.setMessage("Do you really want to give up?").setPositiveButton("Yes, I'm a looser.", dialogClickListener)
+                        .setNegativeButton("No, I'll finish it.", dialogClickListener).show();
+              //
                 break;
 
         }

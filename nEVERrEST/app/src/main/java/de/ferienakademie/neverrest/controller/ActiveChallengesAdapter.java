@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Date;
+import java.util.List;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.model.Challenge;
@@ -22,9 +23,9 @@ import de.ferienakademie.neverrest.model.Challenge;
  */
 public class ActiveChallengesAdapter extends ArrayAdapter<Challenge> {
     private final Context context;
-    private final Challenge[] values;
+    private final List<Challenge> values;
 
-    public ActiveChallengesAdapter(Context context, Challenge[] challenges) {
+    public ActiveChallengesAdapter(Context context, List<Challenge> challenges) {
         super(context, R.layout.active_challenge_item, challenges);
         this.context = context;
         this.values = challenges;
@@ -41,9 +42,9 @@ public class ActiveChallengesAdapter extends ArrayAdapter<Challenge> {
         ProgressBar progressBar = (ProgressBar) rowView.findViewById(R.id.progressBar);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 
-        textViewActivityName.setText(values[position].getTitle());
+        textViewActivityName.setText(values.get(position).getTitle());
         Date today = new Date();
-        long lastTime = values[position].getTimestampLastModified();
+        long lastTime = values.get(position).getTimestampLastModified();
         double timeDifference = (today.getTime() - lastTime)/3600.0/1000/24.0;
         textViewActivityLastTime.setText("Last activity " + (int) Math.round(timeDifference) + " days ago.");
         if(timeDifference<7){
@@ -53,8 +54,8 @@ public class ActiveChallengesAdapter extends ArrayAdapter<Challenge> {
         } else {
             textViewActivityLastTime.setTextColor(Color.parseColor("#FF0000"));
         }
-        progressBar.setProgress((int) (values[position].getCompletedEffort()/values[position].getTotalEffort()));
-        Drawable iconChallenge = Drawable.createFromPath(values[position].getIconPath());
+        progressBar.setProgress((int) (values.get(position).getCompletedEffort()/values.get(position).getTotalEffort()));
+        Drawable iconChallenge = Drawable.createFromPath(values.get(position).getIconPath());
         imageView.setImageDrawable(iconChallenge);
         return rowView;
     }
