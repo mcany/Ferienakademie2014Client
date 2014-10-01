@@ -1,6 +1,8 @@
 package de.ferienakademie.neverrest.view;
 
+
 import android.app.Dialog;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,14 +12,16 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.view.Menu;
+import android.view.MenuItem;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -39,21 +43,35 @@ import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
 import de.ferienakademie.neverrest.model.MetricType;
 
-public class FindChallengesActivity extends FragmentActivity {
+public class FindChallengesActivity extends FragmentActivity implements NeverrestInterface {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public static final String TAG = FindChallengesActivity.class.getSimpleName();
     final int notClickedMarkerImage = R.drawable.ic_launcher;
     final int clickedMarkerImage = R.drawable.ic_launcher;
 
+    ///////// NAVIGATION DRAWER STUFF /////////
+    /**
+     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     */
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private int mDrawerPosition;
+    private boolean mIsCreated;
+
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    private CharSequence mTitle;
+
+
     //continents coordinates
-    final LatLng coordinatesAfrica = new LatLng(0.2136714,16.98485);
-    final LatLng coordinatesEurope = new LatLng(49.5,22);
-    final LatLng coordinatesAsia = new LatLng(29,100);
-    final LatLng coordinatesSouthAmerica = new LatLng(-21.7351043,-63.28125);
-    final LatLng coordinatesNorthAmerica = new LatLng(37.5,-110);
-    final LatLng coordinatesAustralia = new LatLng(-26.4390742,133.2813229);
-    final LatLng coordinatesAntarctica = new LatLng(-75,0);
+    final LatLng coordinatesAfrica = new LatLng(0.2136714, 16.98485);
+    final LatLng coordinatesEurope = new LatLng(49.5, 22);
+    final LatLng coordinatesAsia = new LatLng(29, 100);
+    final LatLng coordinatesSouthAmerica = new LatLng(-21.7351043, -63.28125);
+    final LatLng coordinatesNorthAmerica = new LatLng(37.5, -110);
+    final LatLng coordinatesAustralia = new LatLng(-26.4390742, 133.2813229);
+    final LatLng coordinatesAntarctica = new LatLng(-75, 0);
 
     //continents markers
     private Marker markerAfrica = null;
@@ -73,9 +91,10 @@ public class FindChallengesActivity extends FragmentActivity {
     private List<Challenge> challengesAustralia = new ArrayList<Challenge>();
     private List<Challenge> challengesAntarctica = new ArrayList<Challenge>();
 
+
     //dummy challenges for Africa
-    private LatLng[] dummyChallengesAfrica = {new LatLng(28.0289837,1.6666663),new LatLng(31.7945869,-7.0849336),new LatLng(-28.4792625,24.6727135),
-            new LatLng(-18.7792678,46.8344597), new LatLng(-4.0335162,21.7500603)};
+    private LatLng[] dummyChallengesAfrica = {new LatLng(28.0289837, 1.6666663), new LatLng(31.7945869, -7.0849336), new LatLng(-28.4792625, 24.6727135),
+            new LatLng(-18.7792678, 46.8344597), new LatLng(-4.0335162, 21.7500603)};
 
 
     final Context context = this;
@@ -85,6 +104,9 @@ public class FindChallengesActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_challenges);
 
+        mIsCreated = true;
+
+        setUpNavigationDrawer();
         setUpMapIfNeeded();
         resetMap();
     }
@@ -97,18 +119,15 @@ public class FindChallengesActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        if(mMap.getMaxZoomLevel() > 2.0f)
-        {
+        if (mMap.getMaxZoomLevel() > 2.0f) {
             mMap.clear();
             resetMap();
-        }
-        else
-        {
+        } else {
             super.onBackPressed();
         }
     }
 
-    private void resetMap(){
+    private void resetMap() {
         mMap.getUiSettings().setZoomGesturesEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(false);
         //initialize the first position of the camera
@@ -122,11 +141,11 @@ public class FindChallengesActivity extends FragmentActivity {
      * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
      * installed) and the map has not already been instantiated.. This will ensure that we only ever
      * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p>
+     * <p/>
      * If it isn't installed {@link SupportMapFragment} (and
      * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
      * install/update the Google Play services APK on their device.
-     * <p>
+     * <p/>
      * A user can return to this FragmentActivity after following the prompt and correctly
      * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
      * have been completely destroyed during this process (it is likely that it would only be
@@ -141,9 +160,8 @@ public class FindChallengesActivity extends FragmentActivity {
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
-                mMap.setOnInfoWindowClickListener(new FindChallengesActivityOnInfoWindowClickListener());
-                mMap.setOnMarkerClickListener(new FindChallengesActivityOnMarkerClickListener());
                 setUpMap();
+                mMap.setOnInfoWindowClickListener(new FindChallengesActivityOnInfoWindowClickListener());
             }
         }
     }
@@ -151,7 +169,7 @@ public class FindChallengesActivity extends FragmentActivity {
     /**
      * This is where we can add markers or lines, add listeners or move the camera. In this case, we
      * just add a marker near Africa.
-     * <p>
+     * <p/>
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
@@ -161,13 +179,11 @@ public class FindChallengesActivity extends FragmentActivity {
         DatabaseHandler databaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
         try {
             Iterator<Challenge> mChallengeIterator = databaseHandler.getChallengeDao().iterator();
-            while (mChallengeIterator.hasNext())
-            {
+            while (mChallengeIterator.hasNext()) {
                 Challenge mChallenge = mChallengeIterator.next();
                 challengesAfrica.add(mChallenge);
             }
-        }
-        catch (SQLException exception){
+        } catch (SQLException exception) {
             Log.d(TAG, exception.getMessage());
         }
 
@@ -177,22 +193,22 @@ public class FindChallengesActivity extends FragmentActivity {
         //markerAfrica.showInfoWindow();
         markerAfrica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
-        markerEurope = mMap.addMarker(new MarkerOptions().position(coordinatesEurope).title(""+ dummyChallengesAfrica.length));
+        markerEurope = mMap.addMarker(new MarkerOptions().position(coordinatesEurope).title("" + dummyChallengesAfrica.length));
         markerEurope.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
-        markerAsia = mMap.addMarker(new MarkerOptions().position(coordinatesAsia).title(""+ dummyChallengesAfrica.length));
+        markerAsia = mMap.addMarker(new MarkerOptions().position(coordinatesAsia).title("" + dummyChallengesAfrica.length));
         markerAsia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
-        markerNorthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesNorthAmerica).title(""+ dummyChallengesAfrica.length));
+        markerNorthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesNorthAmerica).title("" + dummyChallengesAfrica.length));
         markerNorthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
-        markerSouthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesSouthAmerica).title(""+ dummyChallengesAfrica.length));
+        markerSouthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesSouthAmerica).title("" + dummyChallengesAfrica.length));
         markerSouthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
-        markerAustralia = mMap.addMarker(new MarkerOptions().position(coordinatesAustralia).title(""+ dummyChallengesAfrica.length));
+        markerAustralia = mMap.addMarker(new MarkerOptions().position(coordinatesAustralia).title("" + dummyChallengesAfrica.length));
         markerAustralia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
-        markerAntarctica = mMap.addMarker(new MarkerOptions().position(coordinatesAntarctica).title(""+ dummyChallengesAfrica.length));
+        markerAntarctica = mMap.addMarker(new MarkerOptions().position(coordinatesAntarctica).title("" + dummyChallengesAfrica.length));
         markerAntarctica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
 
@@ -211,7 +227,6 @@ public class FindChallengesActivity extends FragmentActivity {
         //                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
         //                .anchor(0.5f, 1)
         //).setVisible(true);
-
 
 
         //Marker myLocMarker = mMap.addMarker(new MarkerOptions()
@@ -240,32 +255,103 @@ public class FindChallengesActivity extends FragmentActivity {
         Canvas canvas = new Canvas(bm);
 
         //If the text is bigger than the canvas , reduce the font size
-        if(textRect.width() >= (canvas.getWidth() - 4))     //the padding on either sides is considered as 4, so as to appropriately fit in the text
+        if (textRect.width() >= (canvas.getWidth() - 4))     //the padding on either sides is considered as 4, so as to appropriately fit in the text
             paint.setTextSize(convertToPixels(this, 7));        //Scaling needs to be used for different dpi's
 
         //Calculate the positions
         int xPos = (canvas.getWidth() / 2) - 2;     //-2 is for regulating the x position offset
 
         //"- ((paint.descent() + paint.ascent()) / 2)" is the distance from the baseline to the center.
-        int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2)) ;
+        int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
 
         canvas.drawText(text, xPos, yPos, paint);
 
-        return  bm;
+        return bm;
     }
 
 
-
-    public static int convertToPixels(Context context, int nDP)
-    {
+    public static int convertToPixels(Context context, int nDP) {
         final float conversionScale = context.getResources().getDisplayMetrics().density;
 
-        return (int) ((nDP * conversionScale) + 0.5f) ;
+        return (int) ((nDP * conversionScale) + 0.5f);
 
     }
 
-    class FindChallengesActivityOnMarkerClickListener implements GoogleMap.OnMarkerClickListener
-    {
+    @Override
+    public void setUpNavigationDrawer() {
+        mDrawerPosition = 0;
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer_find_challenges);
+        mNavigationDrawerFragment.setPosition(mDrawerPosition);
+
+        // Set up the drawer
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer_find_challenges,
+                (DrawerLayout) findViewById(R.id.drawer_layout_find_challenges));
+        onNavigationDrawerItemSelected(mDrawerPosition);
+    }
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        mDrawerPosition = position;
+
+        if (mIsCreated) {
+            // update the main content by replacing fragments
+            switch (position) {
+                case Constants.ACTIVITY_MAIN_MENU:
+                    mTitle = getString(R.string.title_navigation_main_menu);
+                    break;
+                case Constants.ACTIVITY_PROFILE:
+                    mTitle = getString(R.string.title_navigation_profile);
+                    Intent profileIntent = new Intent(this, ProfileActivity.class);
+                    profileIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(profileIntent);
+                    this.finish();
+                    break;
+                case Constants.ACTIVITY_CHALLENGE_OVERVIEW:
+                    Intent challengeIntent = new Intent(this, ActiveChallengesActivity.class);
+                    challengeIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(challengeIntent);
+                    this.finish();
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+            // Only show items in the action bar relevant to this screen
+            // if the drawer is not showing. Otherwise, let the drawer
+            // decide what to show in the action bar.
+            getMenuInflater().inflate(R.menu.main, menu);
+            restoreActionBar();
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void restoreActionBar() {
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(mTitle);
+    }
+
+    class FindChallengesActivityOnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
         @Override
         public boolean onMarkerClick(Marker marker) {
             //marker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(clickedMarkerImage, marker.getTitle())));
@@ -300,90 +386,72 @@ public class FindChallengesActivity extends FragmentActivity {
         }
     }
 
-    class FindChallengesActivityOnInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener
-    {
+    class FindChallengesActivityOnInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener {
+
         @Override
         public void onInfoWindowClick(Marker marker) {
             mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(marker.getPosition(), 3.0f)));
             marker.setVisible(false);
 
-            if(marker.getPosition().equals(coordinatesAfrica)) {
+            if (marker.getPosition().equals(coordinatesAfrica)) {
 
-                for (LatLng coordinateOfTheChallenge : dummyChallengesAfrica)
-                {
+                for (LatLng coordinateOfTheChallenge : dummyChallengesAfrica) {
                     mMap.addMarker(new MarkerOptions().position(coordinateOfTheChallenge).title("Challenge Mt. Everest"));
                 }
 
                 ListIterator<Challenge> challengeListIterator = challengesAfrica.listIterator();
-                while (challengeListIterator.hasNext())
-                {
+                while (challengeListIterator.hasNext()) {
                     Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
                             .title(mChallenge.getTitle()));
                 }
-            }
-            else if(marker.getPosition().equals(coordinatesEurope)) {
+            } else if (marker.getPosition().equals(coordinatesEurope)) {
                 ListIterator<Challenge> challengeListIterator = challengesEurope.listIterator();
-                while (challengeListIterator.hasNext())
-                {
+                while (challengeListIterator.hasNext()) {
                     Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
                             .title(mChallenge.getTitle()));
                 }
-            }
-            else if(marker.getPosition().equals(coordinatesAsia)) {
+            } else if (marker.getPosition().equals(coordinatesAsia)) {
                 ListIterator<Challenge> challengeListIterator = challengesAsia.listIterator();
-                while (challengeListIterator.hasNext())
-                {
+                while (challengeListIterator.hasNext()) {
                     Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
                             .title(mChallenge.getTitle()));
                 }
-            }
-            else if(marker.getPosition().equals(coordinatesNorthAmerica)) {
+            } else if (marker.getPosition().equals(coordinatesNorthAmerica)) {
                 ListIterator<Challenge> challengeListIterator = challengesNorthAmerica.listIterator();
-                while (challengeListIterator.hasNext())
-                {
+                while (challengeListIterator.hasNext()) {
                     Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
                             .title(mChallenge.getTitle()));
                 }
-            }
-            else if(marker.getPosition().equals(coordinatesSouthAmerica)) {
+            } else if (marker.getPosition().equals(coordinatesSouthAmerica)) {
                 ListIterator<Challenge> challengeListIterator = challengesSouthAmerica.listIterator();
-                while (challengeListIterator.hasNext())
-                {
+                while (challengeListIterator.hasNext()) {
                     Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
                             .title(mChallenge.getTitle()));
                 }
-            }
-            else if(marker.getPosition().equals(coordinatesAustralia)) {
+            } else if (marker.getPosition().equals(coordinatesAustralia)) {
                 ListIterator<Challenge> challengeListIterator = challengesAustralia.listIterator();
-                while (challengeListIterator.hasNext())
-                {
+                while (challengeListIterator.hasNext()) {
+                    Challenge mChallenge = challengeListIterator.next();
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
+                            .title(mChallenge.getTitle()));
+                }
+            } else if (marker.getPosition().equals(coordinatesAntarctica)) {
+                ListIterator<Challenge> challengeListIterator = challengesAntarctica.listIterator();
+                while (challengeListIterator.hasNext()) {
                     Challenge mChallenge = challengeListIterator.next();
                     mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
                             .title(mChallenge.getTitle()));
                 }
             }
-            else if(marker.getPosition().equals(coordinatesAntarctica)) {
-                ListIterator<Challenge> challengeListIterator = challengesAntarctica.listIterator();
-                while (challengeListIterator.hasNext())
-                {
-                    Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(),mChallenge.getStartingLongitude()))
-                            .title(mChallenge.getTitle()));
-                }
-            }
             else {
-                Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm", MetricType.HORIZONTALDISTANCE,"des","",100.0,0.0,100,0,false);
-
-                Intent intent = new Intent(getBaseContext(),ChallengeActivity.class);
-                intent.putExtra("Challenge", dummyChallenge);
-                startActivity(intent);
             }
+
         }
     }
 }

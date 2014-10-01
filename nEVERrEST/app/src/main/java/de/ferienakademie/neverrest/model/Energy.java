@@ -22,8 +22,54 @@ public class Energy {
         return energieverbrauch;
     }
 
-    public static double gewonneneLebenszeit() {
-        return 42;
+    public static long gewonneneLebenszeitInMillis(Activity activity, User user) {
+        double grundumsatz = grundumsatz(user);
+
+
+        double energyConsumption = (grundumsatz/24)*activity.getDuration()*(getPAL(activity)+1);
+
+        double met = energyConsumption/(user.getMass())*activity.getDuration();
+
+        double estimatedLifeTime = getLifeTimeForMetPerWeek(user.getEstimatedTrainingSessionsPerWeek()*met);
+
+        long estimatedLifeTimeForThisActivity = (long)Math.ceil( estimatedLifeTime / ((getExpectedLifeTime(user)-user.getAge()) * 52 ) * 365.249*24*60*60*1000);
+
+        return estimatedLifeTimeForThisActivity;
     }
 
+
+    private static double getLifeTimeForMetPerWeek(double met) {
+
+        if(met>27.5) {
+            return 4.5;
+        }
+        return 0.04285+0.9743*met-0.1057*Math.pow(met,2) + 0.004967 * Math.pow(met,3)+0.00007995*Math.pow(met,4);
+    }
+
+    private static double getExpectedLifeTime(User user) {
+        if(user.getMale()) {
+            return 81.0;
+        }
+
+        if(!user.getMale()) {
+            return 85.0;
+        }
+
+        return 0.0;
+    }
+
+    private static double getPAL(Activity activity) {
+        switch (activity.getSportsType()) {
+            case CYCLING:
+                return 3.456;
+            case HIKING:
+                return 8.064;
+            case RUNNING:
+                double velocity=6;
+                return 0.1423- 0.0357*velocity + 0.13954 * Math.pow(velocity,2);
+        }
+
+        return 1.5;
+
+    }
 }

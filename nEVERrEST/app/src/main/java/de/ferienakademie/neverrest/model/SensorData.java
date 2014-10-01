@@ -13,14 +13,10 @@ public abstract class SensorData {
     public static final String COL_ACTIVITY = "activity";
 
     @DatabaseField(columnName = COL_CREATION_DATE)
-    private Date creationDate;
-
-    public void setActivity(Activity mActivity) {
-        this.mActivity = mActivity;
-    }
+    protected Date creationDate;
 
     @DatabaseField(columnName = COL_ACTIVITY, foreign = true)
-    private Activity mActivity;
+    protected Activity mActivity;
 
     public Date getCreationDate() {
         return creationDate;
@@ -29,4 +25,10 @@ public abstract class SensorData {
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
+
+    public void setActivity(Activity mActivity) {
+        this.mActivity = mActivity;
+    }
+
+    public Activity getActivity() { return mActivity; }
 }

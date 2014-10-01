@@ -1,47 +1,148 @@
 package de.ferienakademie.neverrest.view;
 
-import android.app.Activity;
+import android.app.ActionBar;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 
-/**
- * Created by arno on 29/09/14.
- */
-public class ProfileActivity extends Activity {
+import static android.view.View.OnClickListener;
+
+public class ProfileActivity extends FragmentActivity
+        implements NeverrestInterface, OnClickListener {
+
+    public static final String TAG = ProfileActivity.class.getSimpleName();
+    private static final String ARG_SECTION_NUMBER = "section_number";
+
+    ///////// NAVIGATION DRAWER STUFF /////////
+
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    ///////// NAVIGATION DRAWER STUFF /////////
+    private CharSequence mTitle;
+    private int mDrawerPosition;
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private boolean mIsCreated;
+    private DatabaseHandler mDatabaseHandler;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_profile);
+        mIsCreated = true;
+        mTitle = getTitle();
+
+        setUpNavigationDrawer();
+
+        // Initialize database
+        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
+
+        userAvatar = (ImageView) findViewById(R.id.userAvatar);
+        userAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(ProfileActivity.this, "Editing avatar...", Toast.LENGTH_SHORT).show();
+            }
+        });
+        userName = (TextView) findViewById(R.id.userName);
+        userGender = (TextView) findViewById(R.id.userGender);
+        userAge = (TextView) findViewById(R.id.userAge);
+        userSize = (TextView) findViewById(R.id.userSize);
+        userWeight = (TextView) findViewById(R.id.userWeight);
+        // ... and stats
+        totalDistance = (TextView) findViewById(R.id.totalDistance);
+        totalAltitude = (TextView) findViewById(R.id.totalAltitude);
+        // linear layout
+        badgeLayout = (LinearLayout) findViewById(R.id.lastBadges);
+        badgeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(ProfileActivity.this, "Editing badges...", Toast.LENGTH_SHORT).show();
+            }
+        });
+        for (int i = 0; i < 8; i++) {
+            badgeLayout.addView(createBadge(R.drawable.sampleimage, "Badge " + i, this));
+        }
+        userData = (LinearLayout) findViewById(R.id.userData);
+        userData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(ProfileActivity.this, "Editing user data...", Toast.LENGTH_SHORT).show();
+            }
+        });
+        globalStatistics = (LinearLayout) findViewById(R.id.globalStatistics);
+        globalStatistics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(ProfileActivity.this, "Showing details for global data...", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // set placeholders for user
+        userName.setText(String.format(userName.getText().toString(), "FitFritz"));
+        userGender.setText(String.format(userGender.getText().toString(), "male"));
+        userAge.setText(String.format(userAge.getText().toString(), 42));
+        userSize.setText(String.format(userSize.getText().toString(), 180));
+        userWeight.setText(String.format(userWeight.getText().toString(), 75));
+        // ... and stats
+        totalDistance.setText(String.format(totalDistance.getText().toString(), "biking: 12km, hiking: 23km, running: 14km"));
+        totalAltitude.setText(String.format(totalAltitude.getText().toString(), "biking: 854km, hiking: 451km, running: 673km"));
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.e(TAG, "requested");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+    }
 
     // user
-    EditText userName;
-    EditText userSize;
-    EditText userWeight;
-    Spinner userGender;
-    EditText userAge;
+    TextView userName;
+    TextView userGender;
+    TextView userAge;
+    TextView userSize;
+    TextView userWeight;
     // stats
-    TextView distanceVertical;
-    TextView distanceHorizotal;
+    TextView totalDistance;
+    TextView totalAltitude;
 
-    // buttons
-    Button enableEditingButton;
-    Button wholeHistoryButton;
+    // image view
+    ImageView userAvatar;
 
-    // edit-mode
-    boolean isInEditMode = false;
-
-    // linear layout for badges
+    // linear layouts
+    LinearLayout userData;
     LinearLayout badgeLayout;
+    LinearLayout globalStatistics;
 
     public LinearLayout createBadge(int image, String text, Context context) {
         int padding = getResources().getDimensionPixelSize(R.dimen.padding_small);
@@ -70,104 +171,82 @@ public class ProfileActivity extends Activity {
         return layout;
     }
 
-    public void enableEditing(EditText edit) {
-        edit.setBackground(new EditText(this).getBackground());
-        edit.setClickable(true);
-        edit.setFocusable(true);
-        edit.setFocusableInTouchMode(true);
-    }
-
-    public void finishEditing(EditText edit) {
-        edit.setBackgroundColor(Color.parseColor("#00FFFFFF"));
-        edit.setClickable(false);
-        edit.setFocusable(false);
-        edit.setFocusableInTouchMode(false);
-    }
-
-    public void enableEditingGlobal() {
-        enableEditing(userName);
-        enableEditing(userSize);
-        enableEditing(userWeight);
-        enableEditing(userAge);
-        userGender.setEnabled(true);
-        userGender.setClickable(true);
-        userGender.setBackground(new Spinner(this).getBackground());
-    }
-
-    public void finishEditingGlobal() {
-        finishEditing(userName);
-        finishEditing(userSize);
-        finishEditing(userWeight);
-        finishEditing(userAge);
-        userGender.setEnabled(false);
-        userGender.setClickable(false);
-        userGender.setBackgroundColor(Color.parseColor("#00FFFFFF"));
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+    public void onNavigationDrawerItemSelected(int position) {
+        mDrawerPosition = position;
 
-        // initialize textViews for user
-        userName = (EditText) findViewById(R.id.userName);
-        userSize = (EditText) findViewById(R.id.userSize);
-        userWeight = (EditText) findViewById(R.id.userWeight);
-        userGender = (Spinner) findViewById(R.id.userGender);
-        userAge = (EditText) findViewById(R.id.userAge);
-        // ... and stats
-        distanceVertical = (TextView) findViewById(R.id.distancesVertical);
-        distanceHorizotal = (TextView) findViewById(R.id.distancesHorizontal);
-        // linear layout
-        badgeLayout = (LinearLayout) findViewById(R.id.lastBadges);
-        for (int i = 0; i < 8; i++) {
-            badgeLayout.addView(createBadge(R.drawable.sampleimage, "Badge " + i, this));
+        if (mIsCreated) {
+
+            // update the main content by replacing fragments
+            switch (position) {
+                case Constants.ACTIVITY_MAIN_MENU:
+                    Intent mainIntent = new Intent(this, FindChallengesActivity.class);
+                    mainIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(mainIntent);
+                    this.finish();
+                    break;
+                case Constants.ACTIVITY_PROFILE:
+                    mTitle = getString(R.string.title_navigation_profile);
+                    break;
+                case Constants.ACTIVITY_CHALLENGE_OVERVIEW:
+                    Intent challengeIntent = new Intent(this, ActiveChallengesActivity.class);
+                    challengeIntent.putExtra(Constants.EXTRA_POSITION, position);
+                    startActivity(challengeIntent);
+                    this.finish();
+                    break;
+            }
         }
-
-        // add genders to spinner
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.gender_array, R.layout.spinner_gender);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        userGender.setAdapter(adapter);
-
-        // button for older entries
-        wholeHistoryButton = (Button) findViewById(R.id.wholeHistoryButton);
-        wholeHistoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(ProfileActivity.this, "Congratulations, you pressed a button.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        enableEditingButton = (Button) findViewById(R.id.enableEditingButton);
-        enableEditingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isInEditMode) {
-                    finishEditingGlobal();
-                    isInEditMode = false;
-                    enableEditingButton.setText("Edit Profile");
-                } else {
-                    enableEditingGlobal();
-                    isInEditMode = true;
-                    enableEditingButton.setText("Finish Editing");
-                }
-            }
-        });
-
-        // set placeholders for user
-        userName.setText(String.format(userName.getText().toString(), "FitFritz"));
-        userSize.setText(String.format(userSize.getText().toString(), 180));
-        userWeight.setText(String.format(userWeight.getText().toString(), 75));
-        userGender.setSelection(0);
-        userAge.setText(String.format(userAge.getText().toString(), 42));
-        // ... and stats
-        distanceVertical.setText(String.format(distanceVertical.getText().toString(), 2, 32));
-        distanceHorizotal.setText(String.format(distanceHorizotal.getText().toString(), 250, 200));
-
-        // disable all buttons per default
-        finishEditingGlobal();
     }
+
+    public void restoreActionBar() {
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(mTitle);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+            // Only show items in the action bar relevant to this screen
+            // if the drawer is not showing. Otherwise, let the drawer
+            // decide what to show in the action bar.
+            getMenuInflater().inflate(R.menu.main, menu);
+            restoreActionBar();
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void setUpNavigationDrawer() {
+        mDrawerPosition = getIntent().getIntExtra(Constants.EXTRA_POSITION, 0);
+
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getFragmentManager().findFragmentById(R.id.navigation_drawer_profile);
+        mNavigationDrawerFragment.setPosition(mDrawerPosition);
+
+        // Set up the drawer
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer_profile,
+                (DrawerLayout) findViewById(R.id.drawer_layout_profile));
+        onNavigationDrawerItemSelected(mDrawerPosition);
+    }
+
 }

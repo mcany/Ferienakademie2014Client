@@ -1,242 +1,157 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="@dimen/activity_horizontal_margin"
-    tools:context=".MainActivity">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/userName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/padding_medium"
-            android:text="%s"
-            android:textSize="24dp"
-            android:textStyle="bold"
-            android:gravity="center_vertical"/>
-
-        <Button
-            android:id="@+id/enableEditingButton"
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="Edit Profile" />
-
-        </RelativeLayout>
+    android:id="@+id/drawer_layout_profile"
+    android:gravity="center_horizontal"
+    tools:context=".ProfileActivity">
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/padding_medium">
-
-        <ImageView
-            android:id="@+id/userAvatar"
-            android:layout_width="150dp "
-            android:layout_height="200dp"
-            android:layout_gravity="left"
-            android:scaleType="fitXY"
-            android:src="@drawable/sampleimage" />
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical">
-
-            <!-- Size -->
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Size:"
-                    android:textSize="@dimen/text_medium" />
-
-                <EditText
-                    android:id="@+id/userSize"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="%d"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="cm"
-                    android:textSize="@dimen/text_medium" />
-
-
-                    -->
-
-            </LinearLayout>
-
-            <!-- Weight -->
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Weight:"
-                    android:textSize="@dimen/text_medium" />
-
-                <EditText
-                    android:id="@+id/userWeight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="%d"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="kg"
-                    android:textSize="@dimen/text_medium" />
-
-            </LinearLayout>
-
-            <!-- Gender -->
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Gender:"
-                    android:textSize="@dimen/text_medium" />
-
-                <Spinner
-                    android:id="@+id/userGender"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/text_medium">
-                    </Spinner>
-
-            </LinearLayout>
-
-            <!-- Age -->
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Age:"
-                    android:textSize="@dimen/text_medium" />
-
-                <EditText
-                    android:id="@+id/userAge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:text="%s"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="years"
-                    android:textSize="@dimen/text_medium" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-
-    <HorizontalScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:id="@+id/lastBadges"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingBottom="@dimen/padding_medium">
 
+            <ImageView
+                android:id="@+id/profileTitleImage"
+                android:layout_width="40dp "
+                android:layout_height="40dp"
+                android:layout_gravity="left"
+                android:scaleType="fitXY"
+                android:src="@drawable/sampleimage" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingLeft="@dimen/padding_medium"
+                android:text="Profile"
+                android:textSize="@dimen/text_large" />
+
         </LinearLayout>
 
-    </HorizontalScrollView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/padding_medium">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/padding_medium">
+            <ImageView
+                android:id="@+id/userAvatar"
+                android:layout_width="100dp "
+                android:layout_height="150dp"
+                android:layout_gravity="left"
+                android:scaleType="fitXY"
+                android:src="@drawable/sampleimage" />
 
-        <ImageView
-            android:id="@+id/piechart"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/sampleimage" />
+            <LinearLayout
+                android:id="@+id/userData"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/padding_medium">
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name: %s"
+                    android:textSize="@dimen/text_medium" />
+
+                <TextView
+                    android:id="@+id/userGender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gender: %s"
+                    android:textSize="@dimen/text_medium" />
+
+                <TextView
+                    android:id="@+id/userAge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Age: %d years"
+                    android:textSize="@dimen/text_medium" />
+
+                <TextView
+                    android:id="@+id/userSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Size: %d cm"
+                    android:textSize="@dimen/text_medium" />
+
+                <TextView
+                    android:id="@+id/userWeight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Weight: %d kg"
+                    android:textSize="@dimen/text_medium" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/lastBadges"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/padding_medium">
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:id="@+id/globalStatistics"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/distancesVerticalTitle"
+                android:id="@+id/totalDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:text="Distances (vertical):" />
+                android:text="Total distance: %s"
+                android:textSize="@dimen/text_medium" />
 
             <TextView
-                android:id="@+id/distancesVertical"
+                android:id="@+id/totalAltitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="%d km Bike, %d km Running" />
-
-            <TextView
-                android:id="@+id/distancesHorizontalTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Distances (horizontal):" />
-
-            <TextView
-                android:id="@+id/distancesHorizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="%d km Bike, %d km Running" />
+                android:text="Total altitude: %s"
+                android:textSize="@dimen/text_medium" />
 
         </LinearLayout>
+
+
     </LinearLayout>
 
-    <Button
-        android:id="@+id/wholeHistoryButton"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="See whole history" />
+    <!-- android:layout_gravity="start" tells DrawerLayout to treat
+ this as a sliding drawer on the left side for left-to-right
+ languages and on the right side for right-to-left languages.
+ If you're not building against API 17 or higher, use
+ android:layout_gravity="left" instead. -->
+    <!-- The drawer is given a fixed width in dp and extends the full height of
+         the container. -->
+    <fragment
+        android:id="@+id/navigation_drawer_profile"
+        android:layout_width="@dimen/navigation_drawer_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:name="de.ferienakademie.neverrest.view.NavigationDrawerFragment"
+        tools:layout="@layout/fragment_navigation_drawer" />
 
-</LinearLayout>
+</android.support.v4.widget.DrawerLayout>
+
