@@ -10,7 +10,7 @@ public class Energy {
     public static double energieverbrauch(Activity activity, User user) {
         double PAL = getPAL(activity);
         double grundumsatz = grundumsatz(user);
-        double energieverbrauch = PAL * duration * (grundumsatz/24.0);
+        double energieverbrauch = PAL * activity.getDuration() * (grundumsatz/24.0);
         return energieverbrauch;
     }
 
