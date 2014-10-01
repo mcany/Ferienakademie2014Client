@@ -22,6 +22,10 @@ public class MetricCalculator {
      */
     public static boolean isValid(LocationData current, List<LocationData> recentPoints) {
 
+        if (recentPoints.size() < 2) {
+            return true;
+        }
+
         // Calculate std dev
         double[] stdDev = calcStdDev(recentPoints);
 
