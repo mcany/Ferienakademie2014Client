@@ -163,8 +163,6 @@ public class ProfileActivity extends FragmentActivity
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        Log.e(TAG, "requested");
     }
 
     @Override
