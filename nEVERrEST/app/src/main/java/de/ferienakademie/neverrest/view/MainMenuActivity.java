@@ -56,10 +56,7 @@ public class MainMenuActivity extends FragmentActivity
 
 
     ///////// UI ELEMENTS /////////
-    private TextView mCoordinateView;
-    private TextView mDistanceView;
-    private TextView mSpeedView;
-    private TextView mAltitudeView;
+
     private ToggleButton mBtnGPSTracking;
 
     ///////// MAP AND LOCATION STUFF /////////
@@ -114,10 +111,7 @@ public class MainMenuActivity extends FragmentActivity
 
         mIsCreated = true;
 
-        mCoordinateView = (TextView) findViewById(R.id.coordinates);
-        mAltitudeView = (TextView) findViewById(R.id.altitude);
-        mDistanceView = (TextView) findViewById(R.id.distance);
-        mSpeedView = (TextView) findViewById(R.id.speed);
+
         mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
         mBtnGPSTracking.setOnClickListener(this);
 
@@ -295,12 +289,6 @@ public class MainMenuActivity extends FragmentActivity
     }
 
     private void updateTextView() {
-        if (mLocation != null) {
-            mAltitudeView.setText("Altitude: " + mAltitude);
-            mCoordinateView.setText("Latitude: " + mLocation.getLatitude() + ", Longitude: " + mLocation.getLongitude());
-            mSpeedView.setText("Speed: " + mSpeed);
-            mDistanceView.setText("Distance: " + mDistance[0]);
-        }
     }
 
     @Override
