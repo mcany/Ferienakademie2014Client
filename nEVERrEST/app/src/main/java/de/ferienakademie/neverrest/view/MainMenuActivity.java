@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,16 +63,12 @@ public class MainMenuActivity extends FragmentActivity
     ///////// MAP AND LOCATION STUFF /////////
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LocationManager mLocationManager;
-    private Location mLocation;
-    private LatLng mLatLng;
-    private LinkedList<Location> mLocationList;
-    private LinkedList<LatLng> mLatLngList;
     private LinkedList<LocationData> mLocationDataList = new LinkedList<LocationData>();
+    private long lastShown = -1;
     private String mProvider;
     private Marker mMarker;
-    private float[] mDistance;
-    private double mAltitude;
-    private float mSpeed;
+    private float[] mDistance = new float[1];
+
 
     ///////// NAVIGATION DRAWER STUFF /////////
     /**
@@ -93,11 +90,13 @@ public class MainMenuActivity extends FragmentActivity
 
         @Override
         public void handleMessage(Message msg) {
+
             switch (msg.what) {
                 case GPSService.MSG_GPSDATA:
                     Log.d(TAG, "Got new GPS data!");
-                    mLocation = (Location) msg.obj;
-                    updateLocation();
+                    Location location = (Location) msg.obj;
+                    LocationData currentPosition = new LocationData(new Date(), location.getLatitude(), location.getLongitude(), location.getAltitude(), location.getSpeed());
+                    updateLocation(currentPosition);
                     updateTextView();
                     break;
             }
@@ -123,7 +122,7 @@ public class MainMenuActivity extends FragmentActivity
     protected void onResume() {
         super.onResume();
 
-        handleLocation();
+        initLocationHandler();
 
         Log.e(TAG, "requested");
     }
@@ -140,7 +139,7 @@ public class MainMenuActivity extends FragmentActivity
         super.onDestroy();
     }
 
-    private void handleLocation() {
+    private void initLocationHandler() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             mProvider = LocationManager.GPS_PROVIDER;
@@ -148,26 +147,22 @@ public class MainMenuActivity extends FragmentActivity
             mProvider = LocationManager.NETWORK_PROVIDER;
         }
 
-        mLocationList = new LinkedList<Location>();
-        mLatLngList = new LinkedList<LatLng>();
-        mDistance = new float[1];
-
         // initialize LocationManager => last Location
-        mLocation = mLocationManager.getLastKnownLocation(mProvider);
+        Location lastKnownLocation = mLocationManager.getLastKnownLocation(mProvider);
+        if (lastKnownLocation != null) {
+            LocationData currentPosition = new LocationData(new Date(), lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), lastKnownLocation.getAltitude(), lastKnownLocation.getSpeed());
+            if (mLocationDataList.size() > 0) {
+                LocationData previous = mLocationDataList.getLast();
+                if (previous.getLatitude() != currentPosition.getLatitude()
+                        || previous.getLongitude() != currentPosition.getLongitude()) {
+                    mLocationDataList.add(currentPosition);
 
-        if (mLocation != null) {
-            mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-            mLocationList.add(mLocation);
-            mLatLngList.add(mLatLng);
-
-            mAltitude = mLocation.getAltitude();
-            mSpeed = mLocation.getSpeed() * 3.6f;
-
-            updateTextView();
-
-        } else {
-            updateTextView();
+                }
+            } else {
+                mLocationDataList.add(currentPosition);
+            }
         }
+        updateTextView();
     }
 
     @Override
@@ -182,8 +177,8 @@ public class MainMenuActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateLocation() {
-        LocationData current = new LocationData(mLocation);
+
+    public void updateLocation(LocationData currentPosition) {
 
         List<LocationData> recentPoints;
         if (mLocationDataList.size() >= 5) {
@@ -192,38 +187,31 @@ public class MainMenuActivity extends FragmentActivity
             recentPoints = mLocationDataList;
         }
 
-        if (!MetricCalculator.isValid(current, recentPoints)) {
+        if (!MetricCalculator.isValid(currentPosition, recentPoints)) {
             Log.d(TAG, "Ignoring current location");
             return;
         }
 
-        // TODO smoothing
-
-        mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-
-        Log.d(TAG, String.valueOf(mLatLng.latitude) + ", " + String.valueOf(mLatLng.longitude));
-
-        mSpeed = mLocation.getSpeed();
-        mAltitude = mLocation.getAltitude();
-
-        mLocationList.add(mLocation);
-        mLatLngList.add(mLatLng);
+        // Smoothing
+        currentPosition = MetricCalculator.smoothLocationData(currentPosition, recentPoints);
 
         // compute total distance
-        int size = mLocationList.size();
+        int size = mLocationDataList.size();
         if (size > 1) {
             float[] tmp = new float[1];
 
-            Location.distanceBetween(mLatLngList.get(size - 2).latitude,
-                    mLatLngList.get(size - 2).longitude,
-                    mLatLngList.get(size - 1).latitude,
-                    mLatLngList.get(size - 1).longitude, tmp);
+            LocationData previous = mLocationDataList.get(size - 2);
+            Location.distanceBetween(previous.getLatitude(),
+                    previous.getLongitude(),
+                    currentPosition.getLatitude(),
+                    currentPosition.getLongitude(), tmp);
+
             mDistance[0] += tmp[0];
         }
 
         // save new location in database
         try {
-            mDatabaseHandler.getLocationDataDao().create(new LocationData(mLocation));
+            mDatabaseHandler.getLocationDataDao().create(currentPosition);
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -253,34 +241,40 @@ public class MainMenuActivity extends FragmentActivity
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void updateMap() {
-        if (mLatLng != null) {
-            Toast.makeText(this, String.valueOf(mLatLng.latitude) +
-                            ", " + String.valueOf(mLatLng.longitude),
+        if (mLocationDataList != null && mLocationDataList.size() > 1) {
+            LocationData previous = mLocationDataList.get(mLocationDataList.size() - 2);
+            LocationData current = mLocationDataList.get(mLocationDataList.size() - 1);
+            LatLng currentLatLng = new LatLng(current.getLatitude(), current.getLongitude());
+
+            Toast.makeText(this, String.valueOf(current.getLatitude()) +
+                            ", " + String.valueOf(current.getLongitude()),
                     Toast.LENGTH_SHORT).show();
 
             if (mMap != null) {
                 // draw route in map
-                if (mLocationList.size() > 1) {
+                if (mLocationDataList.size() > 1) {
                     mMap.addPolyline(new PolylineOptions()
-                            .add(mLatLngList.get(mLatLngList.size() - 2), mLatLng)
+                            .add(new LatLng(previous.getLatitude(), previous.getLongitude()),
+                                    currentLatLng)
                             .color(Color.parseColor("#3f51b5")).width(20));
                 }
 
                 // update Marker position
                 if (mMarker == null) {
                     mMarker = mMap.addMarker(new MarkerOptions()
-                            .position(mLatLng)
+                            .position(currentLatLng)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher)));
                 } else {
-                    mMarker.setPosition(mLatLng);
+                    mMarker.setPosition(currentLatLng);
                 }
 
                 mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
                 // update Camera
                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(mLatLng).tilt(75).bearing(mLocation.getBearing())
+                        .target(currentLatLng).tilt(75)
                         .zoom(16).build();
+                // .bearing(mLocation.getBearing())
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
             }
@@ -289,6 +283,16 @@ public class MainMenuActivity extends FragmentActivity
     }
 
     private void updateTextView() {
+
+        if (null != mLocationDataList && mLocationDataList.size() > 0) {
+            LocationData currentPosition = mLocationDataList.getLast();
+
+            //mAltitudeView.setText("Altitude: " + currentPosition.getAltitude());
+            //mCoordinateView.setText("Latitude: " + currentPosition.getLatitude() + ", Longitude: " + currentPosition.getLongitude());
+            //mSpeedView.setText("Speed: " + currentPosition.getSpeed());
+            //mDistanceView.setText("Distance: " + mDistance[0]);
+        }
+
     }
 
     @Override
