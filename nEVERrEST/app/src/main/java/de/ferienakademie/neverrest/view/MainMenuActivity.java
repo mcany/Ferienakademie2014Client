@@ -166,6 +166,13 @@ public class MainMenuActivity extends FragmentActivity
             recentPoints = mLocationDataList;
         }
 
+        boolean isValid = MetricCalculator.isValid(currentPosition, recentPoints);
+        Toast.makeText(getApplicationContext(), "Lat:" + currentPosition.getLatitude()
+                + " Long: "+ currentPosition.getLongitude()
+                + " Alt: " + currentPosition.getAltitude()
+                + " Valid: " + isValid,
+                Toast.LENGTH_LONG);
+
         if (!MetricCalculator.isValid(currentPosition, recentPoints)) {
             Log.d(TAG, "Ignoring current location. Looks like an outlier");
             return;
@@ -173,6 +180,9 @@ public class MainMenuActivity extends FragmentActivity
 
         // Smoothing
         currentPosition = MetricCalculator.smoothLocationData(currentPosition, recentPoints);
+        if (null == currentPosition.getActivity()) {
+            currentPosition.setActivity(mActivity);
+        }
 
         // compute total distance
         int size = mLocationDataList.size();
