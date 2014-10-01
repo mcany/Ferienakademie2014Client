@@ -78,7 +78,7 @@ public class ActiveChallengesActivity extends ListActivity {
         catch (SQLException exception) {
             Log.d(TAG, exception.getMessage());
         }
-        mAdapter = new ActiveChallengesAdapter(this, challenges);
+        mAdapter = new ActiveChallengesAdapter(this, activeChallenges());
         setListAdapter(mAdapter);
 
     }
@@ -95,7 +95,15 @@ public class ActiveChallengesActivity extends ListActivity {
         super.onDestroy();
     }
 
-
+    private List<Challenge> activeChallenges() {
+        List<Challenge> activeChallenges = new LinkedList<Challenge>();
+        for(Challenge challenge : challenges) {
+            if(challenge.getCompletedEffort() > 0) {
+                activeChallenges.add(challenge);
+            }
+        }
+        return activeChallenges;
+    }
 
 
 }

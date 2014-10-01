@@ -68,9 +68,11 @@ public class ChallengeActivity extends Activity implements View.OnClickListener 
         LinearLayout linearLayoutProgressBar = (LinearLayout) findViewById(R.id.linearLayoutProgressBar);
         linearLayoutProgressBar.setMinimumHeight(size.x);
         ViewGroup.LayoutParams params = linearLayoutProgressBar.getLayoutParams();
-// Changes the height and width to the specified *pixels*
+        // Changes the height and width to the specified *pixels*
         params.height = (int) (size.x * 0.5);
         params.width = (int)(size.x*0.86);
+        progressBar.setMax((int)challenge.getTotalEffort());
+        progressBar.setProgress((int)(challenge.getTotalEffort() - challenge.getCompletedEffort()));
    }
 
 
