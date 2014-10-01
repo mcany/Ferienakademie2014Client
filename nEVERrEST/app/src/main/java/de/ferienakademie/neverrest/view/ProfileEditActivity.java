@@ -226,11 +226,11 @@ public class ProfileEditActivity extends FragmentActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer_profile);
-        mNavigationDrawerFragment.setPosition(mDrawerPosition);
+        //mNavigationDrawerFragment.setPosition(mDrawerPosition);
 
         // Set up the drawer
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer_profile,
                 (DrawerLayout) findViewById(R.id.drawer_layout_profile));
-        onNavigationDrawerItemSelected(mDrawerPosition);
+        //onNavigationDrawerItemSelected(mDrawerPosition);
     }
 }
