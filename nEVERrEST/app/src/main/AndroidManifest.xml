@@ -47,6 +47,10 @@
             android:name=".view.ProfileActivity"
             android:label="@string/title_activity_profile"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.ProfileEditActivity"
+            android:label="@string/title_activity_profile_edit"
+            android:screenOrientation="portrait" />
 
         <service android:name=".controller.GPSService" />
 
