@@ -5,19 +5,11 @@ package de.ferienakademie.neverrest.model;
  */
 public class Energy {
 
-    public static double grundumsatz(User user) {
-        double mass = user.getMass();
-        double height = user.getHeight();
-        double age = user.getAge();
-        double s=-674.08;
-        if(user.getMale()) {
-            s = 20.93;
-        }
-        double grundumsatz = (41.87 * mass + 26.17 * height - 20.93 * age + s);
-        return grundumsatz;
-    }
 
-    public static double energieverbrauch(double PAL, double duration, double grundumsatz) {
+
+    public static double energieverbrauch(Activity activity, User user) {
+        double PAL = getPAL(activity);
+        double grundumsatz = grundumsatz(user);
         double energieverbrauch = PAL * duration * (grundumsatz/24.0);
         return energieverbrauch;
     }
@@ -37,6 +29,18 @@ public class Energy {
         return estimatedLifeTimeForThisActivity;
     }
 
+
+    private static double grundumsatz(User user) {
+        double mass = user.getMass();
+        double height = user.getHeight();
+        double age = user.getAge();
+        double s=-674.08;
+        if(user.getMale()) {
+            s = 20.93;
+        }
+        double grundumsatz = (41.87 * mass + 26.17 * height - 20.93 * age + s);
+        return grundumsatz;
+    }
 
     private static double getLifeTimeForMetPerWeek(double met) {
 

@@ -101,7 +101,7 @@ public class ProfileActivity extends FragmentActivity
         userGender.setText(String.format(userGender.getText().toString(), "male"));
         userAge.setText(String.format(userAge.getText().toString(), 42));
         userSize.setText(String.format(userSize.getText().toString(), 180));
-        userWeight.setText(String.format(userWeight.getText().toString(), 75));
+        userWeight.setText(String.format(userWeight.getText().toString(), 120));
         // ... and stats
         totalDistance.setText(String.format(totalDistance.getText().toString(), "biking: 12km, hiking: 23km, running: 14km"));
         totalAltitude.setText(String.format(totalAltitude.getText().toString(), "biking: 854km, hiking: 451km, running: 673km"));
