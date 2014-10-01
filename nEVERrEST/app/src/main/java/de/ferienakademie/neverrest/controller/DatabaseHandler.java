@@ -13,9 +13,11 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.model.Activity;
 import de.ferienakademie.neverrest.model.Challenge;
 import de.ferienakademie.neverrest.model.LocationData;
+import de.ferienakademie.neverrest.model.MetricType;
 import de.ferienakademie.neverrest.model.User;
 
 /**
@@ -24,6 +26,8 @@ import de.ferienakademie.neverrest.model.User;
 public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 
     public final String TAG = DatabaseHandler.class.getSimpleName();
+
+	private final Context context;
 
     // name of the database file for your application -- change to something appropriate for your app
     private static final String DATABASE_NAME = "de.ferienakademie.neverrest.android.database";
@@ -39,6 +43,7 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		this.context = context;
     }
     /**
      * This is called when the database is first created. Usually you should call createTable statements here to create
@@ -72,7 +77,6 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
         */
 
         createDummyChallenges();
-
     }
     /**
      * This is called when your application is upgraded and it has a higher version number. This allows you to adjust
@@ -147,35 +151,73 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 
     public List<Challenge> createDummyChallenges() {
         List<Challenge> challenges = new LinkedList<Challenge>();
-        Challenge challenge1 = new Challenge();
-        challenge1.setTitle("Mt. Everest");
-        challenge1.setDescription("Very cool high mountain!");
-        challenge1.setStartingLatitude(27.98002);
-        challenge1.setStartingLongitude(86.921543);
-        Challenge challenge2 = new Challenge();
-        challenge2.setTitle("Mt. Coolio");
-        challenge2.setDescription("Very cool high mountain!");
-        challenge2.setStartingLatitude(10);
-        challenge2.setStartingLongitude(42);
-        Challenge challenge3 = new Challenge();
-        challenge3.setTitle("Root 66");
-        challenge3.setDescription("Very cool high mountain!");
-        challenge3.setStartingLatitude(12);
-        challenge3.setStartingLongitude(34);
-        Challenge challenge4 = new Challenge();
-        challenge4.setTitle("Gollum");
-        challenge4.setDescription("Very cool high mountain!");
-        challenge4.setStartingLatitude(0);
-        challenge4.setStartingLongitude(0);
-        challenges.add(challenge1);
-        challenges.add(challenge2);
-        challenges.add(challenge3);
-        challenges.add(challenge4);
+		challenges.add(new Challenge.Builder()
+				.title("Trans-Siberian Railway")
+				.description("Choo Choo")
+				.totalEffort(9228)
+				.continentName(context.getString(R.string.continent_asia))
+				.lat(54.5638511)
+				.lon(100.5932779)
+				.metricType(MetricType.HORIZONTALDISTANCE)
+				.build());
+		challenges.add(new Challenge.Builder()
+				.title("Great Wall of China")
+				.description("We are not planning to build a wall")
+				.totalEffort(8850)
+				.continentName(context.getString(R.string.continent_asia))
+				.lat(40.431908)
+				.lon(116.570375)
+				.metricType(MetricType.HORIZONTALDISTANCE)
+				.build());
+		challenges.add(new Challenge.Builder()
+				.title("Jacob's Trail")
+				.description("Don't cry, walk!")
+				.totalEffort(6950)
+				.continentName(context.getString(R.string.continent_europe))
+				.lat(-33.391868)
+				.lon(-70.6059235)
+				.metricType(MetricType.HORIZONTALDISTANCE)
+				.build());
+		challenges.add(new Challenge.Builder()
+				.title("Sahara-Crossing")
+				.description("Sweat like a camel")
+				.totalEffort(4800)
+				.continentName(context.getString(R.string.continent_africa))
+				.lat(22.2243761)
+				.lon(22.1154785)
+				.metricType(MetricType.HORIZONTALDISTANCE)
+				.build());
+		challenges.add(new Challenge.Builder()
+				.title("Route 66")
+				.description("= approx 8.12404")
+				.totalEffort(3939)
+				.continentName(context.getString(R.string.continent_north_america))
+				.lat(39.0576271)
+				.lon(-89.7508269)
+				.metricType(MetricType.HORIZONTALDISTANCE)
+				.build());
+		challenges.add(new Challenge.Builder()
+				.title("Tour de France")
+				.description("Without doping to the peak")
+				.totalEffort(3663)
+				.continentName(context.getString(R.string.continent_europe))
+				.lat(48.8588589)
+				.lon(2.3470599)
+				.metricType(MetricType.HORIZONTALDISTANCE)
+				.build());
+		challenges.add(new Challenge.Builder()
+				.title("Bike tour along Donau")
+				.description("Als fuhre ich am Ufer der Donau entlang, ...")
+				.totalEffort(2850)
+				.continentName(context.getString(R.string.continent_europe))
+				.lat(48.99763)
+				.lon(2.476667)
+				.metricType(MetricType.HORIZONTALDISTANCE)
+				.build());
         try {
-            getChallengeDao().create(challenge1);
-            getChallengeDao().create(challenge2);
-            getChallengeDao().create(challenge3);
-            getChallengeDao().create(challenge4);
+			for (Challenge challenge : challenges) {
+				getChallengeDao().create(challenge);
+			}
         }
         catch (SQLException exception) {
             Log.d(TAG, exception.getMessage());
