@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
@@ -33,22 +34,30 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
-import de.ferienakademie.neverrest.model.MetricType;
 
 public class FindChallengesActivity extends FragmentActivity implements NeverrestInterface {
 
+    private MediaPlayer mMediaPlayer;
+
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public static final String TAG = FindChallengesActivity.class.getSimpleName();
+
+    final String continentMarkerTAG = "continentMarker";
     final int notClickedMarkerImage = R.drawable.ic_launcher;
     final int clickedMarkerImage = R.drawable.ic_launcher;
+    final int onProgressChallengeMarkerImage = R.drawable.ic_map_marker_green;
+    final int finishedChallengeMarkerImage = R.drawable.ic_map_marker_gold;
+    final int notStartedChallengeMarkerImage = R.drawable.ic_map_marker_grey;
 
     ///////// NAVIGATION DRAWER STUFF /////////
     /**
@@ -57,12 +66,16 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private int mDrawerPosition;
     private boolean mIsCreated;
-
+    private DatabaseHandler databaseHandler;
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
 
+    private List<Marker> markersOnTheMap = new ArrayList<Marker>();
+    private Map<Marker, Challenge> challengeMarkersToChallengeMap = new HashMap<Marker, Challenge>();
+    private Map<String, List<Challenge>> continentMarkersToChallengesMap = new HashMap<String, List<Challenge>>();
+    private Map<String, Marker> stringToContinentMarkerMap = new HashMap<String, Marker>();
 
     //continents coordinates
     final LatLng coordinatesAfrica = new LatLng(0.2136714, 16.98485);
@@ -92,17 +105,16 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
     private List<Challenge> challengesAntarctica = new ArrayList<Challenge>();
 
 
-    //dummy challenges for Africa
-    private LatLng[] dummyChallengesAfrica = {new LatLng(28.0289837, 1.6666663), new LatLng(31.7945869, -7.0849336), new LatLng(-28.4792625, 24.6727135),
-            new LatLng(-18.7792678, 46.8344597), new LatLng(-4.0335162, 21.7500603)};
-
-
     final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_challenges);
+        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+
+        mMediaPlayer = MediaPlayer.create(context, R.raw.sky);
+        //mMediaPlayer.start();
 
         mIsCreated = true;
 
@@ -134,6 +146,17 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(coordinatesAfrica, 2.0f)));
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
+        challengesAntarctica = new ArrayList<Challenge>();
+        challengesAsia = new ArrayList<Challenge>();
+        challengesAustralia = new ArrayList<Challenge>();
+        challengesAfrica = new ArrayList<Challenge>();
+        challengesEurope = new ArrayList<Challenge>();
+        challengesNorthAmerica = new ArrayList<Challenge>();
+        challengesSouthAmerica = new ArrayList<Challenge>();
+        markersOnTheMap = new ArrayList<Marker>();
+        continentMarkersToChallengesMap = new HashMap<String, List<Challenge>>();
+        challengeMarkersToChallengeMap = new HashMap<Marker, Challenge>();
+        stringToContinentMarkerMap = new HashMap<String, Marker>();
         setUpMap();
     }
 
@@ -160,7 +183,6 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
-                mMap.setOnInfoWindowClickListener(new FindChallengesActivityOnInfoWindowClickListener());
                 mMap.setOnMarkerClickListener(new FindChallengesActivityOnMarkerClickListener());
                 setUpMap();
             }
@@ -174,43 +196,76 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
+        //create continent markers
+        markerAfrica = mMap.addMarker(new MarkerOptions().position(coordinatesAfrica).title(continentMarkerTAG+"Africa"));
+        markerAfrica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerAfrica.getTitle(),markerAfrica);
+        markerEurope = mMap.addMarker(new MarkerOptions().position(coordinatesEurope).title(continentMarkerTAG+"Europe"));
+        markerEurope.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerEurope.getTitle(),markerEurope);
+        markerAsia = mMap.addMarker(new MarkerOptions().position(coordinatesAsia).title(continentMarkerTAG+"Asia"));
+        markerAsia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerAsia.getTitle(),markerAsia);
+        markerNorthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesNorthAmerica).title(continentMarkerTAG+"NorthAmerica"));
+        markerNorthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerNorthAmerica.getTitle(),markerNorthAmerica);
+        markerSouthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesSouthAmerica).title(continentMarkerTAG+"SouthAmerica"));
+        markerSouthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerSouthAmerica.getTitle(),markerSouthAmerica);
+        markerAustralia = mMap.addMarker(new MarkerOptions().position(coordinatesAustralia).title(continentMarkerTAG+"Australia"));
+        markerAustralia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerAustralia.getTitle(),markerAustralia);
+        markerAntarctica = mMap.addMarker(new MarkerOptions().position(coordinatesAntarctica).title(continentMarkerTAG+"Antarctica"));
+        markerAntarctica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerAntarctica.getTitle(),markerAntarctica);
 
-        //TODO: get challenges from the DB
-        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
-        DatabaseHandler databaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
+        databaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
         try {
             Iterator<Challenge> mChallengeIterator = databaseHandler.getChallengeDao().iterator();
+
             while (mChallengeIterator.hasNext()) {
                 Challenge mChallenge = mChallengeIterator.next();
-                challengesAfrica.add(mChallenge);
+                if (mChallenge.getContinentName().equals(context.getString(R.string.continent_africa)))
+                {
+                    challengesAfrica.add(mChallenge);
+                }
+                else if (mChallenge.getContinentName().equals(context.getString(R.string.continent_antarctica)))
+                {
+                    challengesAntarctica.add(mChallenge);
+                }
+                else if (mChallenge.getContinentName().equals(context.getString(R.string.continent_asia)))
+                {
+                    challengesAsia.add(mChallenge);
+                }
+                else if (mChallenge.getContinentName().equals(context.getString(R.string.continent_australia)))
+                {
+                    challengesAustralia.add(mChallenge);
+                }
+                else if (mChallenge.getContinentName().equals(context.getString(R.string.continent_europe)))
+                {
+                    challengesEurope.add(mChallenge);
+                }
+                else if (mChallenge.getContinentName().equals(context.getString(R.string.continent_north_america)))
+                {
+                    challengesNorthAmerica.add(mChallenge);
+                }
+                else if (mChallenge.getContinentName().equals(context.getString(R.string.continent_south_america)))
+                {
+                    challengesSouthAmerica.add(mChallenge);
+                }
             }
+            continentMarkersToChallengesMap = new HashMap<String, List<Challenge>>();
+            continentMarkersToChallengesMap.put(markerAfrica.getTitle(),challengesAfrica);
+            continentMarkersToChallengesMap.put(markerAntarctica.getTitle(), challengesAntarctica);
+            continentMarkersToChallengesMap.put(markerAustralia.getTitle(), challengesAustralia);
+            continentMarkersToChallengesMap.put(markerEurope.getTitle(), challengesEurope);
+            continentMarkersToChallengesMap.put(markerNorthAmerica.getTitle(), challengesNorthAmerica);
+            continentMarkersToChallengesMap.put(markerSouthAmerica.getTitle(), challengesSouthAmerica);
+            continentMarkersToChallengesMap.put(markerAsia.getTitle(), challengesAsia);
         } catch (SQLException exception) {
             Log.d(TAG, exception.getMessage());
         }
 
-        //create continent markers
-        markerAfrica = mMap.addMarker(new MarkerOptions().position(coordinatesAfrica).title(""+ dummyChallengesAfrica.length));
-
-        //markerAfrica.showInfoWindow();
-        markerAfrica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
-
-        markerEurope = mMap.addMarker(new MarkerOptions().position(coordinatesEurope).title("" + dummyChallengesAfrica.length));
-        markerEurope.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
-
-        markerAsia = mMap.addMarker(new MarkerOptions().position(coordinatesAsia).title("" + dummyChallengesAfrica.length));
-        markerAsia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
-
-        markerNorthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesNorthAmerica).title("" + dummyChallengesAfrica.length));
-        markerNorthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
-
-        markerSouthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesSouthAmerica).title("" + dummyChallengesAfrica.length));
-        markerSouthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
-
-        markerAustralia = mMap.addMarker(new MarkerOptions().position(coordinatesAustralia).title("" + dummyChallengesAfrica.length));
-        markerAustralia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
-
-        markerAntarctica = mMap.addMarker(new MarkerOptions().position(coordinatesAntarctica).title("" + dummyChallengesAfrica.length));
-        markerAntarctica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
 
 
         //TODO: Change the image of the marker
@@ -355,104 +410,83 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
     class FindChallengesActivityOnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            //marker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(clickedMarkerImage, marker.getTitle())));
-            // custom dialog
-            final Dialog dialog = new Dialog(context);
-            dialog.setContentView(R.layout.custom_dialog_map_challenge_info);
-            dialog.setTitle(marker.getTitle());
+            if(!marker.getTitle().contains(continentMarkerTAG)) {
+                //marker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(clickedMarkerImage, marker.getTitle())));
 
-            // set the custom dialog components - text, image and button
-            TextView description = (TextView) dialog.findViewById(R.id.challengeDescription);
-            description.setText("Android custom dialog example!");
-            TextView details = (TextView) dialog.findViewById(R.id.challengeDetails);
-            details.setText("foo bar foo bar foo bar");
-            ImageView image = (ImageView) dialog.findViewById(R.id.challengeImage);
-            image.setImageResource(R.drawable.ic_launcher);
+                final Challenge mChallenge = challengeMarkersToChallengeMap.get(marker);
+                // custom dialog
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.custom_dialog_map_challenge_info);
+                dialog.setTitle(marker.getTitle());
 
+                // set the custom dialog components - text, image and button
+                TextView description = (TextView) dialog.findViewById(R.id.challengeDescription);
+                description.setText(mChallenge.getDescription());
+                TextView details = (TextView) dialog.findViewById(R.id.challengeDetails);
+                details.setText("TotalEffort: "+mChallenge.getTotalEffort()+ "\nType: " + mChallenge.getType());
+                ImageView image = (ImageView) dialog.findViewById(R.id.challengeImage);
+                image.setImageResource(R.drawable.ic_launcher);
 
-            Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonAcceptChallenge);
-            // if button is clicked, close the custom dialog
-            dialogButton.setOnClickListener(new View.OnClickListener() {
-               @Override
-                public void onClick(View v) {
-                   Intent intent = new Intent(context, ChallengeActivity.class);
-                   //intent.putExtra("Challenge", marker.getTitle());
-                   startActivity(intent);
-                }
-            });
-
-           dialog.show();
-
-            return false;
+                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonAcceptChallenge);
+                // if button is clicked, close the custom dialog
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, ChallengeActivity.class);
+                        mChallenge.setTimestampStarted(System.currentTimeMillis());
+                        try {
+                            databaseHandler.getChallengeDao().update(mChallenge);
+                        } catch(SQLException exception) {
+                            Log.d(TAG, exception.getMessage());
+                        }
+                        intent.putExtra("CHALLENGE", mChallenge);
+                        startActivity(intent);
+                    }
+                });
+                dialog.show();
+            }
+            else
+            {
+                mMap.clear();
+                resetMap();
+                stringToContinentMarkerMap.get(marker.getTitle()).setVisible(false);
+                continentMarkerClicked(marker);
+            }
+            return true;
         }
     }
 
-    class FindChallengesActivityOnInfoWindowClickListener implements GoogleMap.OnInfoWindowClickListener {
-
-        @Override
-        public void onInfoWindowClick(Marker marker) {
-            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(marker.getPosition(), 3.0f)));
-            marker.setVisible(false);
-
-            if (marker.getPosition().equals(coordinatesAfrica)) {
-
-                for (LatLng coordinateOfTheChallenge : dummyChallengesAfrica) {
-                    mMap.addMarker(new MarkerOptions().position(coordinateOfTheChallenge).title("Challenge Mt. Everest"));
+    public void continentMarkerClicked (Marker marker) {
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(marker.getPosition(), 3.0f)));
+        markersOnTheMap = new ArrayList<Marker>();
+        marker.setVisible(false);
+        ListIterator<Challenge> challengeListIterator = continentMarkersToChallengesMap.get(marker.getTitle()).listIterator();
+        while (challengeListIterator.hasNext())
+        {
+            Challenge mChallenge = challengeListIterator.next();
+            Marker challengeMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
+                    .title("" + challengeListIterator.nextIndex()));
+            if(mChallenge.isFinished())
+            {
+                //challengeMarker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(finishedChallengeMarkerImage, "")));
+                challengeMarker.setIcon(BitmapDescriptorFactory.fromResource(finishedChallengeMarkerImage));
+            }
+            else
+            {
+                if(mChallenge.getTimestampStarted()==0)
+                {
+                    //challengeMarker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notStartedChallengeMarkerImage, "")));
+                    challengeMarker.setIcon(BitmapDescriptorFactory.fromResource(notStartedChallengeMarkerImage));
                 }
-
-                ListIterator<Challenge> challengeListIterator = challengesAfrica.listIterator();
-                while (challengeListIterator.hasNext()) {
-                    Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
-                            .title(mChallenge.getTitle()));
-                }
-            } else if (marker.getPosition().equals(coordinatesEurope)) {
-                ListIterator<Challenge> challengeListIterator = challengesEurope.listIterator();
-                while (challengeListIterator.hasNext()) {
-                    Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
-                            .title(mChallenge.getTitle()));
-                }
-            } else if (marker.getPosition().equals(coordinatesAsia)) {
-                ListIterator<Challenge> challengeListIterator = challengesAsia.listIterator();
-                while (challengeListIterator.hasNext()) {
-                    Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
-                            .title(mChallenge.getTitle()));
-                }
-            } else if (marker.getPosition().equals(coordinatesNorthAmerica)) {
-                ListIterator<Challenge> challengeListIterator = challengesNorthAmerica.listIterator();
-                while (challengeListIterator.hasNext()) {
-                    Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
-                            .title(mChallenge.getTitle()));
-                }
-            } else if (marker.getPosition().equals(coordinatesSouthAmerica)) {
-                ListIterator<Challenge> challengeListIterator = challengesSouthAmerica.listIterator();
-                while (challengeListIterator.hasNext()) {
-                    Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
-                            .title(mChallenge.getTitle()));
-                }
-            } else if (marker.getPosition().equals(coordinatesAustralia)) {
-                ListIterator<Challenge> challengeListIterator = challengesAustralia.listIterator();
-                while (challengeListIterator.hasNext()) {
-                    Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
-                            .title(mChallenge.getTitle()));
-                }
-            } else if (marker.getPosition().equals(coordinatesAntarctica)) {
-                ListIterator<Challenge> challengeListIterator = challengesAntarctica.listIterator();
-                while (challengeListIterator.hasNext()) {
-                    Challenge mChallenge = challengeListIterator.next();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(mChallenge.getStartingLatitude(), mChallenge.getStartingLongitude()))
-                            .title(mChallenge.getTitle()));
+                else
+                {
+                    challengeMarker.setIcon(BitmapDescriptorFactory.fromResource(onProgressChallengeMarkerImage));
+                    //challengeMarker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(onProgressChallengeMarkerImage,"")));
                 }
             }
-            else {
-            }
-
+            markersOnTheMap.add(challengeMarker);
+            challengeMarkersToChallengeMap.put(challengeMarker, mChallenge);
         }
     }
 }

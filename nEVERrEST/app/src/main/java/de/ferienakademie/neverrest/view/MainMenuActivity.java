@@ -36,15 +36,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.controller.MetricCalculator;
+import de.ferienakademie.neverrest.model.Activity;
 import de.ferienakademie.neverrest.model.LocationData;
-import de.ferienakademie.neverrest.model.User;
 
 import static android.view.View.OnClickListener;
 
@@ -53,10 +56,12 @@ public class MainMenuActivity extends FragmentActivity
 
     public static final int NUMBER_RECENT_POINTS = 5; // for outlier detection and smoothing
     public static final String TAG = MainMenuActivity.class.getSimpleName();
+    public static final String SPORTS_TYPE = "sportsType";
 
 
     ///////// DATABASE ELEMENTS /////////
     private de.ferienakademie.neverrest.model.Activity mActivity;
+    private SportsType mSportsType;
 
 
     ///////// UI ELEMENTS /////////
@@ -66,16 +71,12 @@ public class MainMenuActivity extends FragmentActivity
     ///////// MAP AND LOCATION STUFF /////////
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LocationManager mLocationManager;
-    private Location mLocation;
-    private LatLng mLatLng;
-    private LinkedList<Location> mLocationList;
-    private LinkedList<LatLng> mLatLngList;
     private LinkedList<LocationData> mLocationDataList = new LinkedList<LocationData>();
     private String mProvider;
     private Marker mMarker;
-    private float[] mDistance;
-    private double mAltitude;
-    private float mSpeed;
+    private float mDistance = 0.f;
+
+
 
     ///////// NAVIGATION DRAWER STUFF /////////
     /**
@@ -129,18 +130,19 @@ public class MainMenuActivity extends FragmentActivity
     private CharSequence mTitle;
 
 
-    private DatabaseHandler mDatabaseHandler;
+    private DatabaseHandler mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
     private GPSService mLocationService;
     private Handler mUIHandler = new Handler() {
 
         @Override
         public void handleMessage(Message msg) {
+
             switch (msg.what) {
                 case GPSService.MSG_GPSDATA:
                     Log.d(TAG, "Got new GPS data!");
-                    mLocation = (Location) msg.obj;
-                    updateLocation();
-                    updateTextView();
+                    Location location = (Location) msg.obj;
+                    LocationData currentPosition = new LocationData(new Date(), location.getLatitude(), location.getLongitude(), location.getAltitude(), location.getSpeed());
+                    updateLocation(currentPosition);
                     break;
             }
         }
@@ -151,6 +153,7 @@ public class MainMenuActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        mSportsType = (SportsType) getIntent().getSerializableExtra(MainMenuActivity.SPORTS_TYPE);
         mIsCreated = true;
 
 
@@ -168,8 +171,9 @@ public class MainMenuActivity extends FragmentActivity
     @Override
     protected void onResume() {
         super.onResume();
+        setUpMapIfNeeded();
+        initLocationHandler();
 
-        handleLocation();
         if (accelor != null) {
 
             sensorManager.registerListener(this, accelor, 25000, 0);
@@ -182,10 +186,9 @@ public class MainMenuActivity extends FragmentActivity
     protected void onPause() {
         super.onPause();
         setUpMapIfNeeded();
+
     }
-
-
-    private void handleLocation() {
+    private void initLocationHandler() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             mProvider = LocationManager.GPS_PROVIDER;
@@ -193,25 +196,19 @@ public class MainMenuActivity extends FragmentActivity
             mProvider = LocationManager.NETWORK_PROVIDER;
         }
 
-        mLocationList = new LinkedList<Location>();
-        mLatLngList = new LinkedList<LatLng>();
-        mDistance = new float[1];
-
         // initialize LocationManager => last Location
-        mLocation = mLocationManager.getLastKnownLocation(mProvider);
-
-        if (mLocation != null) {
-            mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-            mLocationList.add(mLocation);
-            mLatLngList.add(mLatLng);
-
-            mAltitude = mLocation.getAltitude();
-            mSpeed = mLocation.getSpeed() * 3.6f;
-
-            updateTextView();
-
-        } else {
-            updateTextView();
+        Location lastKnownLocation = mLocationManager.getLastKnownLocation(mProvider);
+        if (lastKnownLocation != null) {
+            LocationData currentPosition = new LocationData(new Date(), lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), lastKnownLocation.getAltitude(), lastKnownLocation.getSpeed());
+            if (mLocationDataList.size() > 0) {
+                LocationData previous = mLocationDataList.getLast();
+                if (previous.getLatitude() != currentPosition.getLatitude()
+                        || previous.getLongitude() != currentPosition.getLongitude()) {
+                    updateLocation(currentPosition);
+                }
+            } else {
+                updateLocation(currentPosition);
+            }
         }
     }
 
@@ -227,53 +224,54 @@ public class MainMenuActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateLocation() {
-        LocationData current = new LocationData(mLocation);
-
+    public void updateLocation(LocationData currentPosition) {
         List<LocationData> recentPoints;
-        if (mLocationDataList.size() >= 5) {
+        if (mLocationDataList.size() >= NUMBER_RECENT_POINTS) {
             recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS + 1), mLocationDataList.size() - 1);
         } else {
             recentPoints = mLocationDataList;
         }
 
-        if (!MetricCalculator.isValid(current, recentPoints)) {
-            Log.d(TAG, "Ignoring current location");
+        boolean isValid = MetricCalculator.isValid(currentPosition, recentPoints);
+        Toast.makeText(getApplicationContext(), "Lat:" + currentPosition.getLatitude()
+                        + " Long: "+ currentPosition.getLongitude()
+                        + " Alt: " + currentPosition.getAltitude()
+                        + " Valid: " + isValid,
+                Toast.LENGTH_LONG);
+
+        if (!MetricCalculator.isValid(currentPosition, recentPoints)) {
+            Log.d(TAG, "Ignoring current location. Looks like an outlier");
             return;
         }
 
-        // TODO smoothing
-
-        mLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-
-        Log.d(TAG, String.valueOf(mLatLng.latitude) + ", " + String.valueOf(mLatLng.longitude));
-
-        mSpeed = mLocation.getSpeed();
-        mAltitude = mLocation.getAltitude();
-
-        mLocationList.add(mLocation);
-        mLatLngList.add(mLatLng);
+        // Smoothing
+        currentPosition = MetricCalculator.smoothLocationData(currentPosition, recentPoints);
+        if (null == currentPosition.getActivity()) {
+            currentPosition.setActivity(mActivity);
+        }
 
         // compute total distance
-        int size = mLocationList.size();
+        int size = mLocationDataList.size();
         if (size > 1) {
             float[] tmp = new float[1];
 
-            Location.distanceBetween(mLatLngList.get(size - 2).latitude,
-                    mLatLngList.get(size - 2).longitude,
-                    mLatLngList.get(size - 1).latitude,
-                    mLatLngList.get(size - 1).longitude, tmp);
-            mDistance[0] += tmp[0];
+            LocationData previous = mLocationDataList.get(size - 2);
+            Location.distanceBetween(previous.getLatitude(),
+                    previous.getLongitude(),
+                    currentPosition.getLatitude(),
+                    currentPosition.getLongitude(), tmp);
+
+            mDistance += tmp[0];
         }
 
         // save new location in database
         try {
-            mDatabaseHandler.getLocationDataDao().create(new LocationData(mLocation));
+            mDatabaseHandler.getLocationDataDao().create(currentPosition);
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
         }
+        mLocationDataList.add(currentPosition);
 
-        updateTextView();
         updateMap();
     }
 
@@ -285,6 +283,7 @@ public class MainMenuActivity extends FragmentActivity
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
+                // TODO this won't draw the track
                 updateMap();
 
             }
@@ -298,44 +297,46 @@ public class MainMenuActivity extends FragmentActivity
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void updateMap() {
-        if (mLatLng != null) {
-            Toast.makeText(this, String.valueOf(mLatLng.latitude) +
-                            ", " + String.valueOf(mLatLng.longitude),
+        if (mLocationDataList != null && mLocationDataList.size() > 1) {
+            LocationData previous = mLocationDataList.get(mLocationDataList.size() - 2);
+            LocationData current = mLocationDataList.get(mLocationDataList.size() - 1);
+            LatLng currentLatLng = new LatLng(current.getLatitude(), current.getLongitude());
+
+            Toast.makeText(this, String.valueOf(current.getLatitude()) +
+                            ", " + String.valueOf(current.getLongitude()),
                     Toast.LENGTH_SHORT).show();
 
             if (mMap != null) {
                 // draw route in map
-                if (mLocationList.size() > 1) {
+                if (mLocationDataList.size() > 1) {
                     mMap.addPolyline(new PolylineOptions()
-                            .add(mLatLngList.get(mLatLngList.size() - 2), mLatLng)
+                            .add(new LatLng(previous.getLatitude(), previous.getLongitude()),
+                                    currentLatLng)
                             .color(Color.parseColor("#3f51b5")).width(20));
                 }
 
                 // update Marker position
                 if (mMarker == null) {
                     mMarker = mMap.addMarker(new MarkerOptions()
-                            .position(mLatLng)
+                            .position(currentLatLng)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher)));
                 } else {
-                    mMarker.setPosition(mLatLng);
+                    mMarker.setPosition(currentLatLng);
                 }
 
                 mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
                 // update Camera
                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(mLatLng).tilt(75).bearing(mLocation.getBearing())
+                        .target(currentLatLng).tilt(75)
                         .zoom(16).build();
+                // .bearing(mLocation.getBearing())
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
             }
         }
 
     }
-
-    private void updateTextView() {
-    }
-
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         GPSService.GPSServiceBinder binder = (GPSService.GPSServiceBinder) iBinder;
@@ -354,15 +355,32 @@ public class MainMenuActivity extends FragmentActivity
             case R.id.btnStartGPSTracking:
                 Log.d(TAG, "Toggle Button pressed.");
                 if (mBtnGPSTracking.isChecked()) {
+                    // Start new activity
+                    mActivity = new Activity(UUID.randomUUID().toString(), System.currentTimeMillis(),
+                            0L, "Some user id", mSportsType);
+                    try {
+                        mDatabaseHandler.getActivityDao().create(mActivity);
+                    } catch (SQLException e) {
+                        Log.e(TAG, e.getMessage());
+                        return;
+                    }
+
                     Intent serviceIntent = new Intent(this, GPSService.class);
                     bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
                 } else {
+                    // Stop tracking and finish activity
+
+                    mActivity.setDuration(System.currentTimeMillis() - mActivity.getTimestamp());
+                    try {
+                        mDatabaseHandler.getActivityDao().update(mActivity);
+                    } catch (SQLException e) {
+                        Log.e(TAG, e.getMessage());
+                    }
                     unbindService(this);
                 }
                 break;
         }
     }
-
     @Override
     public void setUpNavigationDrawer() {
         mDrawerPosition = getIntent().getIntExtra(Constants.EXTRA_POSITION, -1);
@@ -414,7 +432,6 @@ public class MainMenuActivity extends FragmentActivity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
@@ -486,7 +503,7 @@ public class MainMenuActivity extends FragmentActivity
             if (mSamplesFilteredX[counterSamplesFiltered] < 0.15f) {
                 mSamplesFilteredX[counterSamplesFiltered] = 0.0f;
             }
-           mSamplesFilteredY[counterSamplesFiltered]
+            mSamplesFilteredY[counterSamplesFiltered]
                     = 0.25f * (mMovingAvgY[0] + mMovingAvgY[1] + mMovingAvgY[2] + mMovingAvgY[3]);
             if (mSamplesFilteredY[counterSamplesFiltered] < 0.15f) {
                 mSamplesFilteredY[counterSamplesFiltered] = 0.0f;

@@ -3,14 +3,16 @@ package de.ferienakademie.neverrest.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.sql.SQLException;
+
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
+
 @DatabaseTable(tableName = Activity.TABLE_ACTIVITY)
 public final class Activity {
 
     public final static String TABLE_ACTIVITY = "activity";
     public final static String COL_UUID = "uuid";
     public final static String COL_DURATION = "duration";
-    public final static String COL_ENERGY = "energy";
-    public final static String COL_ADDITIONAL_LIFETIME = "additional_lifetime";
     public final static String COL_TIMESTAMP = "timestamp";
     public final static String COL_USER_UUID = "user_uuid";
     public final static String COL_TYPE = "type";
@@ -20,13 +22,7 @@ public final class Activity {
     private String uuid;
 
     @DatabaseField(columnName = COL_DURATION)
-    private Double duration;
-
-    @DatabaseField(columnName = COL_ENERGY)
-    private Double energy;
-
-    @DatabaseField(columnName = COL_ADDITIONAL_LIFETIME)
-    private Double additionalLifetime;
+    private long duration;
 
     @DatabaseField(columnName = COL_TIMESTAMP)
     private Long timestamp;
@@ -45,17 +41,13 @@ public final class Activity {
     public Activity(
             String uuid,
             Long timestamp,
-            Double duration,
-            Double energy,
-            Double additionalLifetime,
+            long duration,
             String userUuid,
             SportsType type) {
 
         this.uuid = uuid;
         this.timestamp = timestamp;
         this.duration = duration;
-        this.energy=energy;
-        this.additionalLifetime = additionalLifetime;
         this.userUuid = userUuid;
         this.type = type;
 
@@ -67,18 +59,13 @@ public final class Activity {
     }
 
 
-    public Double getDuration() {
+    public long getDuration() {
         return duration;
     }
 
 
     public Long getTimestamp() {
         return timestamp;
-    }
-
-
-    public Double getEnergy() {
-        return energy;
     }
 
 
@@ -91,8 +78,28 @@ public final class Activity {
         return type;
     }
 
-    public Double getAdditionalLifetime() {
-        return additionalLifetime;
+    //returns the additional lifetime in milliseconds for this activity
+    //returns -1 if something unexpected happened
+    public double getAdditionalLifetimeInMilliseconds() {
+        long additionalLifetimeInMilliseconds = -1;
+        try {
+            additionalLifetimeInMilliseconds = Energy.gewonneneLebenszeitInMillis(this,DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForId(userUuid));
+        } catch (SQLException exception) {
+            System.out.println("SQLException");
+        }
+        return additionalLifetimeInMilliseconds;
+    }
+
+    //returns consumped calories for this activity
+    //returns -1 if something unexpected happened
+    public double getConsumptedEnergyInCalories() {
+        double energieverbrauchInKiloCalories = -1.0;
+        try {
+            energieverbrauchInKiloCalories = Energy.energieverbrauch(this, DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().queryForId(userUuid));
+        } catch(SQLException exception) {
+            System.out.println("SQLException");
+        }
+        return energieverbrauchInKiloCalories;
     }
 
 
@@ -100,12 +107,8 @@ public final class Activity {
         this.uuid = uuid;
     }
 
-    public void setDuration(Double duration) {
+    public void setDuration(long duration) {
         this.duration = duration;
-    }
-
-    public void setEnergy(Double energy) {
-        this.energy = energy;
     }
 
     public void setTimestamp(Long timestamp) {
@@ -119,6 +122,5 @@ public final class Activity {
     public void setSportsType(SportsType type) {
         this.type = type;
     }
-
 
 }

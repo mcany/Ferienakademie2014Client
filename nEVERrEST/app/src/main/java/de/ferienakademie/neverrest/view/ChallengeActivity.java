@@ -1,10 +1,12 @@
 package de.ferienakademie.neverrest.view;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
@@ -27,6 +29,8 @@ import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
+import de.ferienakademie.neverrest.model.MetricType;
+import de.ferienakademie.neverrest.model.SportsType;
 
 import static android.view.View.OnClickListener;
 
@@ -36,6 +40,7 @@ public class ChallengeActivity extends FragmentActivity
     private Challenge mChallenge;
     private TextView mHeading;
     private ImageView mChallengeImage;
+    private TextView mDetailsTextView;
     private Button mStartButton;
     private Button mAbortButton;
 
@@ -61,24 +66,16 @@ public class ChallengeActivity extends FragmentActivity
         setContentView(R.layout.activity_challenge);
         mChallenge = (Challenge) getIntent().getSerializableExtra(Constants.EXTRA_CHALLENGE);
 
-        //Challenge dummyChallenge = new Challenge("idsaf", "Roberti Golumm", de.ferienakademie.neverrest.shared.beans.Activity.Type.CYCLING,"des",100.0,100);
-        //mChallenge = dummyChallenge;
         mHeading = (TextView) findViewById(R.id.heading);
         mHeading.setText(mChallenge.getTitle());
         mStartButton = (Button) findViewById(R.id.buttonStart);
         mAbortButton = (Button) findViewById(R.id.buttonAbort);
         mStartButton.setOnClickListener(this);
         mAbortButton.setOnClickListener(this);
-        //   mChallenge.getPercentageCompleted();
 
         mIsCreated = true;
         setUpNavigationDrawer();
 
-        /*challengeImage = (ImageView) findViewById(R.id.progressBarImage);
-        Resources res = getResources();
-        challengeImage.setImageDrawable(res.getDrawable(R.drawable.milena_und_chris));
-        Matrix imageMatrix = challengeImage.getImageMatrix();
-        //challenge.getPercentageCompleted();*/
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.ProgressBarImage);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -92,6 +89,19 @@ public class ChallengeActivity extends FragmentActivity
         params.width = (int) (size.x * 0.86);
         progressBar.setMax((int) mChallenge.getTotalEffort());
         progressBar.setProgress((int) (mChallenge.getTotalEffort() - mChallenge.getCompletedEffort()));
+        mDetailsTextView = (TextView) findViewById(R.id.textViewDetails);
+        //List<Activity> activitiesOfChallange = DatabaseUtil.INSTANCE.getDatabaseHandler().getActivityDao().queryForEq(de.ferienakademie.neverrest.model.Activity.C)
+        //int duration =
+        String unit = (mChallenge.getType() == MetricType.HORIZONTALDISTANCE) ? " km" : " m";
+        mDetailsTextView.setText(mChallenge.getCompletedEffort() + " of " + mChallenge.getTotalEffort() + unit + "\n" );
+        if(mChallenge.getType() == MetricType.HORIZONTALDISTANCE) {
+            linearLayoutProgressBar.setRotation(180);
+        }
+        Drawable iconChallenge = (mChallenge.getType() == MetricType.HORIZONTALDISTANCE) ? this.getResources().getDrawable(R.drawable.distance) : this.getResources().getDrawable(R.drawable.altitude);
+        ((ImageView)findViewById(R.id.imageChallengeType)).setImageDrawable(iconChallenge);
+        Drawable iconChallengeGroup =  this.getResources().getDrawable(R.drawable.single_200x200);
+        ((ImageView)findViewById(R.id.imageChallengeTypeGroup)).setImageDrawable(iconChallengeGroup);
+
     }
 
 
@@ -131,13 +141,13 @@ public class ChallengeActivity extends FragmentActivity
 
                                 switch (which) {
                                     case 0:
-                                        intent.putExtra("Activity", "mit Challenge jar setzen");
+                                        intent.putExtra(MainMenuActivity.SPORTS_TYPE, SportsType.RUNNING);
                                         break;
                                     case 1:
-                                        intent.putExtra("Activity", "mit Challenge jar setzen");
+                                        intent.putExtra(MainMenuActivity.SPORTS_TYPE, SportsType.CYCLING);
                                         break;
                                     case 2:
-                                        intent.putExtra("Activity", "auch oben die Buttons");
+                                        intent.putExtra(MainMenuActivity.SPORTS_TYPE, SportsType.HIKING);
                                         break;
                                 }
                                 startActivity(intent);
