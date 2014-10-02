@@ -35,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/padding_medium"
-        android:text="Sports: %s" />
+        android:text="Type: %s" />
 
     <TextView
         android:id="@+id/challengeStart"
@@ -58,11 +58,13 @@
         android:paddingBottom="@dimen/padding_medium"
         android:text="Duration: %s" />
 
+    <!--
     <TextView
         android:id="@+id/challengeDurationDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/padding_medium"
         android:text="Duration Details: %s" />
+        -->
 
 </LinearLayout>

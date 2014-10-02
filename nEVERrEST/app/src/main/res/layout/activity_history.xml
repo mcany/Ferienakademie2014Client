@@ -17,18 +17,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/historyImage"
-                android:layout_width="60dp "
-                android:layout_height="60dp"
-                android:layout_gravity="fill"
-                android:scaleType="fitXY"
-                android:src="@drawable/sampleimage" />
-
             <TextView
                 android:id="@+id/historyTitle"
+                android:paddingTop="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="Badges"

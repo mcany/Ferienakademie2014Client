@@ -34,7 +34,7 @@ public class HistoryDetailsActivity extends Activity {
         start = (TextView) findViewById(R.id.challengeStart);
         finish = (TextView) findViewById(R.id.challengeFinish);
         duration = (TextView) findViewById(R.id.challengeDuration);
-        durationDetails = (TextView) findViewById(R.id.challengeDurationDetails);
+        // durationDetails = (TextView) findViewById(R.id.challengeDurationDetails);
         image = (ImageView) findViewById(R.id.challengeBadge);
 
         Challenge challenge = (Challenge)getIntent().getSerializableExtra(Constants.EXTRA_CHALLENGE);

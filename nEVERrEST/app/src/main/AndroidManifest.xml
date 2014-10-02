@@ -59,6 +59,14 @@
             android:name=".view.AfterChallengeDetailViewActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.HistoryActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.HistoryDetailsActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
 
         <service android:name=".controller.GPSService" />
 

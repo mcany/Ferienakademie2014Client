@@ -33,7 +33,9 @@ public class HistoryListAdapter extends ArrayAdapter<Challenge> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(de.ferienakademie.neverrest.R.layout.list_history, parent, false);
         TextView textView = (TextView) rowView.findViewById(R.id.firstLine);
+		textView.setTextColor(context.getResources().getColor(android.R.color.black));
         TextView textViewDetails = (TextView) rowView.findViewById(R.id.secondLine);
+		textViewDetails.setTextColor(context.getResources().getColor(android.R.color.black));
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         textView.setText(values.get(position).getTitle());
         textViewDetails.setText(values.get(position).getDescription());
