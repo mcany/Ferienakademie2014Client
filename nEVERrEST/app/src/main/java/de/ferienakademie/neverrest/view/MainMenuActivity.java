@@ -300,7 +300,7 @@ public class MainMenuActivity extends FragmentActivity
                 if (mBtnGPSTracking.isChecked()) {
                     // Start new activity
                     mActivity = new Activity(UUID.randomUUID().toString(), System.currentTimeMillis(),
-                            0L, "Some user id", mSportsType);
+                            0L, "Some user id", mSportsType, null);
                     try {
                         mDatabaseHandler.getActivityDao().create(mActivity);
                     } catch (SQLException e) {

@@ -16,6 +16,7 @@ public final class Activity {
     public final static String COL_TIMESTAMP = "timestamp";
     public final static String COL_USER_UUID = "user_uuid";
     public final static String COL_TYPE = "type";
+    public final static String COL_CHALLENGE = "challenge";
 
 
     @DatabaseField(columnName = COL_UUID, id = true)
@@ -33,6 +34,10 @@ public final class Activity {
     @DatabaseField(columnName = COL_TYPE)
     private SportsType type;
 
+    @DatabaseField(columnName = COL_CHALLENGE)
+    private Challenge challenge;
+
+
     public Activity() {
         // ORMLite needs a no-arg constructor
     }
@@ -43,13 +48,15 @@ public final class Activity {
             Long timestamp,
             long duration,
             String userUuid,
-            SportsType type) {
+            SportsType type,
+            Challenge challenge) {
 
         this.uuid = uuid;
         this.timestamp = timestamp;
         this.duration = duration;
         this.userUuid = userUuid;
         this.type = type;
+        this.challenge = challenge;
 
     }
 
@@ -123,4 +130,19 @@ public final class Activity {
         this.type = type;
     }
 
+    public Challenge getChallenge() {
+        return challenge;
+    }
+
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
+    }
+
+    public SportsType getType() {
+        return type;
+    }
+
+    public void setType(SportsType type) {
+        this.type = type;
+    }
 }
