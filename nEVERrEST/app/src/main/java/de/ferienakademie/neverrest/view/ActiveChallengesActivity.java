@@ -173,7 +173,7 @@ public class ActiveChallengesActivity extends FragmentActivity implements Neverr
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
         Intent intent = new Intent(this, ChallengeActivity.class);
-        intent.putExtra(Constants.EXTRA_CHALLENGE, challenges.get(position));
+        intent.putExtra(Constants.EXTRA_CHALLENGE, mAdapter.getItem(position));
         intent.putExtra(Constants.EXTRA_POSITION, mDrawerPosition);
         startActivity(intent);
 
