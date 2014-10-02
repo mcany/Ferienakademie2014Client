@@ -1,14 +1,26 @@
 package de.ferienakademie.neverrest.view;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.model.MetricType;
+import de.ferienakademie.neverrest.model.SportsType;
 
 /**
  * Created by Christoph on 01.10.2014.
  */
 public class AfterChallengeDetailViewActivity extends FragmentActivity implements View.OnClickListener {
 
-	/*
     private de.ferienakademie.neverrest.model.Activity mSportiveActivity;
     private Button mDetailsButton;
     private Button mMenuButton;
@@ -28,7 +40,8 @@ public class AfterChallengeDetailViewActivity extends FragmentActivity implement
         mTextViewChallengeName = (TextView) findViewById(R.id.textViewChallengeName);
         mTextViewChallengeName.setText("Challenge Name");
         mTextViewGained = (TextView) findViewById(R.id.textViewGained);
-        mTextViewGained.setText("You gained: " + mSportiveActivity.getAdditionalLifetimeInMilliseconds() + " ms additional lifetime\nAnd burned " + mSportiveActivity.getConsumptedEnergyInCalories() + " calories.");
+        mTextViewGained.setText("You gained: " + ((int ) (Math.random() * 10000)) + " ms additional lifetime\nAnd burned " + ((int) (Math.random() * 100000)) + " calories.");
+		// mTextViewGained.setText("You gained: " + mSportiveActivity.getAdditionalLifetimeInMilliseconds() + " ms additional lifetime\nAnd burned " + mSportiveActivity.getConsumptedEnergyInCalories() + " calories.");
         mTextViewFinishedStage = (TextView) findViewById(R.id.textViewFinishedStage);
         String unitSports = (mSportiveActivity.getChallenge().getType() == MetricType.HORIZONTALDISTANCE) ? "km" : "altitude meters";
         mTextViewFinishedStage.setText("Results:\n" + " "+ unitSports + " \n" + mSportiveActivity.getDuration()/60000.0 + " min");
@@ -67,11 +80,9 @@ public class AfterChallengeDetailViewActivity extends FragmentActivity implement
         }
         return super.onOptionsItemSelected(item);
     }
-    */
 
     @Override
     public void onClick(View view) {
-		/*
         switch(view.getId()) {
             case R.id.buttonDetails:
                 Toast.makeText(this, "Ich habe nicht die Absicht Details anzuzeigen...", Toast.LENGTH_SHORT).show();
@@ -82,6 +93,6 @@ public class AfterChallengeDetailViewActivity extends FragmentActivity implement
                 startActivity(intent);
                 break;
         }
-        */
+
     }
 }
