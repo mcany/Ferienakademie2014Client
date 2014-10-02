@@ -3,12 +3,13 @@ package de.ferienakademie.neverrest.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 
 @DatabaseTable(tableName = Activity.TABLE_ACTIVITY)
-public final class Activity {
+public final class Activity implements Serializable {
 
     public final static String TABLE_ACTIVITY = "activity";
     public final static String COL_UUID = "uuid";
@@ -16,6 +17,9 @@ public final class Activity {
     public final static String COL_TIMESTAMP = "timestamp";
     public final static String COL_USER_UUID = "user_uuid";
     public final static String COL_TYPE = "type";
+    public final static String COL_CHALLENGE = "challenge";
+    public final static String COL_TOTAL_DISTANCE = "total_distance";
+    public final static String COL_TOTAL_HEIGHT = "total_height";
 
 
     @DatabaseField(columnName = COL_UUID, id = true)
@@ -33,6 +37,15 @@ public final class Activity {
     @DatabaseField(columnName = COL_TYPE)
     private SportsType type;
 
+    @DatabaseField(columnName = COL_CHALLENGE)
+    private Challenge challenge;
+
+    @DatabaseField(columnName = COL_TOTAL_DISTANCE)
+    private double totalDistance;
+
+    @DatabaseField(columnName = COL_TOTAL_HEIGHT)
+    private double totalHeight;
+
     public Activity() {
         // ORMLite needs a no-arg constructor
     }
@@ -43,13 +56,15 @@ public final class Activity {
             Long timestamp,
             long duration,
             String userUuid,
-            SportsType type) {
+            SportsType type,
+            Challenge challenge) {
 
         this.uuid = uuid;
         this.timestamp = timestamp;
         this.duration = duration;
         this.userUuid = userUuid;
         this.type = type;
+        this.challenge = challenge;
 
     }
 
@@ -123,4 +138,35 @@ public final class Activity {
         this.type = type;
     }
 
+    public Challenge getChallenge() {
+        return challenge;
+    }
+
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
+    }
+
+    public SportsType getType() {
+        return type;
+    }
+
+    public void setType(SportsType type) {
+        this.type = type;
+    }
+
+    public double getTotalDistance() {
+        return totalDistance;
+    }
+
+    public void setTotalDistance(double totalDistance) {
+        this.totalDistance = totalDistance;
+    }
+
+    public double getTotalHeight() {
+        return totalHeight;
+    }
+
+    public void setTotalHeight(double totalHeight) {
+        this.totalHeight = totalHeight;
+    }
 }
