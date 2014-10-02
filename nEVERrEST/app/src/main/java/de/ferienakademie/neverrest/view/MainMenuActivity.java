@@ -395,8 +395,9 @@ public class MainMenuActivity extends FragmentActivity
                     // Start new activity
                     time.setBase(SystemClock.elapsedRealtime() + timeWhenStoppedChronometer);
                     time.start();
+                    //TODO: enter real challenge
                     mActivity = new Activity(UUID.randomUUID().toString(), System.currentTimeMillis(),
-                            0L, "Some user id", mSportsType);
+                            0L, "Some user id", mSportsType, null);
                     try {
                         mDatabaseHandler.getActivityDao().create(mActivity);
                     } catch (SQLException e) {

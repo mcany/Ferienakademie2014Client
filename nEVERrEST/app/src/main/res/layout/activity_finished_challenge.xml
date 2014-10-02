@@ -1,0 +1,93 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
+    tools:context="de.ferienakademie.neverrest.view.FinishedChallengeActivity">
+
+    <LinearLayout
+        android:id="@+id/headingLayout"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:background="#CCCCCC">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageChallengeType"
+                android:src="@drawable/ic_launcher"
+                android:layout_below="@+id/textView"
+                android:layout_gravity="center_vertical"/>
+            <TextView
+                android:id="@+id/textViewChallengeName"
+                android:background="#CCCCCC"
+                android:gravity="center_vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:text="ChallengeName"
+                android:paddingLeft="10dip"
+                android:paddingRight="0dip"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <TextView
+        android:text="CONGRATULATIONS"
+        android:id="@+id/congrats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/headingLayout"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/badgeImage"
+        android:src="@drawable/ic_launcher"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        />
+
+
+    <TextView
+        android:text="Challenge Completed!"
+        android:id="@+id/challengeCompleted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/badgeImage"
+        android:layout_alignRight="@+id/congrats"
+        android:layout_alignEnd="@+id/congrats" />
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Close"
+            android:id="@+id/buttonClose" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonShare"
+            android:text="Share"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+</RelativeLayout>

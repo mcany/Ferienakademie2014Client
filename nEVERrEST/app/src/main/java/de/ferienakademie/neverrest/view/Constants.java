@@ -14,5 +14,6 @@ public class Constants {
     ////// INPUT EXTRA CONSTANTS ///////
     public static final String EXTRA_POSITION = "POSITION";
     public static final String EXTRA_CHALLENGE = "CHALLENGE";
+    public static final String EXTRA_ACTIVITY ="ACTIVITY";
 
 }
