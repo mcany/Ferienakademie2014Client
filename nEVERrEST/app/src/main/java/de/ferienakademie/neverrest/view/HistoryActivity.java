@@ -1,12 +1,20 @@
 package de.ferienakademie.neverrest.view;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.controller.DatabaseHandler;
+import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.controller.HistoryListAdapter;
 import de.ferienakademie.neverrest.model.Challenge;
 
@@ -17,28 +25,52 @@ import de.ferienakademie.neverrest.model.Challenge;
 
 public class HistoryActivity extends FragmentActivity implements NeverrestInterface {
 
-    private ListView mListView;
+    private DatabaseHandler mDatabaseHandler;
+    private Context context = this;
+
+    //TODO: implement the group challenges (already some code provided)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        mListView = (ListView) findViewById(R.id.historyList);
+        //initialize database
+        DatabaseUtil.INSTANCE.initialize(getApplicationContext());
+        mDatabaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
 
-        ArrayList<Challenge> list = new ArrayList<Challenge>();
-
-        for (int i = 0; i < 25; i++) {
-            Challenge c = new Challenge();
-            c.setTitle("Challange " + i);
-            c.setDescription("Description " + i);
-            list.add(c);
+        //get list of all finished challenges from the database
+        List<Challenge> finishedSingleChallenges = new ArrayList<Challenge>();
+        finishedSingleChallenges.clear();
+        try {
+            finishedSingleChallenges = mDatabaseHandler.getChallengeDao().queryForEq("finished", true);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        final HistoryListAdapter adapter = new HistoryListAdapter(getApplicationContext(), list);
-        mListView.setAdapter(adapter);
+        //add all finished challenges to the listview and set the according adapter
+        final ListView listviewSingle = (ListView) findViewById(R.id.historyListSingle);
+        //ListView listviewGroup = (ListView) findViewById(R.id.historyListGroup);
 
+        final ArrayList<Challenge> listSingle = new ArrayList<Challenge>();
+        //ArrayList<Challenge> listGroup = new ArrayList<Challenge>();
 
+        for (int i = 0; i < finishedSingleChallenges.size(); i++) {
+            listSingle.add(finishedSingleChallenges.get(i));
+        }
+
+        final HistoryListAdapter adapterSingle = new HistoryListAdapter(getApplicationContext(), listSingle);
+        listviewSingle.setAdapter(adapterSingle);
+
+        //click on a finished challenge opens the challenge details
+        listviewSingle.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Intent intent = new Intent(context, HistoryDetailsActivity.class);
+                intent.putExtra(Constants.EXTRA_CHALLENGE, listSingle.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

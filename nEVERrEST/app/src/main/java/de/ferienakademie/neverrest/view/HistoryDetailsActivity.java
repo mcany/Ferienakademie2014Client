@@ -2,14 +2,11 @@ package de.ferienakademie.neverrest.view;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import de.ferienakademie.neverrest.R;
+import de.ferienakademie.neverrest.model.Challenge;
 
 /**
  * Created by arno on 29/09/14.
@@ -23,6 +20,7 @@ public class HistoryDetailsActivity extends Activity {
     TextView finish;
     TextView duration;
     TextView durationDetails;
+    ImageView image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +35,20 @@ public class HistoryDetailsActivity extends Activity {
         finish = (TextView) findViewById(R.id.challengeFinish);
         duration = (TextView) findViewById(R.id.challengeDuration);
         durationDetails = (TextView) findViewById(R.id.challengeDurationDetails);
+        image = (ImageView) findViewById(R.id.challengeBadge);
 
-        // set placeholders for user
-        name.setText(String.format(name.getText().toString(), "Mt. Everest"));
-        value.setText(String.format(value.getText().toString(), "8848m"));
-        sports.setText(String.format(sports.getText().toString(), "Hiking"));
-        start.setText(String.format(start.getText().toString(), "02.03.2010"));
-        finish.setText(String.format(finish.getText().toString(), "24.09.2014"));
-        duration.setText(String.format(duration.getText().toString(), "125:52 h"));
-        durationDetails.setText(String.format(durationDetails.getText().toString(), "7h bike, 10h etc"));
+        Challenge challenge = (Challenge)getIntent().getSerializableExtra(Constants.EXTRA_CHALLENGE);
 
-
+        // set placeholders for finished challenge
+        name.setText(String.format(name.getText().toString(), challenge.getTitle()));
+        value.setText(String.format(value.getText().toString(), challenge.getTotalEffort()));
+        sports.setText(String.format(sports.getText().toString(), challenge.getType()));
+        start.setText(String.format(start.getText().toString(), challenge.getTimestampStarted()));
+        finish.setText(String.format(finish.getText().toString(), challenge.getTimestampLastModified()));
+        duration.setText(String.format(duration.getText().toString(), challenge.getTimestampLastModified()-challenge.getTimestampStarted()));
+        image.setImageDrawable(this.getResources().getDrawable((challenge.getIconResourceId())));
+        //TODO: display different durations of the different sport types used to finish the challenge
+        //durationDetails.setText(String.format(durationDetails.getText().toString(), "7h bike, 10h etc"));
     }
 
 }
