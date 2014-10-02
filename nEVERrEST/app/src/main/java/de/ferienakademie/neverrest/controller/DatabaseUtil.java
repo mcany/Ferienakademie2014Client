@@ -82,6 +82,7 @@ public enum DatabaseUtil {
 				.lat(22.2243761)
 				.lon(22.1154785)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.sahara)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Route 66")
@@ -91,6 +92,7 @@ public enum DatabaseUtil {
 				.lat(39.0576271)
 				.lon(-89.7508269)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.route_66)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Tour de France")
@@ -100,6 +102,7 @@ public enum DatabaseUtil {
 				.lat(48.8588589)
 				.lon(2.3470599)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.tour_de_france)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Bike tour along Donau")
@@ -109,6 +112,7 @@ public enum DatabaseUtil {
 				.lat(48.99763)
 				.lon(2.476667)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.donauradweg)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Trans-Australian Railway")
@@ -118,6 +122,7 @@ public enum DatabaseUtil {
 				.lat(-41.7399978)
 				.lon(147.67)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.transaustralische_eisenbahn)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("South Pole Traverse")
@@ -127,6 +132,7 @@ public enum DatabaseUtil {
 				.lon(89.9899009)
 				.lon(0)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.suedpol)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Carlifornia State Route")
@@ -136,6 +142,7 @@ public enum DatabaseUtil {
 				.lat(36.7552565)
 				.lon(-121.7652093)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.california_state_route)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Germany North-South")
@@ -145,6 +152,7 @@ public enum DatabaseUtil {
 				.lat(51.165691)
 				.lon(10.451526)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.deutschland_nord_sued)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("St. Petersburg - Moscow")
@@ -154,6 +162,7 @@ public enum DatabaseUtil {
 				.lat(55.749792)
 				.lon(37.632495)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.moskau)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("A8")
@@ -163,6 +172,7 @@ public enum DatabaseUtil {
 				.lat(48.6070949)
 				.lon(9.6330233)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.a8)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Sao Paulo - Rio de Janeiro")
@@ -172,6 +182,7 @@ public enum DatabaseUtil {
 				.lat(-22.9156912)
 				.lon(-43.449703)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.rio_de_janeiro)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Washington - New York")
@@ -181,7 +192,9 @@ public enum DatabaseUtil {
 				.lat(40.7056308)
 				.lon(-73.9780035)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.new_york)
 				.build());
+		/*
 		challenges.add(new Challenge.Builder()
 				.title("Machu Picchu")
 				.description("Hopefully you're not that ancient")
@@ -200,6 +213,7 @@ public enum DatabaseUtil {
 				.lon(-67.5960231)
 				.metricType(MetricType.HORIZONTALDISTANCE)
 				.build());
+		*/
 		challenges.add(new Challenge.Builder()
 				.title("Eurotunnel")
 				.description("Bring the queen a baguette")
@@ -208,6 +222,7 @@ public enum DatabaseUtil {
 				.lat(51.017884)
 				.lon(1.4805104)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.eurotunnel)
 				.build());
 		try {
 			for (Challenge challenge : challenges) {
@@ -282,6 +297,7 @@ public enum DatabaseUtil {
 				.metricType(MetricType.VERTICALDISTANCE)
 				.iconResourceId(R.drawable.mount_kilimanjaro)
 				.build());
+		/*
 		challenges.add(new Challenge.Builder()
 				.title("Mount Vinson")
 				.description("")
@@ -291,6 +307,7 @@ public enum DatabaseUtil {
 				.lon(-85.616667)
 				.metricType(MetricType.VERTICALDISTANCE)
 				.build());
+				*/
 		try {
 			for (Challenge challenge : challenges) {
 				databaseHandler.getChallengeDao().create(challenge);

@@ -51,7 +51,7 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public static final String TAG = FindChallengesActivity.class.getSimpleName();
-
+    Dialog dialog = null;
     final String continentMarkerTAG = "continentMarker";
     final int notClickedMarkerImage = R.drawable.ic_launcher;
     final int clickedMarkerImage = R.drawable.ic_launcher;
@@ -415,9 +415,13 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
 
                 final Challenge mChallenge = challengeMarkersToChallengeMap.get(marker);
                 // custom dialog
-                final Dialog dialog = new Dialog(context);
+                if(dialog!=null)
+                {
+                    dialog.dismiss();
+                }
+                dialog = new Dialog(context);
                 dialog.setContentView(R.layout.custom_dialog_map_challenge_info);
-                dialog.setTitle(marker.getTitle());
+                dialog.setTitle(mChallenge.getTitle());
 
                 // set the custom dialog components - text, image and button
                 TextView description = (TextView) dialog.findViewById(R.id.challengeDescription);

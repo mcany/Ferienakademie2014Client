@@ -161,7 +161,7 @@ public class MainMenuActivity extends FragmentActivity
     public void updateLocation(LocationData currentPosition) {
         List<LocationData> recentPoints;
         if (mLocationDataList.size() >= NUMBER_RECENT_POINTS) {
-            recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS + 1), mLocationDataList.size() - 1);
+            recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS), mLocationDataList.size() - 1);
         } else {
             recentPoints = mLocationDataList;
         }
@@ -173,7 +173,7 @@ public class MainMenuActivity extends FragmentActivity
                 + " Valid: " + isValid,
                 Toast.LENGTH_LONG);
 
-        if (!MetricCalculator.isValid(currentPosition, recentPoints)) {
+        if (!isValid) {
             Log.d(TAG, "Ignoring current location. Looks like an outlier");
             return;
         }
@@ -304,8 +304,9 @@ public class MainMenuActivity extends FragmentActivity
                 Log.d(TAG, "Toggle Button pressed.");
                 if (mBtnGPSTracking.isChecked()) {
                     // Start new activity
+                    // TODO replace null through challenge
                     mActivity = new Activity(UUID.randomUUID().toString(), System.currentTimeMillis(),
-                            0L, "Some user id", mSportsType);
+                            0L, "Some user id", mSportsType, null);
                     try {
                         mDatabaseHandler.getActivityDao().create(mActivity);
                     } catch (SQLException e) {
