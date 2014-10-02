@@ -18,6 +18,9 @@ public final class User {
     public static final String COL_AGE = "age";
     public static final String COL_ESTIMATED_TRAINING_SESSIONS_PER_WEEK= "estimatedTrainingSessionsPerWeek";
 
+    @DatabaseField(columnName = "id", generatedId = true)
+    private int id;
+
     @DatabaseField(columnName = COL_UUID)
     private String uuid;
 
