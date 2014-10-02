@@ -39,4 +39,48 @@ public class EnergyTest extends TestCase{
         assertEquals(239.005736, result, 0.001);
     }
 
+
+    public void testKiloJouleToCalories2() {
+        double result = 0;
+        //test private methods
+        try {
+            Method m = Class.forName("de.ferienakademie.neverrest.model.Energy").getDeclaredMethod("kiloJouleToCalories", Double.TYPE);
+            m.setAccessible(true);
+            result = ((Double)m.invoke(null, 5.0)).doubleValue();
+        } catch (Exception e) {
+            Log.e("Error",e+"");
+        }
+        assertEquals(1195.02868, result, 0.001);
+    }
+
+
+    public void testGetPAL() {
+        double result = 0;
+        Activity activity = new Activity();
+        activity.setSportsType(SportsType.CYCLING);
+        //test private methods
+        try {
+            Method m = Class.forName("de.ferienakademie.neverrest.model.Energy").getDeclaredMethod("getPAL", Activity.class);
+            m.setAccessible(true);
+            result = ((Double)m.invoke(null, activity)).doubleValue();
+        } catch (Exception e) {
+            Log.e("Error",e+"");
+        }
+        assertEquals(3.456, result, 0.001);
+    }
+
+    public void testGetPAL2() {
+        double result = 0;
+        Activity activity = new Activity();
+        activity.setSportsType(SportsType.HIKING);
+        //test private methods
+        try {
+            Method m = Class.forName("de.ferienakademie.neverrest.model.Energy").getDeclaredMethod("getPAL", Activity.class);
+            m.setAccessible(true);
+            result = ((Double)m.invoke(null, activity)).doubleValue();
+        } catch (Exception e) {
+            Log.e("Error",e+"");
+        }
+        assertEquals(8.064, result, 0.001);
+    }
 }
