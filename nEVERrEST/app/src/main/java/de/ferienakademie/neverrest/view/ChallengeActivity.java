@@ -99,7 +99,7 @@ public class ChallengeActivity extends FragmentActivity
         }
         Drawable iconChallenge = (mChallenge.getType() == MetricType.HORIZONTALDISTANCE) ? this.getResources().getDrawable(R.drawable.distance) : this.getResources().getDrawable(R.drawable.altitude);
         ((ImageView)findViewById(R.id.imageChallengeType)).setImageDrawable(iconChallenge);
-        Drawable iconChallengeGroup =  this.getResources().getDrawable(R.drawable.single_200x200);
+        Drawable iconChallengeGroup =  this.getResources().getDrawable(R.drawable.single);
         ((ImageView)findViewById(R.id.imageChallengeTypeGroup)).setImageDrawable(iconChallengeGroup);
 
 

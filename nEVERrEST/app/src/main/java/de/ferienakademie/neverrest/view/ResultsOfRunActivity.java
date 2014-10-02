@@ -11,14 +11,12 @@ public class ResultsOfRunActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rsults_of_run);
+        //setContentView(R.layout.acti);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.rsults_of_run, menu);
         return true;
     }
 
