@@ -304,6 +304,7 @@ public class MainMenuActivity extends FragmentActivity
                 Log.d(TAG, "Toggle Button pressed.");
                 if (mBtnGPSTracking.isChecked()) {
                     // Start new activity
+                    // TODO replace null through challenge
                     mActivity = new Activity(UUID.randomUUID().toString(), System.currentTimeMillis(),
                             0L, "Some user id", mSportsType, null);
                     try {
