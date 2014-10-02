@@ -25,6 +25,8 @@ public class FinishedChallengeActivity extends Activity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_finished_challenge);
+        mSportiveActivity = (de.ferienakademie.neverrest.model.Activity) getIntent().getSerializableExtra(Constants.EXTRA_ACTIVITY);
+
         mCloseButton = (Button) findViewById(R.id.buttonClose);
         mShareButton = (Button) findViewById(R.id.buttonShare);
         mBadgeImage = (ImageView) findViewById(R.id.badgeImage);

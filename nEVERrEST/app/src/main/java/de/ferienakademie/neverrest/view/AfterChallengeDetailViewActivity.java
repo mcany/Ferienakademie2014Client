@@ -44,12 +44,12 @@ public class AfterChallengeDetailViewActivity extends FragmentActivity implement
         mTextViewChallengeName = (TextView) findViewById(R.id.textViewChallengeName);
         mTextViewChallengeName.setText("Challenge Name");
         mTextViewGained = (TextView) findViewById(R.id.textViewGained);
-        mTextViewGained.setText("You gained:");
+        mTextViewGained.setText("You gained: " + mSportiveActivity.getAdditionalLifetimeInMilliseconds() + " ms additional lifetime\nAnd burned " + mSportiveActivity.getConsumptedEnergyInCalories() + " calories.");
         mTextViewFinishedStage = (TextView) findViewById(R.id.textViewFinishedStage);
         String unitSports = (mSportiveActivity.getChallenge().getType() == MetricType.HORIZONTALDISTANCE) ? "km" : "altitude meters";
         mTextViewFinishedStage.setText("Results:\n" + " "+ unitSports + " \n" + mSportiveActivity.getDuration()/60000.0 + " min");
         mTextViewSpeed = (TextView) findViewById(R.id.textViewSpeed);
-        mTextViewSpeed.setText("Average speed: \n" + 50.0/(mSportiveActivity.getDuration() / 360000) + " " + unitSports +"/h");
+        mTextViewSpeed.setText("Average speed: \n" + 50.0/(mSportiveActivity.getDuration() / 360000.0) + " " + unitSports +"/h");
 
         mDetailsButton = (Button) findViewById(R.id.buttonDetails);
         mMenuButton = (Button) findViewById(R.id.buttonMenu);
@@ -91,7 +91,8 @@ public class AfterChallengeDetailViewActivity extends FragmentActivity implement
                 Toast.makeText(this, "Ich habe nicht die Absicht Details anzuzeigen...", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.buttonMenu:
-                Intent intent = new Intent(this,FindChallengesActivity.class);
+                Intent intent = new Intent(this,FinishedChallengeActivity.class);
+                intent.putExtra(Constants.EXTRA_ACTIVITY, mSportiveActivity);
                 startActivity(intent);
                 break;
         }

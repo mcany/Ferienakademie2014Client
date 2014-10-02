@@ -417,7 +417,13 @@ public class MainMenuActivity extends FragmentActivity
                     } catch (SQLException e) {
                         Log.e(TAG, e.getMessage());
                     }
-                    unbindService(this);
+                    //unbindService(this);
+
+                    Intent intent = new Intent(this,AfterChallengeDetailViewActivity.class);
+                    intent.putExtra(Constants.EXTRA_ACTIVITY, mActivity);
+                    startActivity(intent);
+
+
                 }
                 break;
         }

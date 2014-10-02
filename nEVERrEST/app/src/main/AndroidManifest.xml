@@ -36,11 +36,11 @@
 
         <activity
             android:name=".view.ChallengeActivity"
-            android:label="nEVEReEST"
+            android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
             android:name=".view.ActiveChallengesActivity"
-            android:label="nEVEReEST"
+            android:label="@string/app_name"
             android:screenOrientation="portrait" />
 
         <activity
@@ -50,6 +50,14 @@
         <activity
             android:name=".view.ProfileEditActivity"
             android:label="@string/title_activity_profile_edit"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.FinishedChallengeActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.AfterChallengeDetailViewActivity"
+            android:label="@string/app_name"
             android:screenOrientation="portrait" />
 
         <service android:name=".controller.GPSService" />
