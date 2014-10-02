@@ -10,48 +10,14 @@
     android:background="#FFFFFF"
     tools:context=".ChallengeActivity">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/container_challenge"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
         android:paddingTop="0dp">
-        <LinearLayout
-            android:id="@+id/headingLayout"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            >
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="20"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:background="#CCCCCC">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageChallengeType"
-                android:src="@drawable/ic_launcher"
-                android:layout_below="@+id/textView"
-                android:layout_gravity="center_vertical"/>
-        <TextView
-            android:text="@string/app_name"
-            android:background="#CCCCCC"
-            android:gravity="center_vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:id="@+id/heading"
-            android:paddingLeft="10dip"
-            android:paddingRight="0dip"/> </LinearLayout>
-        </LinearLayout>
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/headingLayout">
 
         <LinearLayout
             android:id="@+id/first_layout"
@@ -152,10 +118,7 @@
                 android:layout_alignParentRight="true" />
         </RelativeLayout>
 
-
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
 this as a sliding drawer on the left side for left-to-right

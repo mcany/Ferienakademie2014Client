@@ -37,7 +37,6 @@ public class ChallengeActivity extends FragmentActivity
         implements OnClickListener, NeverrestInterface {
 
     private Challenge mChallenge;
-    private TextView mHeading;
     private ImageView mChallengeImage;
     private TextView mDetailsTextView;
     private Button mStartButton;
@@ -65,8 +64,7 @@ public class ChallengeActivity extends FragmentActivity
         setContentView(R.layout.activity_challenge);
         mChallenge = (Challenge) getIntent().getSerializableExtra(Constants.EXTRA_CHALLENGE);
 
-        mHeading = (TextView) findViewById(R.id.heading);
-        mHeading.setText(mChallenge.getTitle());
+		getActionBar().setTitle(mChallenge.getTitle());
         mStartButton = (Button) findViewById(R.id.buttonStart);
         mAbortButton = (Button) findViewById(R.id.buttonAbort);
         mStartButton.setOnClickListener(this);
@@ -98,9 +96,7 @@ public class ChallengeActivity extends FragmentActivity
             linearLayoutProgressBar.setRotation(0);
         }
         Drawable iconChallenge = (mChallenge.getType() == MetricType.HORIZONTALDISTANCE) ? this.getResources().getDrawable(R.drawable.distance) : this.getResources().getDrawable(R.drawable.altitude);
-        ((ImageView)findViewById(R.id.imageChallengeType)).setImageDrawable(iconChallenge);
-        Drawable iconChallengeGroup =  this.getResources().getDrawable(R.drawable.single_200x200);
-        ((ImageView)findViewById(R.id.imageChallengeTypeGroup)).setImageDrawable(iconChallengeGroup);
+        ((ImageView)findViewById(R.id.imageChallengeTypeGroup)).setImageDrawable(iconChallenge);
 
     }
 
