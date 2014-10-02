@@ -28,6 +28,9 @@ public class MetricCalculator {
 
         // Calculate std dev
         double[] stdDev = calcStdDev(recentPoints);
+        if (0 == stdDev[0] || 0 == stdDev[1]) {
+            return true;
+        }
 
         // Determine min and max threshold
         LocationData mostRecent = recentPoints.get(recentPoints.size() - 1);
@@ -58,6 +61,10 @@ public class MetricCalculator {
         double[] sum = {0.d, 0.d, 0.d, 0.d};
 
         int size = points.size();
+        if (size == 0) {
+            return new double[] { 0, 0 };
+        }
+
         for (int i=0; i<size; i++) {
             LocationData cur = points.get(i);
             squaredSum[0] += cur.getLatitude() * cur.getLatitude();

@@ -52,6 +52,7 @@ public class ProfileActivity extends FragmentActivity
     TextView userAge;
     TextView userSize;
     TextView userWeight;
+    TextView userSessions;
     // stats
     TextView totalDistance;
     TextView totalAltitude;
@@ -93,6 +94,7 @@ public class ProfileActivity extends FragmentActivity
         userAge = (TextView) findViewById(R.id.userAge);
         userSize = (TextView) findViewById(R.id.userSize);
         userWeight = (TextView) findViewById(R.id.userWeight);
+        userSessions = (TextView) findViewById(R.id.userSessions);
         // ... and stats
         totalDistance = (TextView) findViewById(R.id.totalDistance);
         totalAltitude = (TextView) findViewById(R.id.totalAltitude);
@@ -104,8 +106,9 @@ public class ProfileActivity extends FragmentActivity
                 Toast.makeText(ProfileActivity.this, "Editing badges...", Toast.LENGTH_SHORT).show();
             }
         });
-        for (int i = 0; i < 8; i++) {
-            badgeLayout.addView(createBadge(R.drawable.sampleimage, "Badge " + i, this));
+        badgeLayout.addView(createBadge(R.drawable.ic_launcher, "Mt. Everest", this));
+        for (int i = 0; i < 7; i++) {
+            badgeLayout.addView(createBadge(R.drawable.greybadge, "", this));
         }
         userData = (LinearLayout) findViewById(R.id.userData);
         userData.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +146,7 @@ public class ProfileActivity extends FragmentActivity
                 currentUser.setHeight(179);
                 currentUser.setMass(123);
                 currentUser.setMale(true);
+                currentUser.setEstimatedTrainingSessionsPerWeek(1);
                 DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().create(currentUser);
             }
 
@@ -156,6 +160,7 @@ public class ProfileActivity extends FragmentActivity
             userAge.setText("Age: " +  (int) currentUser.getAge() + " years");
             userSize.setText("Size: " + (int) currentUser.getHeight() + " cm");
             userWeight.setText("Weight: " + (int) currentUser.getMass() + " kg");
+            userSessions.setText("Sportsessions per week: " + currentUser.getEstimatedTrainingSessionsPerWeek());
             // ... and stats
             totalDistance.setText("Total distance: \n1324km (bike), 834km (run)");
             totalAltitude.setText("Total altitude: \n12km (bike), 32km (run)");
@@ -183,7 +188,7 @@ public class ProfileActivity extends FragmentActivity
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layout.setLayoutParams(layoutParams);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(0, 0, padding, 0);
+        layout.setPadding(padding, padding, padding, padding);
 
         ImageView imageView = new ImageView(context);
         ViewGroup.LayoutParams imageParams = new ViewGroup.LayoutParams(getResources().getDimensionPixelSize(R.dimen.badge_size_small), getResources().getDimensionPixelSize(R.dimen.badge_size_small));

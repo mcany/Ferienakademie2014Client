@@ -95,7 +95,7 @@ public class ChallengeActivity extends FragmentActivity
         String unit = (mChallenge.getType() == MetricType.HORIZONTALDISTANCE) ? " km" : " m";
         mDetailsTextView.setText(mChallenge.getCompletedEffort() + " of " + mChallenge.getTotalEffort() + unit + "\n" );
         if(mChallenge.getType() == MetricType.HORIZONTALDISTANCE) {
-            linearLayoutProgressBar.setRotation(180);
+            linearLayoutProgressBar.setRotation(0);
         }
         Drawable iconChallenge = (mChallenge.getType() == MetricType.HORIZONTALDISTANCE) ? this.getResources().getDrawable(R.drawable.distance) : this.getResources().getDrawable(R.drawable.altitude);
         ((ImageView)findViewById(R.id.imageChallengeType)).setImageDrawable(iconChallenge);

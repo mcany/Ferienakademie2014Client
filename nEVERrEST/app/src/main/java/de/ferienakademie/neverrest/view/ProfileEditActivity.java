@@ -57,6 +57,7 @@ public class ProfileEditActivity extends FragmentActivity
     EditText userAgeEdit;
     EditText userSizeEdit;
     EditText userWeightEdit;
+    EditText userSessionsEdit;
 
     // button
     Button cancelButton;
@@ -80,6 +81,7 @@ public class ProfileEditActivity extends FragmentActivity
         userAgeEdit = (EditText) findViewById(R.id.userAgeEdit);
         userSizeEdit = (EditText) findViewById(R.id.userSizeEdit);
         userWeightEdit = (EditText) findViewById(R.id.userWeightEdit);
+        userSessionsEdit = (EditText) findViewById(R.id.userSessionsEdit);
 
         cancelButton = (Button) findViewById(R.id.cancelButton);
         saveButton = (Button) findViewById(R.id.saveButton);
@@ -105,6 +107,7 @@ public class ProfileEditActivity extends FragmentActivity
                 userAgeEdit.setText("" + (int) currentUser.getAge());
                 userSizeEdit.setText("" + (int) currentUser.getHeight());
                 userWeightEdit.setText("" + (int) currentUser.getMass());
+                userSessionsEdit.setText("" + currentUser.getEstimatedTrainingSessionsPerWeek());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -129,6 +132,7 @@ public class ProfileEditActivity extends FragmentActivity
                     currentUser.setAge(Integer.valueOf(userAgeEdit.getText().toString()));
                     currentUser.setHeight(Integer.valueOf(userSizeEdit.getText().toString()));
                     currentUser.setMass(Integer.valueOf(userWeightEdit.getText().toString()));
+                    currentUser.setEstimatedTrainingSessionsPerWeek(Integer.valueOf(userSessionsEdit.getText().toString()));
                     DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().update(currentUser);
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -226,11 +230,11 @@ public class ProfileEditActivity extends FragmentActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer_profile);
-        mNavigationDrawerFragment.setPosition(mDrawerPosition);
+        //mNavigationDrawerFragment.setPosition(mDrawerPosition);
 
         // Set up the drawer
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer_profile,
                 (DrawerLayout) findViewById(R.id.drawer_layout_profile));
-        onNavigationDrawerItemSelected(mDrawerPosition);
+        //onNavigationDrawerItemSelected(mDrawerPosition);
     }
 }
