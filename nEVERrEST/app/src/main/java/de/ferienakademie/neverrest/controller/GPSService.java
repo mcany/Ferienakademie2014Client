@@ -21,13 +21,11 @@ import android.widget.Toast;
 
 // got from http://stackoverflow.com/questions/8828639/android-get-gps-location-via-a-service (26.09.2014 17:45)
 public class GPSService extends Service {
-
     private static final String TAG = GPSService.class.getSimpleName();
+    private LocationManager mLocationManager = null;
     // each second location is fetched
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
-
-    private LocationManager mLocationManager = null;
     private Handler mUIHandler;
     public static final int MSG_GPSDATA = 42;
     private IBinder mBinder = new GPSServiceBinder();

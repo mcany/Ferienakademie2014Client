@@ -7,6 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -18,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -50,6 +54,7 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
 
     final String continentMarkerTAG = "continentMarker";
     final int notClickedMarkerImage = R.drawable.ic_launcher;
+    final int clickedMarkerImage = R.drawable.ic_launcher;
     final int onProgressChallengeMarkerImage = R.drawable.ic_map_marker_green;
     final int finishedChallengeMarkerImage = R.drawable.ic_map_marker_gold;
     final int notStartedChallengeMarkerImage = R.drawable.ic_map_marker_grey;
@@ -99,7 +104,7 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
     private List<Challenge> challengesAustralia = new ArrayList<Challenge>();
     private List<Challenge> challengesAntarctica = new ArrayList<Challenge>();
 
-    protected int mDpi = 0;
+
     final Context context = this;
 
     @Override
@@ -108,11 +113,10 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
         setContentView(R.layout.activity_find_challenges);
         DatabaseUtil.INSTANCE.initialize(getApplicationContext());
 
-        //mMediaPlayer = MediaPlayer.create(context, R.raw.sky);
+        mMediaPlayer = MediaPlayer.create(context, R.raw.sky);
         //mMediaPlayer.start();
 
         mIsCreated = true;
-        mDpi = getResources().getDisplayMetrics().densityDpi;
 
         setUpNavigationDrawer();
         setUpMapIfNeeded();
@@ -194,26 +198,26 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
     private void setUpMap() {
         //create continent markers
         markerAfrica = mMap.addMarker(new MarkerOptions().position(coordinatesAfrica).title(continentMarkerTAG+"Africa"));
-        markerAfrica.setIcon(BitmapDescriptorFactory.fromResource(notClickedMarkerImage));
-        stringToContinentMarkerMap.put(markerAfrica.getTitle(), markerAfrica);
+        markerAfrica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerAfrica.getTitle(),markerAfrica);
         markerEurope = mMap.addMarker(new MarkerOptions().position(coordinatesEurope).title(continentMarkerTAG+"Europe"));
-        markerEurope.setIcon(BitmapDescriptorFactory.fromResource(notClickedMarkerImage));
-        stringToContinentMarkerMap.put(markerEurope.getTitle(), markerEurope);
+        markerEurope.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerEurope.getTitle(),markerEurope);
         markerAsia = mMap.addMarker(new MarkerOptions().position(coordinatesAsia).title(continentMarkerTAG+"Asia"));
-        markerAsia.setIcon(BitmapDescriptorFactory.fromResource(notClickedMarkerImage));
-        stringToContinentMarkerMap.put(markerAsia.getTitle(), markerAsia);
+        markerAsia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerAsia.getTitle(),markerAsia);
         markerNorthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesNorthAmerica).title(continentMarkerTAG+"NorthAmerica"));
-        markerNorthAmerica.setIcon(BitmapDescriptorFactory.fromResource(notClickedMarkerImage));
-        stringToContinentMarkerMap.put(markerNorthAmerica.getTitle(), markerNorthAmerica);
+        markerNorthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerNorthAmerica.getTitle(),markerNorthAmerica);
         markerSouthAmerica = mMap.addMarker(new MarkerOptions().position(coordinatesSouthAmerica).title(continentMarkerTAG+"SouthAmerica"));
-        markerSouthAmerica.setIcon(BitmapDescriptorFactory.fromResource(notClickedMarkerImage));
-        stringToContinentMarkerMap.put(markerSouthAmerica.getTitle(), markerSouthAmerica);
+        markerSouthAmerica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerSouthAmerica.getTitle(),markerSouthAmerica);
         markerAustralia = mMap.addMarker(new MarkerOptions().position(coordinatesAustralia).title(continentMarkerTAG+"Australia"));
-        markerAustralia.setIcon(BitmapDescriptorFactory.fromResource(notClickedMarkerImage));
-        stringToContinentMarkerMap.put(markerAustralia.getTitle(), markerAustralia);
+        markerAustralia.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerAustralia.getTitle(),markerAustralia);
         markerAntarctica = mMap.addMarker(new MarkerOptions().position(coordinatesAntarctica).title(continentMarkerTAG+"Antarctica"));
-        markerAntarctica.setIcon(BitmapDescriptorFactory.fromResource(notClickedMarkerImage));
-        stringToContinentMarkerMap.put(markerAntarctica.getTitle(), markerAntarctica);
+        markerAntarctica.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notClickedMarkerImage, "")));
+        stringToContinentMarkerMap.put(markerAntarctica.getTitle(),markerAntarctica);
 
         databaseHandler = DatabaseUtil.INSTANCE.getDatabaseHandler();
         try {
@@ -261,6 +265,72 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
         } catch (SQLException exception) {
             Log.d(TAG, exception.getMessage());
         }
+
+
+
+        //TODO: Change the image of the marker
+
+        //Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        //Bitmap bmp = Bitmap.createBitmap(200, 50, conf);
+        //Canvas canvas = new Canvas(bmp);
+
+        //Paint paint =  new Paint();
+
+        //canvas.drawText("TEXT", 0, 50, paint); // paint defines the text color, stroke width, size
+        //mMap.addMarker(new MarkerOptions()
+        //                .position(new LatLng(0,0))
+        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker2))
+        //                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+        //                .anchor(0.5f, 1)
+        //).setVisible(true);
+
+
+        //Marker myLocMarker = mMap.addMarker(new MarkerOptions()
+        //        .position(new LatLng(0,0))
+        //        .icon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(R.drawable.sampleimage, "your text goes here"))));
+    }
+
+
+    private Bitmap writeTextOnDrawable(int drawableId, String text) {
+
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), drawableId)
+                .copy(Bitmap.Config.ARGB_8888, true);
+
+        Typeface tf = Typeface.create("Helvetica", Typeface.BOLD);
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.WHITE);
+        paint.setTypeface(tf);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(convertToPixels(this, 11));
+
+        Rect textRect = new Rect();
+        paint.getTextBounds(text, 0, text.length(), textRect);
+
+        Canvas canvas = new Canvas(bm);
+
+        //If the text is bigger than the canvas , reduce the font size
+        if (textRect.width() >= (canvas.getWidth() - 4))     //the padding on either sides is considered as 4, so as to appropriately fit in the text
+            paint.setTextSize(convertToPixels(this, 7));        //Scaling needs to be used for different dpi's
+
+        //Calculate the positions
+        int xPos = (canvas.getWidth() / 2) - 2;     //-2 is for regulating the x position offset
+
+        //"- ((paint.descent() + paint.ascent()) / 2)" is the distance from the baseline to the center.
+        int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
+
+        canvas.drawText(text, xPos, yPos, paint);
+
+        return bm;
+    }
+
+
+    public static int convertToPixels(Context context, int nDP) {
+        final float conversionScale = context.getResources().getDisplayMetrics().density;
+
+        return (int) ((nDP * conversionScale) + 0.5f);
+
     }
 
     @Override
@@ -341,8 +411,9 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
         @Override
         public boolean onMarkerClick(Marker marker) {
             if(!marker.getTitle().contains(continentMarkerTAG)) {
-                final Challenge mChallenge = challengeMarkersToChallengeMap.get(marker);
+                //marker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(clickedMarkerImage, marker.getTitle())));
 
+                final Challenge mChallenge = challengeMarkersToChallengeMap.get(marker);
                 // custom dialog
                 final Dialog dialog = new Dialog(context);
                 dialog.setContentView(R.layout.custom_dialog_map_challenge_info);
@@ -354,19 +425,13 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
                 TextView details = (TextView) dialog.findViewById(R.id.challengeDetails);
                 details.setText("TotalEffort: "+mChallenge.getTotalEffort()+ "\nType: " + mChallenge.getType());
                 ImageView image = (ImageView) dialog.findViewById(R.id.challengeImage);
-                //TODO: add the challenge image
-                image.setImageResource(mChallenge.getIconResourceId());
+                image.setImageResource(R.drawable.ic_launcher);
 
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonAcceptChallenge);
-                if(mChallenge.getTimestampStarted()>0)
-                {
-                    dialogButton.setText("See Challenge");
-                }
                 // if button is clicked, close the custom dialog
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //TODO: database is not updated
                         Intent intent = new Intent(context, ChallengeActivity.class);
                         mChallenge.setTimestampStarted(System.currentTimeMillis());
                         try {
@@ -391,19 +456,6 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
         }
     }
 
-    protected Bitmap adjustImage(Bitmap image) {
-        int dpi = image.getDensity();
-        if (dpi == mDpi)
-            return image;
-        else {
-            int width = (image.getWidth() * mDpi + dpi / 2) / dpi;
-            int height = (image.getHeight() * mDpi + dpi / 2) / dpi;
-            Bitmap adjustedImage = Bitmap.createScaledBitmap(image, width, height, true);
-            adjustedImage.setDensity(mDpi);
-            return adjustedImage;
-        }
-    }
-
     public void continentMarkerClicked (Marker marker) {
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(marker.getPosition(), 3.0f)));
@@ -417,21 +469,20 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
                     .title("" + challengeListIterator.nextIndex()));
             if(mChallenge.isFinished())
             {
-                challengeMarker.setIcon(BitmapDescriptorFactory.fromBitmap(adjustImage(BitmapFactory.decodeResource(getResources(), finishedChallengeMarkerImage)
-                        .copy(Bitmap.Config.ARGB_8888, true))));
-
+                //challengeMarker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(finishedChallengeMarkerImage, "")));
+                challengeMarker.setIcon(BitmapDescriptorFactory.fromResource(finishedChallengeMarkerImage));
             }
             else
             {
-                if(mChallenge.getTimestampStarted() > 0)
+                if(mChallenge.getTimestampStarted()==0)
                 {
-                    challengeMarker.setIcon(BitmapDescriptorFactory.fromBitmap(adjustImage(BitmapFactory.decodeResource(getResources(), onProgressChallengeMarkerImage)
-                            .copy(Bitmap.Config.ARGB_8888, true))));
+                    //challengeMarker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(notStartedChallengeMarkerImage, "")));
+                    challengeMarker.setIcon(BitmapDescriptorFactory.fromResource(notStartedChallengeMarkerImage));
                 }
                 else
                 {
-                    challengeMarker.setIcon(BitmapDescriptorFactory.fromBitmap(adjustImage(BitmapFactory.decodeResource(getResources(), notStartedChallengeMarkerImage)
-                            .copy(Bitmap.Config.ARGB_8888, true))));
+                    challengeMarker.setIcon(BitmapDescriptorFactory.fromResource(onProgressChallengeMarkerImage));
+                    //challengeMarker.setIcon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(onProgressChallengeMarkerImage,"")));
                 }
             }
             markersOnTheMap.add(challengeMarker);
