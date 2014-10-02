@@ -46,31 +46,31 @@ public class GPSService extends Service {
         Location mLastLocation;
 
         public MyLocationListener(String provider) {
-            Log.e(TAG, "LocationListener " + provider);
+            Log.d(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location);
+            Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
             mUIHandler.sendMessage(Message.obtain(null, MSG_GPSDATA, mLastLocation));
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
+            Log.d(TAG, "onProviderDisabled: " + provider);
             Toast.makeText(GPSService.this, "Please enable GPS!", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
+            Log.d(TAG, "onProviderEnabled: " + provider);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + provider);
+            Log.d(TAG, "onStatusChanged: " + provider);
         }
     }
 
