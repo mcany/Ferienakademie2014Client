@@ -12,15 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="#FFFFFF"
         android:gravity="center_horizontal">
-        <TextView
-            android:text="@string/app_name"
-            android:background="#0277BD"
-            android:textColor="#FFFFFF"
-            android:gravity="center_vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:id="@+id/heading" />
         <LinearLayout
             android:id="@+id/first_layout"
             android:layout_width="fill_parent"
@@ -36,7 +29,7 @@
                 android:layout_margin="30dp"
                 android:layout_height="fill_parent"
                 android:id="@+id/imageView"
-                android:src="@drawable/ic_launcher"
+                android:src="@drawable/walking"
                 android:layout_below="@+id/textView" />
             <LinearLayout
                 android:layout_width="0dp"

@@ -24,8 +24,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -35,7 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import org.w3c.dom.Text;
+
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+
 import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
@@ -51,6 +52,7 @@ import de.ferienakademie.neverrest.controller.MetricCalculator;
 import de.ferienakademie.neverrest.model.Activity;
 import de.ferienakademie.neverrest.model.LocationData;
 import de.ferienakademie.neverrest.model.SportsType;
+
 import static android.view.View.OnClickListener;
 public class MainMenuActivity extends FragmentActivity
         implements NeverrestInterface, ServiceConnection, OnClickListener, SensorEventListener {
@@ -99,7 +101,6 @@ public class MainMenuActivity extends FragmentActivity
     private TextView secondText;
     private TextView thirdTime;
     private Chronometer time;
-    private TextView heading;
     DecimalFormat df;
 /*
 private int mRingbufferSize = mSamplingRate * 30;
@@ -144,14 +145,12 @@ private float[] mAccZProcessingBuffer = new float[mCopySize];
         firstText.setTextSize(25f);
         time = (Chronometer) findViewById(R.id.chronometer);
         time.setTextSize(60f);
-        heading = (TextView) findViewById(R.id.heading);
         secondText = (TextView) findViewById(R.id.second_textview);
         secondText.setText("0 km/h");
         secondText.setTextSize(25f);
         thirdTime = (TextView) findViewById(R.id.third_textview);
         thirdTime.setText(String.format("%d kcal",(int) burnedKcal));
         thirdTime.setTextSize(25f);
-// heading.setText(mActivity.);
         setUpNavigationDrawer();
         setUpMapIfNeeded();
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -396,7 +395,6 @@ private float[] mAccZProcessingBuffer = new float[mCopySize];
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
