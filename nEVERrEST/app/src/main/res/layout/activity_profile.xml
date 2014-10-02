@@ -101,6 +101,13 @@
                     android:text="Weight: %d kg"
                     android:textSize="@dimen/text_medium" />
 
+                <TextView
+                    android:id="@+id/userSessions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sportsessions per week: %d"
+                    android:textSize="@dimen/text_medium" />
+
             </LinearLayout>
 
         </LinearLayout>
