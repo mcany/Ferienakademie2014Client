@@ -17,7 +17,8 @@
 
         <TextView
             android:text="@string/app_name"
-            android:background="#CCCCCC"
+            android:background="#0277BD"
+            android:textColor="#FFFFFF"
             android:gravity="center_vertical"
             android:layout_width="fill_parent"
             android:layout_height="40dp"
@@ -36,6 +37,7 @@
             <ImageView
                 android:layout_width="0dp"
                 android:layout_weight="30"
+                android:layout_margin="30dp"
                 android:layout_height="fill_parent"
                 android:id="@+id/imageView"
                 android:src="@drawable/ic_launcher"
@@ -51,13 +53,13 @@
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="50"
+                    android:layout_weight="80"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="30"
+                        android:layout_weight="35"
                         android:text="@string/distance"
                         android:gravity="center"
                         android:id="@+id/first_textview" />
@@ -65,7 +67,7 @@
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="70"
+                        android:layout_weight="65"
                         android:gravity="center"
                         android:id="@+id/second_textview" />
                 </LinearLayout>
@@ -74,14 +76,14 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="20"
+                    android:layout_weight="30"
                     android:text="@string/time"
                     android:gravity="center"
                     android:id="@+id/third_textview" />
                 <Chronometer
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="80"
+                    android:layout_weight="70"
                     android:gravity="center"
                     android:id="@+id/chronometer"/>
 

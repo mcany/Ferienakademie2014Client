@@ -16,12 +16,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Chronometer;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -35,7 +38,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.w3c.dom.Text;
+
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,6 +55,7 @@ import de.ferienakademie.neverrest.controller.GPSService;
 import de.ferienakademie.neverrest.controller.MetricCalculator;
 import de.ferienakademie.neverrest.model.Activity;
 import de.ferienakademie.neverrest.model.LocationData;
+import de.ferienakademie.neverrest.model.SportsType;
 
 import static android.view.View.OnClickListener;
 
@@ -75,6 +83,7 @@ public class MainMenuActivity extends FragmentActivity
     private String mProvider;
     private Marker mMarker;
     private float mDistance = 0.f;
+    long timeWhenStoppedChronometer = 0;
 
 
 
@@ -105,8 +114,16 @@ public class MainMenuActivity extends FragmentActivity
     private float mSumY = 0;
     private float mSumZ = 0;
 
-    private float burnedKcal = 0;
+    private float burnedKcal = 0f;
     private int counterSamplesFiltered = 0;
+
+    private TextView firstText;
+    private TextView secondText;
+    private TextView thirdTime;
+
+    private Chronometer time;
+    private TextView heading;
+    DecimalFormat df;
 
    /*
     private int mRingbufferSize = mSamplingRate * 30;
@@ -159,12 +176,32 @@ public class MainMenuActivity extends FragmentActivity
 
         mBtnGPSTracking = (ToggleButton) findViewById(R.id.btnStartGPSTracking);
         mBtnGPSTracking.setOnClickListener(this);
+        firstText = (TextView) findViewById(R.id.first_textview);
+        firstText.setTextSize(25f);
+        time = (Chronometer) findViewById(R.id.chronometer);
+        time.setTextSize(60f);
+        heading = (TextView) findViewById(R.id.heading);
+        secondText = (TextView) findViewById(R.id.second_textview);
+        secondText.setText("0 km/h");
+        secondText.setTextSize(25f);
+        thirdTime = (TextView) findViewById(R.id.third_textview);
+        thirdTime.setText(String.format("%d kcal",(int) burnedKcal));
+        thirdTime.setTextSize(25f);
+
+     //   heading.setText(mActivity.);
 
         setUpNavigationDrawer();
         setUpMapIfNeeded();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        symbols.setGroupingSeparator(',');
+         df = new DecimalFormat("#0.00",symbols);
+        float dis = mDistance/1000;
+        df.format(dis);
+        firstText.setText(df.format(dis)+ " km");
 
     }
 
@@ -226,18 +263,13 @@ public class MainMenuActivity extends FragmentActivity
 
     public void updateLocation(LocationData currentPosition) {
         List<LocationData> recentPoints;
-        if (mLocationDataList.size() >= NUMBER_RECENT_POINTS) {
-            recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS + 1), mLocationDataList.size() - 1);
+        if (mLocationDataList.size() >= NUMBER_RECENT_POINTS ) {
+            recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS), mLocationDataList.size() - 1);
         } else {
             recentPoints = mLocationDataList;
         }
 
-        boolean isValid = MetricCalculator.isValid(currentPosition, recentPoints);
-        Toast.makeText(getApplicationContext(), "Lat:" + currentPosition.getLatitude()
-                        + " Long: "+ currentPosition.getLongitude()
-                        + " Alt: " + currentPosition.getAltitude()
-                        + " Valid: " + isValid,
-                Toast.LENGTH_LONG);
+
 
         if (!MetricCalculator.isValid(currentPosition, recentPoints)) {
             Log.d(TAG, "Ignoring current location. Looks like an outlier");
@@ -245,7 +277,7 @@ public class MainMenuActivity extends FragmentActivity
         }
 
         // Smoothing
-        currentPosition = MetricCalculator.smoothLocationData(currentPosition, recentPoints);
+  //    currentPosition = MetricCalculator.smoothLocationData(currentPosition, recentPoints);
         if (null == currentPosition.getActivity()) {
             currentPosition.setActivity(mActivity);
         }
@@ -262,6 +294,11 @@ public class MainMenuActivity extends FragmentActivity
                     currentPosition.getLongitude(), tmp);
 
             mDistance += tmp[0];
+            float dis = mDistance/1000;
+            df.format(dis);
+            firstText.setText(df.format(dis)+ " km");
+            secondText.setText(String.format("%d km/h", (int) mLocationDataList.getLast().getSpeed()));
+
         }
 
         // save new location in database
@@ -297,18 +334,18 @@ public class MainMenuActivity extends FragmentActivity
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void updateMap() {
-        if (mLocationDataList != null && mLocationDataList.size() > 1) {
-            LocationData previous = mLocationDataList.get(mLocationDataList.size() - 2);
+
+
+        if (mLocationDataList != null && mLocationDataList.size() > 0) {
             LocationData current = mLocationDataList.get(mLocationDataList.size() - 1);
             LatLng currentLatLng = new LatLng(current.getLatitude(), current.getLongitude());
 
-            Toast.makeText(this, String.valueOf(current.getLatitude()) +
-                            ", " + String.valueOf(current.getLongitude()),
-                    Toast.LENGTH_SHORT).show();
+
 
             if (mMap != null) {
                 // draw route in map
                 if (mLocationDataList.size() > 1) {
+                    LocationData previous = mLocationDataList.get(mLocationDataList.size() - 2);
                     mMap.addPolyline(new PolylineOptions()
                             .add(new LatLng(previous.getLatitude(), previous.getLongitude()),
                                     currentLatLng)
@@ -356,6 +393,8 @@ public class MainMenuActivity extends FragmentActivity
                 Log.d(TAG, "Toggle Button pressed.");
                 if (mBtnGPSTracking.isChecked()) {
                     // Start new activity
+                    time.setBase(SystemClock.elapsedRealtime() + timeWhenStoppedChronometer);
+                    time.start();
                     mActivity = new Activity(UUID.randomUUID().toString(), System.currentTimeMillis(),
                             0L, "Some user id", mSportsType);
                     try {
@@ -369,8 +408,9 @@ public class MainMenuActivity extends FragmentActivity
                     bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
                 } else {
                     // Stop tracking and finish activity
-
-                    mActivity.setDuration(System.currentTimeMillis() - mActivity.getTimestamp());
+                    timeWhenStoppedChronometer = time.getBase() - SystemClock.elapsedRealtime();
+                    time.stop();
+                     mActivity.setDuration(System.currentTimeMillis() - mActivity.getTimestamp());
                     try {
                         mDatabaseHandler.getActivityDao().update(mActivity);
                     } catch (SQLException e) {
@@ -550,8 +590,9 @@ public class MainMenuActivity extends FragmentActivity
             mSumZ = 0;
             counterSamplesFiltered = 0;
 
+            thirdTime.setText(String.format("%d kcal",(int) burnedKcal));
 
-            Toast.makeText(this, String.valueOf(burnedKcal), Toast.LENGTH_SHORT).show();
+
 
         }
 
@@ -591,6 +632,7 @@ public class MainMenuActivity extends FragmentActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        timeWhenStoppedChronometer = 0;
         if (accelor != null) {
             sensorManager.unregisterListener(this);
         }
