@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,6 +41,7 @@ import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
+import de.ferienakademie.neverrest.model.MetricType;
 
 public class FindChallengesActivity extends FragmentActivity implements NeverrestInterface {
 
@@ -346,17 +348,29 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
                 // custom dialog
                 final Dialog dialog = new Dialog(context);
                 dialog.setContentView(R.layout.custom_dialog_map_challenge_info);
-                dialog.setTitle(marker.getTitle());
+                dialog.setTitle(mChallenge.getTitle());
 
                 // set the custom dialog components - text, image and button
                 TextView description = (TextView) dialog.findViewById(R.id.challengeDescription);
                 description.setText(mChallenge.getDescription());
                 TextView details = (TextView) dialog.findViewById(R.id.challengeDetails);
-                details.setText("TotalEffort: "+mChallenge.getTotalEffort()+ "\nType: " + mChallenge.getType());
+                details.setText("TotalEffort: "+mChallenge.getTotalEffort()+ "\n\nType: " + mChallenge.getType());
                 ImageView image = (ImageView) dialog.findViewById(R.id.challengeImage);
-                //TODO: add the challenge image
                 image.setImageResource(mChallenge.getIconResourceId());
+                image.getLayoutParams().height = 180;
+                image.getLayoutParams().width = 180;
 
+
+                if(mChallenge.getType().equals(MetricType.VERTICALDISTANCE))
+                {
+                    final RotateAnimation rotateAnim = new RotateAnimation(0.0f, 90,
+                            RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                            RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+
+                    rotateAnim.setDuration(0);
+                    rotateAnim.setFillAfter(true);
+                    image.startAnimation(rotateAnim);
+                }
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonAcceptChallenge);
                 if(mChallenge.getTimestampStarted()>0)
                 {
@@ -366,7 +380,6 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //TODO: database is not updated
                         Intent intent = new Intent(context, ChallengeActivity.class);
                         mChallenge.setTimestampStarted(System.currentTimeMillis());
                         try {

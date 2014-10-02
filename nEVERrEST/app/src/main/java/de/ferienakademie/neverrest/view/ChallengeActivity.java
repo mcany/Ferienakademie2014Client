@@ -88,7 +88,7 @@ public class ChallengeActivity extends FragmentActivity
         params.width = (int) (size.x * 0.86);
         progressBar.setMax((int) mChallenge.getTotalEffort());
         progressBar.setProgress((int) (mChallenge.getTotalEffort() - mChallenge.getCompletedEffort()));
-		progressBar.setBackground(getResources().getDrawable(mChallenge.getIconResourceId()));
+		progressBar.setBackgroundResource(mChallenge.getIconResourceId());
         mDetailsTextView = (TextView) findViewById(R.id.textViewDetails);
         //List<Activity> activitiesOfChallange = DatabaseUtil.INSTANCE.getDatabaseHandler().getActivityDao().queryForEq(de.ferienakademie.neverrest.model.Activity.C)
         //int duration =
