@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Neverrest</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -28,5 +27,4 @@
     <string name="continent_north_america">North America</string>
     <string name="continent_antarctica">Antarctica</string>
     <string name="time">Time:</string>
-
 </resources>

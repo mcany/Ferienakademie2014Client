@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -106,10 +107,11 @@ public class ProfileActivity extends FragmentActivity
                 Toast.makeText(ProfileActivity.this, "Editing badges...", Toast.LENGTH_SHORT).show();
             }
         });
-        badgeLayout.addView(createBadge(R.drawable.ic_launcher, "Mt. Everest", this));
-        for (int i = 0; i < 7; i++) {
-            badgeLayout.addView(createBadge(R.drawable.greybadge, "", this));
-        }
+        badgeLayout.addView(createBadge(R.drawable.animatorbadge, "Animator", this));
+        badgeLayout.addView(createBadge(R.drawable.mounteverestbadge, "Mt. Everest", this));
+        badgeLayout.addView(createBadge(R.drawable.routebadge, "Route 66", this));
+        badgeLayout.addView(createBadge(R.drawable.singlemasterbadge, "Single Master", this));
+
         userData = (LinearLayout) findViewById(R.id.userData);
         userData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,7 +153,7 @@ public class ProfileActivity extends FragmentActivity
             }
 
             // set user data
-            userName.setText("Name: " +  currentUser.getUsername());
+            userName.setText(Html.fromHtml("<b>Name: " +  currentUser.getUsername() + "</b>"));
             if (currentUser.getMale() == true) {
                 userGender.setText("Gender: male");
             } else {
@@ -161,9 +163,15 @@ public class ProfileActivity extends FragmentActivity
             userSize.setText("Size: " + (int) currentUser.getHeight() + " cm");
             userWeight.setText("Weight: " + (int) currentUser.getMass() + " kg");
             userSessions.setText("Sportsessions per week: " + currentUser.getEstimatedTrainingSessionsPerWeek());
+            // set image according to gender
+            if (currentUser.getMale()) {
+                userAvatar.setImageResource(R.drawable.avatarfritz1);
+            } else {
+                userAvatar.setImageResource(R.drawable.avatargerda1);
+            }
             // ... and stats
-            totalDistance.setText("Total distance: \n1324km (bike), 834km (run)");
-            totalAltitude.setText("Total altitude: \n12km (bike), 32km (run)");
+            totalDistance.setText(Html.fromHtml("<b>Total covered distance:</b><br>2158km <i>(1324km by bike, 834km by foot)</i>"));
+            totalAltitude.setText(Html.fromHtml("<b>Total covered altitude:</b><br>227km <i>(95km by bike, 132km by foot)</i>"));
 
         } catch (SQLException e) {
             e.printStackTrace();
