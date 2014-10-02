@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.ferienakademie.neverrest" >
+    package="de.ferienakademie.neverrest">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,21 +16,24 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
+
         <activity
             android:name=".view.FindChallengesActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".view.MainMenuActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".view.ChallengeActivity"
             android:label="nEVEReEST"
@@ -39,6 +42,7 @@
             android:name=".view.ActiveChallengesActivity"
             android:label="nEVEReEST"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".view.ProfileActivity"
             android:label="@string/title_activity_profile"

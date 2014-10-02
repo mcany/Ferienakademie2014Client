@@ -106,8 +106,9 @@ public class ProfileActivity extends FragmentActivity
                 Toast.makeText(ProfileActivity.this, "Editing badges...", Toast.LENGTH_SHORT).show();
             }
         });
-        for (int i = 0; i < 8; i++) {
-            badgeLayout.addView(createBadge(R.drawable.sampleimage, "Badge " + i, this));
+        badgeLayout.addView(createBadge(R.drawable.ic_launcher, "Mt. Everest", this));
+        for (int i = 0; i < 7; i++) {
+            badgeLayout.addView(createBadge(R.drawable.greybadge, "", this));
         }
         userData = (LinearLayout) findViewById(R.id.userData);
         userData.setOnClickListener(new View.OnClickListener() {
@@ -187,7 +188,7 @@ public class ProfileActivity extends FragmentActivity
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layout.setLayoutParams(layoutParams);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(0, 0, padding, 0);
+        layout.setPadding(padding, padding, padding, padding);
 
         ImageView imageView = new ImageView(context);
         ViewGroup.LayoutParams imageParams = new ViewGroup.LayoutParams(getResources().getDimensionPixelSize(R.dimen.badge_size_small), getResources().getDimensionPixelSize(R.dimen.badge_size_small));

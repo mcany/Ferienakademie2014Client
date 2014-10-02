@@ -167,7 +167,7 @@ public class MainMenuActivity extends FragmentActivity
         }
 
         boolean isValid = MetricCalculator.isValid(currentPosition, recentPoints);
-        Toast.makeText(this, "Lat:" + currentPosition.getLatitude()
+        Toast.makeText(getApplicationContext(), "Lat:" + currentPosition.getLatitude()
                 + " Long: "+ currentPosition.getLongitude()
                 + " Alt: " + currentPosition.getAltitude()
                 + " Valid: " + isValid,
@@ -235,6 +235,10 @@ public class MainMenuActivity extends FragmentActivity
             LocationData current = mLocationDataList.get(mLocationDataList.size() - 1);
             LatLng currentLatLng = new LatLng(current.getLatitude(), current.getLongitude());
 
+            Toast.makeText(this, String.valueOf(current.getLatitude()) +
+                            ", " + String.valueOf(current.getLongitude()),
+                    Toast.LENGTH_SHORT).show();
+
             if (mMap != null) {
                 // draw route in map
                 if (mLocationDataList.size() > 1) {
@@ -261,6 +265,7 @@ public class MainMenuActivity extends FragmentActivity
                         .zoom(16).build();
                 // .bearing(mLocation.getBearing())
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
             }
         }
 
