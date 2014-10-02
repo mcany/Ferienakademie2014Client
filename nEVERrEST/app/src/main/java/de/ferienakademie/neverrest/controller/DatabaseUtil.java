@@ -52,6 +52,7 @@ public enum DatabaseUtil {
 				.lat(54.5638511)
 				.lon(100.5932779)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.transsibirische_eisenbahn)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Great Wall of China")
@@ -61,6 +62,7 @@ public enum DatabaseUtil {
 				.lat(40.431908)
 				.lon(116.570375)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.chinesische_mauer)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Jacob's Trail")
@@ -70,6 +72,7 @@ public enum DatabaseUtil {
 				.lat(-33.391868)
 				.lon(-70.6059235)
 				.metricType(MetricType.HORIZONTALDISTANCE)
+				.iconResourceId(R.drawable.jakosweg)
 				.build());
 		challenges.add(new Challenge.Builder()
 				.title("Sahara-Crossing")

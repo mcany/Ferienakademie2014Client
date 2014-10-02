@@ -52,6 +52,7 @@ public class ProfileActivity extends FragmentActivity
     TextView userAge;
     TextView userSize;
     TextView userWeight;
+    TextView userSessions;
     // stats
     TextView totalDistance;
     TextView totalAltitude;
@@ -93,6 +94,7 @@ public class ProfileActivity extends FragmentActivity
         userAge = (TextView) findViewById(R.id.userAge);
         userSize = (TextView) findViewById(R.id.userSize);
         userWeight = (TextView) findViewById(R.id.userWeight);
+        userSessions = (TextView) findViewById(R.id.userSessions);
         // ... and stats
         totalDistance = (TextView) findViewById(R.id.totalDistance);
         totalAltitude = (TextView) findViewById(R.id.totalAltitude);
@@ -143,6 +145,7 @@ public class ProfileActivity extends FragmentActivity
                 currentUser.setHeight(179);
                 currentUser.setMass(123);
                 currentUser.setMale(true);
+                currentUser.setEstimatedTrainingSessionsPerWeek(1);
                 DatabaseUtil.INSTANCE.getDatabaseHandler().getUserDao().create(currentUser);
             }
 
@@ -156,6 +159,7 @@ public class ProfileActivity extends FragmentActivity
             userAge.setText("Age: " +  (int) currentUser.getAge() + " years");
             userSize.setText("Size: " + (int) currentUser.getHeight() + " cm");
             userWeight.setText("Weight: " + (int) currentUser.getMass() + " kg");
+            userSessions.setText("Sportsessions per week: " + currentUser.getEstimatedTrainingSessionsPerWeek());
             // ... and stats
             totalDistance.setText("Total distance: \n1324km (bike), 834km (run)");
             totalAltitude.setText("Total altitude: \n12km (bike), 32km (run)");

@@ -160,8 +160,8 @@ public class MainMenuActivity extends FragmentActivity
 
     public void updateLocation(LocationData currentPosition) {
         List<LocationData> recentPoints;
-        if (mLocationDataList.size() >= 5) {
-            recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS + 1), mLocationDataList.size() - 1);
+        if (mLocationDataList.size() >= NUMBER_RECENT_POINTS) {
+            recentPoints = mLocationDataList.subList(mLocationDataList.size() - (NUMBER_RECENT_POINTS), mLocationDataList.size() - 1);
         } else {
             recentPoints = mLocationDataList;
         }
@@ -173,7 +173,7 @@ public class MainMenuActivity extends FragmentActivity
                 + " Valid: " + isValid,
                 Toast.LENGTH_LONG);
 
-        if (!MetricCalculator.isValid(currentPosition, recentPoints)) {
+        if (!isValid) {
             Log.d(TAG, "Ignoring current location. Looks like an outlier");
             return;
         }
