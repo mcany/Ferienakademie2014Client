@@ -37,7 +37,7 @@ public final class Activity implements Serializable {
     @DatabaseField(columnName = COL_TYPE)
     private SportsType type;
 
-    @DatabaseField(columnName = COL_CHALLENGE)
+    @DatabaseField(columnName = COL_CHALLENGE, foreign = true)
     private Challenge challenge;
 
     @DatabaseField(columnName = COL_TOTAL_DISTANCE)

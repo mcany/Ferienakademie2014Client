@@ -421,7 +421,7 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
                 }
                 dialog = new Dialog(context);
                 dialog.setContentView(R.layout.custom_dialog_map_challenge_info);
-                dialog.setTitle(marker.getTitle());
+                dialog.setTitle(mChallenge.getTitle());
 
                 // set the custom dialog components - text, image and button
                 TextView description = (TextView) dialog.findViewById(R.id.challengeDescription);
