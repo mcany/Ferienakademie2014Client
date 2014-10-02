@@ -213,7 +213,7 @@ public class MainMenuActivity extends FragmentActivity
 
         if (accelor != null) {
 
-            sensorManager.registerListener(this, accelor, 25000, 0);
+            sensorManager.registerListener(this, accelor, 25000);
 
             Log.e(TAG, "requested");
         }
@@ -396,7 +396,7 @@ public class MainMenuActivity extends FragmentActivity
                     time.setBase(SystemClock.elapsedRealtime() + timeWhenStoppedChronometer);
                     time.start();
                     mActivity = new Activity(UUID.randomUUID().toString(), System.currentTimeMillis(),
-                            0L, "Some user id", mSportsType);
+                            0L, "Some user id", mSportsType, null);
                     try {
                         mDatabaseHandler.getActivityDao().create(mActivity);
                     } catch (SQLException e) {
