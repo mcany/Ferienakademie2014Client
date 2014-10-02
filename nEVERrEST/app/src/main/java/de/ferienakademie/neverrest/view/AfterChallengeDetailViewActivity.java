@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import de.ferienakademie.neverrest.R;
-import de.ferienakademie.neverrest.model.MetricType;
 import de.ferienakademie.neverrest.model.SportsType;
 
 /**
@@ -38,18 +37,23 @@ public class AfterChallengeDetailViewActivity extends FragmentActivity implement
 
         setContentView(R.layout.activity_after_challenge_detail_view);
         mTextViewChallengeName = (TextView) findViewById(R.id.textViewChallengeName);
-        mTextViewChallengeName.setText("Challenge Name");
+		getActionBar().setTitle("Mount Everest");
         mTextViewGained = (TextView) findViewById(R.id.textViewGained);
-        mTextViewGained.setText("You gained: " + ((int ) (Math.random() * 10000)) + " ms additional lifetime\nAnd burned " + ((int) (Math.random() * 100000)) + " calories.");
+        mTextViewGained.setText("You gained: " + ((int ) (Math.random() * 10000)) + " ms additional lifetime\nAnd burned " + ((int) (Math.random() * 1000)) + " calories.");
 		// mTextViewGained.setText("You gained: " + mSportiveActivity.getAdditionalLifetimeInMilliseconds() + " ms additional lifetime\nAnd burned " + mSportiveActivity.getConsumptedEnergyInCalories() + " calories.");
         mTextViewFinishedStage = (TextView) findViewById(R.id.textViewFinishedStage);
-        String unitSports = (mSportiveActivity.getChallenge().getType() == MetricType.HORIZONTALDISTANCE) ? "km" : "altitude meters";
-        mTextViewFinishedStage.setText("Results:\n" + " "+ unitSports + " \n" + mSportiveActivity.getDuration()/60000.0 + " min");
+        // String unitSports = (mSportiveActivity.getChallenge().getType() == MetricType.HORIZONTALDISTANCE) ? "km" : "altitude meters";
+		String unitSports = "Altitude meters";
+        // mTextViewFinishedStage.setText("Results:\n" + " "+ unitSports + " \n" + mSportiveActivity.getDuration()/60000.0 + " min");
+		mTextViewFinishedStage.setText("Results:\n8.46 km in 2 hours");
         mTextViewSpeed = (TextView) findViewById(R.id.textViewSpeed);
-        mTextViewSpeed.setText("Average speed: \n" + 50.0/(mSportiveActivity.getDuration() / 360000.0) + " " + unitSports +"/h");
+        mTextViewSpeed.setText("Average speed: \n" + ((Math.round( 1000 * 50.0/(mSportiveActivity.getDuration() / 360000.0))) / 1000) + " " + unitSports +"/h");
+		mTextViewSpeed.setText("Average speed: \n 4.23 km / h");
 
         mDetailsButton = (Button) findViewById(R.id.buttonDetails);
         mMenuButton = (Button) findViewById(R.id.buttonMenu);
+		mDetailsButton.setOnClickListener(this);
+		mMenuButton.setOnClickListener(this);
 
         mSportsTypeImage = (ImageView) findViewById(R.id.imageSportType);
         mGroupSingleImage = (ImageView) findViewById(R.id.imageChallengeTypeGroup);
@@ -58,7 +62,7 @@ public class AfterChallengeDetailViewActivity extends FragmentActivity implement
         mSportsTypeImage.setImageDrawable(iconSportsType);
 
         Drawable iconChallengeGroup =  this.getResources().getDrawable(R.drawable.single);
-        mGroupSingleImage.setImageDrawable(iconChallengeGroup);
+        // mGroupSingleImage.setImageDrawable(iconChallengeGroup);
     }
 
 

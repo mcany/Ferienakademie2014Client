@@ -18,41 +18,10 @@
         android:paddingRight="0dp"
         android:paddingTop="0dp">
         <LinearLayout
-            android:id="@+id/headingLayout"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            >
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="20"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:background="#CCCCCC">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageChallengeType"
-                    android:src="@drawable/ic_launcher"
-                    android:layout_below="@+id/textView"
-                    android:layout_gravity="center_vertical"/>
-                <TextView
-                    android:id="@+id/textViewChallengeName"
-                    android:background="#CCCCCC"
-                    android:gravity="center_vertical"
-                    android:layout_width="fill_parent"
-                    android:layout_height="40dp"
-                    android:paddingLeft="10dip"
-                    android:paddingRight="0dip"/>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
             android:id="@+id/middleLayout"
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/headingLayout"
             android:layout_marginBottom="100dp">
 
             <LinearLayout

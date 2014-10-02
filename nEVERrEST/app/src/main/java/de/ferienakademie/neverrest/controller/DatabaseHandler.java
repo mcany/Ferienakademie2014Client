@@ -392,6 +392,8 @@ public class DatabaseHandler extends OrmLiteSqliteOpenHelper {
 		challenges.add(new Challenge.Builder()
 				.title("Mount Everest")
 				.description("")
+				.completedEffort(4323)
+				.timestampStarted(123112)
 				.totalEffort(8848)
 				.continentName(context.getString(R.string.continent_asia))
 				.lat(27.98002)
