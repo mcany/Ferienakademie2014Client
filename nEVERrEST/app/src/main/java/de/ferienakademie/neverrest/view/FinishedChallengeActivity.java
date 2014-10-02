@@ -1,21 +1,11 @@
 package de.ferienakademie.neverrest.view;
 
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import de.ferienakademie.neverrest.R;
 
 public class FinishedChallengeActivity extends Activity implements View.OnClickListener {
 
+	/*
     private de.ferienakademie.neverrest.model.Activity mSportiveActivity;
     private Button mCloseButton;
     private Button mShareButton;
@@ -53,9 +43,11 @@ public class FinishedChallengeActivity extends Activity implements View.OnClickL
         }
         return super.onOptionsItemSelected(item);
     }
+    */
 
     @Override
     public void onClick(View view) {
+		/*
         switch(view.getId()) {
             case R.id.buttonShare:
                 Toast.makeText(this, "NSA already knows about your finished challenge!", Toast.LENGTH_SHORT).show();
@@ -65,5 +57,6 @@ public class FinishedChallengeActivity extends Activity implements View.OnClickL
                 startActivity(intent);
                 break;
         }
+        */
     }
 }
