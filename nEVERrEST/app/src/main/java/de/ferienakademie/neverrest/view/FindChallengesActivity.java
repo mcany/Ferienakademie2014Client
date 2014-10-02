@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,6 +45,7 @@ import de.ferienakademie.neverrest.R;
 import de.ferienakademie.neverrest.controller.DatabaseHandler;
 import de.ferienakademie.neverrest.controller.DatabaseUtil;
 import de.ferienakademie.neverrest.model.Challenge;
+import de.ferienakademie.neverrest.model.MetricType;
 
 public class FindChallengesActivity extends FragmentActivity implements NeverrestInterface {
 
@@ -429,7 +431,21 @@ public class FindChallengesActivity extends FragmentActivity implements Neverres
                 TextView details = (TextView) dialog.findViewById(R.id.challengeDetails);
                 details.setText("TotalEffort: "+mChallenge.getTotalEffort()+ "\nType: " + mChallenge.getType());
                 ImageView image = (ImageView) dialog.findViewById(R.id.challengeImage);
-                image.setImageResource(R.drawable.ic_launcher);
+                image.setImageResource(mChallenge.getIconResourceId());
+                image.getLayoutParams().height = 180;
+                image.getLayoutParams().width = 180;
+
+
+                if(mChallenge.getType().equals(MetricType.VERTICALDISTANCE))
+                {
+                    final RotateAnimation rotateAnim = new RotateAnimation(0.0f, 90,
+                            RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                            RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+
+                    rotateAnim.setDuration(0);
+                    rotateAnim.setFillAfter(true);
+                    image.startAnimation(rotateAnim);
+                }
 
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonAcceptChallenge);
                 // if button is clicked, close the custom dialog
