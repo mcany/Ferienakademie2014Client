@@ -1,7 +1,6 @@
 package de.ferienakademie.neverrest.view;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -89,18 +88,20 @@ public class ChallengeActivity extends FragmentActivity
         params.width = (int) (size.x * 0.86);
         progressBar.setMax((int) mChallenge.getTotalEffort());
         progressBar.setProgress((int) (mChallenge.getTotalEffort() - mChallenge.getCompletedEffort()));
+		progressBar.setBackgroundResource(mChallenge.getIconResourceId());
         mDetailsTextView = (TextView) findViewById(R.id.textViewDetails);
         //List<Activity> activitiesOfChallange = DatabaseUtil.INSTANCE.getDatabaseHandler().getActivityDao().queryForEq(de.ferienakademie.neverrest.model.Activity.C)
         //int duration =
         String unit = (mChallenge.getType() == MetricType.HORIZONTALDISTANCE) ? " km" : " m";
         mDetailsTextView.setText(mChallenge.getCompletedEffort() + " of " + mChallenge.getTotalEffort() + unit + "\n" );
         if(mChallenge.getType() == MetricType.HORIZONTALDISTANCE) {
-            linearLayoutProgressBar.setRotation(180);
+            linearLayoutProgressBar.setRotation(0);
         }
         Drawable iconChallenge = (mChallenge.getType() == MetricType.HORIZONTALDISTANCE) ? this.getResources().getDrawable(R.drawable.distance) : this.getResources().getDrawable(R.drawable.altitude);
         ((ImageView)findViewById(R.id.imageChallengeType)).setImageDrawable(iconChallenge);
         Drawable iconChallengeGroup =  this.getResources().getDrawable(R.drawable.single_200x200);
         ((ImageView)findViewById(R.id.imageChallengeTypeGroup)).setImageDrawable(iconChallengeGroup);
+
 
     }
 

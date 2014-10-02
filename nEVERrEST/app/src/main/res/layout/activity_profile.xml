@@ -11,39 +11,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:id="@+id/headingLayout"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:paddingBottom="@dimen/padding_medium"
-            >
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="20"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:background="#CCCCCC">
-                <ImageView
-                    android:id="@+id/profileTitleImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_launcher"
-                    android:layout_below="@+id/textView"
-                    android:layout_gravity="center_vertical"/>
-                <TextView
-                    android:text="Profile"
-                    android:background="#CCCCCC"
-                    android:gravity="center_vertical"
-                    android:layout_width="fill_parent"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:paddingLeft="10dip"
-                    android:paddingRight="0dip"/> </LinearLayout>
-        </LinearLayout>
+        android:layout_height="match_parent"
+        android:padding="@dimen/padding_medium">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -99,6 +68,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Weight: %d kg"
+                    android:textSize="@dimen/text_medium" />
+
+                <TextView
+                    android:id="@+id/userSessions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sportsessions per week: %d"
                     android:textSize="@dimen/text_medium" />
 
             </LinearLayout>
