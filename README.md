@@ -1,3 +1,3 @@
-This is the android client repo!
+#Neverrest Android Client
 
-To build and import the shared library, clone the shared repository. Then run "gradle jar" and copy the generated jar from the build/libs folder into the libs folder in the app module. Then rebuild the app.
+This is the Neverrest android client developed as part of the Ferienakademie 2014. Please note that it does not represent a finished product ready for production, but rather a study on how such a game could look like. For the complete concept please refer to https://github.com/Maddoc42/Ferienakademie2014Client/blob/master/nEVERrEST/docu/Concept.docx
